@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — TeamSync</title>
+  <meta name="description" content="TeamSync Admin Dashboard — system-wide overview, user management, and analytics." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="../assets/css/teamsync.css" />
+</head>
+<body class="ts-shell">
+  <aside id="ts-sidebar"></aside>
+  <div class="ts-main">
+    <header id="ts-topnav"></header>
+    <main class="ts-content fade-in">
+
+      <!-- Page Hero -->
+      <div class="mb-10">
+        <h1 class="font-headline text-5xl text-on-surface tracking-tight mb-2">System Overview</h1>
+        <p class="font-headline italic text-xl text-outline">Monitor and manage the entire TeamSync workspace.</p>
+      </div>
+
+      <!-- Stat Cards Row -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+        <div class="stat-card">
+          <div class="flex items-start justify-between mb-4">
+            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary">group</span>
+            </div>
+            <span class="font-mono text-[10px] text-outline uppercase tracking-widest">Users</span>
+          </div>
+          <p class="font-headline text-4xl font-bold text-on-surface">48</p>
+          <p class="text-xs text-on-surface-variant mt-1">+3 this month</p>
+        </div>
+        <div class="stat-card">
+          <div class="flex items-start justify-between mb-4">
+            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary">calendar_today</span>
+            </div>
+            <span class="font-mono text-[10px] text-outline uppercase tracking-widest">Meetings</span>
+          </div>
+          <p class="font-headline text-4xl font-bold text-on-surface">124</p>
+          <p class="text-xs text-on-surface-variant mt-1">This quarter</p>
+        </div>
+        <div class="stat-card">
+          <div class="flex items-start justify-between mb-4">
+            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary">assignment</span>
+            </div>
+            <span class="font-mono text-[10px] text-outline uppercase tracking-widest">Tasks</span>
+          </div>
+          <p class="font-headline text-4xl font-bold text-on-surface">317</p>
+          <p class="text-xs text-on-surface-variant mt-1">72% completed</p>
+        </div>
+        <div class="stat-card">
+          <div class="flex items-start justify-between mb-4">
+            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary">hub</span>
+            </div>
+            <span class="font-mono text-[10px] text-outline uppercase tracking-widest">Teams</span>
+          </div>
+          <p class="font-headline text-4xl font-bold text-on-surface">6</p>
+          <p class="text-xs text-on-surface-variant mt-1">Active ateliers</p>
+        </div>
+      </div>
+
+      <!-- Bento Grid -->
+      <div class="grid grid-cols-12 gap-6 mb-10">
+
+        <!-- Activity Feed -->
+        <div class="col-span-12 lg:col-span-7 ts-card p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="font-headline text-2xl text-on-surface">Recent Activity</h2>
+            <button class="text-xs font-medium text-primary hover:underline">View all</button>
+          </div>
+          <div class="space-y-4">
+            <div class="activity-item flex items-start gap-4 p-4 rounded-xl hover:bg-surface-container-low transition-colors">
+              <div class="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings:'FILL' 1;">person_add</span>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-on-surface">New user <strong>Elena Vance</strong> joined as Team Leader</p>
+                <p class="font-mono text-[10px] text-outline mt-1">Engineering • 2 hours ago</p>
+              </div>
+            </div>
+            <div class="activity-item flex items-start gap-4 p-4 rounded-xl hover:bg-surface-container-low transition-colors">
+              <div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-on-surface-variant text-sm" style="font-variation-settings:'FILL' 1;">description</span>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-on-surface">MOM published: <strong>Q4 Brand Strategy Sync</strong></p>
+                <p class="font-mono text-[10px] text-outline mt-1">Design • 4 hours ago</p>
+              </div>
+            </div>
+            <div class="activity-item flex items-start gap-4 p-4 rounded-xl hover:bg-surface-container-low transition-colors">
+              <div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-on-surface-variant text-sm" style="font-variation-settings:'FILL' 1;">calendar_today</span>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-on-surface">Meeting scheduled: <strong>Architecture Sprint Planning</strong></p>
+                <p class="font-mono text-[10px] text-outline mt-1">Engineering • Yesterday</p>
+              </div>
+            </div>
+            <div class="activity-item flex items-start gap-4 p-4 rounded-xl hover:bg-surface-container-low transition-colors">
+              <div class="w-9 h-9 rounded-full bg-error-container/50 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-on-error-container text-sm">assignment_late</span>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-on-surface">Task overdue: <strong>Refactor Auth Middleware</strong></p>
+                <p class="font-mono text-[10px] text-outline mt-1">Engineering • Yesterday</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Health & Quick Links -->
+        <div class="col-span-12 lg:col-span-5 flex flex-col gap-6">
+          <!-- System health -->
+          <div class="ts-card p-6 flex-1">
+            <h2 class="font-headline text-2xl text-on-surface mb-5">System Health</h2>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm font-medium text-on-surface">Team Productivity</span>
+                  <span class="font-mono text-xs text-primary font-bold">84%</span>
+                </div>
+                <div class="ts-progress-track"><div class="ts-progress-fill" style="width:84%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm font-medium text-on-surface">Meeting Attendance</span>
+                  <span class="font-mono text-xs text-primary font-bold">91%</span>
+                </div>
+                <div class="ts-progress-track"><div class="ts-progress-fill" style="width:91%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm font-medium text-on-surface">Task Completion Rate</span>
+                  <span class="font-mono text-xs text-primary font-bold">72%</span>
+                </div>
+                <div class="ts-progress-track"><div class="ts-progress-fill" style="width:72%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm font-medium text-on-surface">MOM Coverage</span>
+                  <span class="font-mono text-xs text-primary font-bold">96%</span>
+                </div>
+                <div class="ts-progress-track"><div class="ts-progress-fill" style="width:96%"></div></div>
+              </div>
+            </div>
+          </div>
+          <!-- Quick admin links -->
+          <div class="grid grid-cols-2 gap-4">
+            <a href="users.html" class="ts-card p-5 hover:-translate-y-1 transition-all flex flex-col gap-3 cursor-pointer group">
+              <span class="material-symbols-outlined text-primary text-2xl">manage_accounts</span>
+              <p class="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">User Management</p>
+            </a>
+            <a href="teams.html" class="ts-card p-5 hover:-translate-y-1 transition-all flex flex-col gap-3 cursor-pointer group">
+              <span class="material-symbols-outlined text-primary text-2xl">hub</span>
+              <p class="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">Teams</p>
+            </a>
+            <a href="meetings.html" class="ts-card p-5 hover:-translate-y-1 transition-all flex flex-col gap-3 cursor-pointer group">
+              <span class="material-symbols-outlined text-primary text-2xl">calendar_today</span>
+              <p class="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">Meetings</p>
+            </a>
+            <a href="tasks.html" class="ts-card p-5 hover:-translate-y-1 transition-all flex flex-col gap-3 cursor-pointer group">
+              <span class="material-symbols-outlined text-primary text-2xl">assignment</span>
+              <p class="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">Tasks</p>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Users Table -->
+      <div class="ts-card overflow-hidden">
+        <div class="px-6 py-5 flex items-center justify-between border-b border-outline-variant/10">
+          <h2 class="font-headline text-2xl text-on-surface">Team Directory</h2>
+          <a href="users.html" class="text-xs font-medium text-primary hover:underline">Manage all users →</a>
+        </div>
+        <table class="ts-table">
+          <thead>
+            <tr>
+              <th>Member</th><th>Role</th><th>Department</th><th>Status</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-full bg-[#2f312f] text-white flex items-center justify-center text-xs font-bold">JT</div>
+                  <div><p class="font-medium text-on-surface">Julian Thorne</p><p class="text-xs text-outline font-mono">julian.t@teamsync.io</p></div>
+                </div>
+              </td>
+              <td><span class="text-sm font-medium">Admin</span></td>
+              <td><span class="text-sm text-on-surface-variant">Design</span></td>
+              <td><span class="badge-scheduled"><span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>Active</span></td>
+              <td class="text-right"><a href="users.html" class="text-xs text-primary hover:underline">Edit</a></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">EV</div>
+                  <div><p class="font-medium text-on-surface">Elena Vance</p><p class="text-xs text-outline font-mono">e.vance@teamsync.io</p></div>
+                </div>
+              </td>
+              <td><span class="text-sm font-medium">Team Lead</span></td>
+              <td><span class="text-sm text-on-surface-variant">Engineering</span></td>
+              <td><span class="badge-draft">Invited</span></td>
+              <td class="text-right"><a href="users.html" class="text-xs text-primary hover:underline">Edit</a></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-full bg-secondary text-white flex items-center justify-center text-xs font-bold">MC</div>
+                  <div><p class="font-medium text-on-surface">Marcus Chen</p><p class="text-xs text-outline font-mono">m.chen@teamsync.io</p></div>
+                </div>
+              </td>
+              <td><span class="text-sm font-medium">Member</span></td>
+              <td><span class="text-sm text-on-surface-variant">Product</span></td>
+              <td><span class="badge-scheduled"><span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>Active</span></td>
+              <td class="text-right"><a href="users.html" class="text-xs text-primary hover:underline">Edit</a></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-xs font-bold">SB</div>
+                  <div><p class="font-medium text-on-surface">Sienna Brooks</p><p class="text-xs text-outline font-mono">s.brooks@teamsync.io</p></div>
+                </div>
+              </td>
+              <td><span class="text-sm font-medium">Member</span></td>
+              <td><span class="text-sm text-on-surface-variant">Design</span></td>
+              <td><span class="badge-completed">Deactivated</span></td>
+              <td class="text-right"><a href="users.html" class="text-xs text-primary hover:underline">Edit</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+    const user = requireAuth(['admin']);
+    if (user) {
+      renderSidebar(user, 'dashboard');
+      renderTopNav('Admin Dashboard', user);
+    }
+  </script>
+</body>
+</html>

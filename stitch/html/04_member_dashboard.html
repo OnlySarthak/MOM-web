@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+        }
+        body {
+            background-color: #faf9f6;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-surface": "#2f312f",
+                        "on-secondary-fixed": "#03164d",
+                        "on-secondary-container": "#3d4c83",
+                        "on-error": "#ffffff",
+                        "on-surface": "#1b1c1a",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#e9e8e5",
+                        "on-tertiary-fixed-variant": "#832700",
+                        "on-primary-container": "#cad3ff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#e3e2df",
+                        "secondary-fixed-dim": "#b7c4ff",
+                        "inverse-primary": "#b7c4ff",
+                        "secondary-container": "#b0befe",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#dce1ff",
+                        "tertiary": "#7f2500",
+                        "tertiary-container": "#a73400",
+                        "on-secondary-fixed-variant": "#35437b",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#1d4ed8",
+                        "inverse-on-surface": "#f2f1ee",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#4d5b94",
+                        "primary-fixed": "#dce1ff",
+                        "background": "#faf9f6",
+                        "primary": "#0037b0",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#747686",
+                        "on-primary-fixed": "#001551",
+                        "surface-bright": "#faf9f6",
+                        "tertiary-fixed": "#ffdbcf",
+                        "on-surface-variant": "#434655",
+                        "outline-variant": "#c4c5d7",
+                        "on-tertiary-fixed": "#390c00",
+                        "on-primary-fixed-variant": "#0039b5",
+                        "tertiary-fixed-dim": "#ffb59c",
+                        "surface-tint": "#2151da",
+                        "surface": "#faf9f6",
+                        "surface-container": "#efeeeb",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "on-tertiary-container": "#ffc9b7",
+                        "surface-container-low": "#f4f3f0",
+                        "surface-container-highest": "#e3e2df",
+                        "on-background": "#1b1c1a",
+                        "surface-dim": "#dbdad7"
+                    },
+                    fontFamily: {
+                        "headline": ["Newsreader"],
+                        "body": ["Inter"],
+                        "label": ["Inter"],
+                        "mono": ["JetBrains Mono"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-body text-on-surface selection:bg-secondary-fixed">
+<!-- Sidebar (Shared Component) -->
+<aside class="fixed left-0 top-0 h-screen w-64 bg-[#2f312f] dark:bg-zinc-950 flex flex-col py-8 shadow-2xl z-50">
+<div class="px-6 mb-10">
+<h1 class="font-['Newsreader'] text-xl italic text-white">TeamSync</h1>
+<p class="font-['Inter'] text-xs tracking-widest text-zinc-400 uppercase mt-1">Digital Atelier</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="relative flex items-center px-6 py-3 text-[#dce1ff] before:absolute before:left-0 before:w-1 before:h-8 before:bg-[#dce1ff] before:rounded-r-full font-['Inter'] text-sm tracking-wide bg-white/5 translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center px-6 py-3 text-zinc-400 hover:text-white transition-colors font-['Inter'] text-sm tracking-wide hover:bg-white/5" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="groups">groups</span>
+                Meetings
+            </a>
+<a class="flex items-center px-6 py-3 text-zinc-400 hover:text-white transition-colors font-['Inter'] text-sm tracking-wide hover:bg-white/5" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="description">description</span>
+                MOMs
+            </a>
+<a class="flex items-center px-6 py-3 text-zinc-400 hover:text-white transition-colors font-['Inter'] text-sm tracking-wide hover:bg-white/5" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="assignment">assignment</span>
+                Tasks
+            </a>
+<a class="flex items-center px-6 py-3 text-zinc-400 hover:text-white transition-colors font-['Inter'] text-sm tracking-wide hover:bg-white/5" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="person">person</span>
+                Profile
+            </a>
+</nav>
+<div class="px-6 mb-6">
+<button class="w-full bg-primary-container text-white py-2.5 rounded shadow-lg hover:shadow-primary/20 transition-all font-medium text-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                New Task
+            </button>
+</div>
+<footer class="mt-auto border-t border-white/10 pt-6">
+<a class="flex items-center px-6 py-3 text-zinc-400 hover:text-white transition-colors font-['Inter'] text-sm tracking-wide hover:bg-white/5" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span>
+                Settings
+            </a>
+<a class="flex items-center px-6 py-3 text-zinc-400 hover:text-white transition-colors font-['Inter'] text-sm tracking-wide hover:bg-white/5" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="logout">logout</span>
+                Logout
+            </a>
+</footer>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- TopNavBar (Shared Component) -->
+<header class="sticky top-0 z-40 w-full bg-[#faf9f6]/85 backdrop-blur-xl flex justify-between items-center h-20 px-12 bg-gradient-to-b from-[#efeeeb] to-transparent">
+<div class="flex items-center gap-8">
+<h2 class="font-headline text-2xl font-medium text-on-surface">My Dashboard</h2>
+<div class="relative group">
+<span class="absolute inset-y-0 left-3 flex items-center text-on-surface-variant/50">
+<span class="material-symbols-outlined text-sm" data-icon="search">search</span>
+</span>
+<input class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-sm w-64 focus:ring-1 focus:ring-primary/20 transition-all" placeholder="Search Atelier..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 rounded transition-all">Support</button>
+<button class="px-5 py-2 bg-gradient-to-br from-primary to-primary-container text-white text-sm font-medium rounded shadow-md active:scale-95 transition-all">Sync Now</button>
+</div>
+<div class="h-10 w-10 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant/20">
+<img class="h-full w-full object-cover" data-alt="Close up portrait of a professional creative designer with soft studio lighting and neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSWoSQm4fDjAyzZ-idOqRZH6R_3eg0RXDDqXEwV4sjobcJb0PM5p_9J7LX8HtzbazGTRTWKeOfO9Jl4ZOvPgPFdV7EpO9bvJEtAFo_VFJ06ENRMxmEtfI13_TQoXIg7pPTaNrfCvygK5y-KTmniUSMSDo_Gdr28jaTCDHDZn-L6M3V6ZsEUxK7QLflx2jDcNC9-xXZw-tFLmbqQmlicR2r2fxnOeAZjKAC839Z0-DyxMWxgySGZZ0hVOvLViT4-Hm5TNI9kH1DQv0"/>
+</div>
+</div>
+</header>
+<div class="px-12 py-10 space-y-12 max-w-7xl mx-auto">
+<!-- Stats Section (Bento Grid Style) -->
+<section class="grid grid-cols-3 gap-6">
+<div class="bg-surface-container-lowest p-8 rounded-xl relative overflow-hidden group hover:bg-surface-container-low transition-colors">
+<div class="relative z-10">
+<p class="font-label text-xs uppercase tracking-[0.2em] text-on-surface-variant/70 mb-2">Upcoming</p>
+<h3 class="font-headline text-4xl font-medium text-primary">04</h3>
+<p class="text-on-surface mt-1 font-medium">My Meetings</p>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+<span class="material-symbols-outlined text-8xl" data-icon="calendar_today">calendar_today</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl relative overflow-hidden group hover:bg-surface-container-low transition-colors">
+<div class="relative z-10">
+<p class="font-label text-xs uppercase tracking-[0.2em] text-on-surface-variant/70 mb-2">Pending</p>
+<h3 class="font-headline text-4xl font-medium text-primary">12</h3>
+<p class="text-on-surface mt-1 font-medium">My Tasks</p>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+<span class="material-symbols-outlined text-8xl" data-icon="task_alt">task_alt</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl relative overflow-hidden group hover:bg-surface-container-low transition-colors">
+<div class="relative z-10">
+<p class="font-label text-xs uppercase tracking-[0.2em] text-on-surface-variant/70 mb-2">Published</p>
+<h3 class="font-headline text-4xl font-medium text-primary">08</h3>
+<p class="text-on-surface mt-1 font-medium">Recent MOMs</p>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+<span class="material-symbols-outlined text-8xl" data-icon="auto_stories">auto_stories</span>
+</div>
+</div>
+</section>
+<!-- Middle Layout: Meetings and Tasks -->
+<section class="grid grid-cols-12 gap-10">
+<!-- Left Column: Assigned Meetings -->
+<div class="col-span-12 lg:col-span-5 space-y-6">
+<div class="flex items-center justify-between">
+<h4 class="font-headline text-xl text-on-surface">Assigned Meetings</h4>
+<button class="text-primary text-sm font-medium hover:underline decoration-1 underline-offset-4">View Calendar</button>
+</div>
+<div class="space-y-3">
+<!-- Meeting Item -->
+<div class="group flex items-center p-4 bg-surface-container-lowest hover:bg-surface-container-low rounded-lg transition-all">
+<div class="h-12 w-12 rounded bg-primary-fixed flex flex-col items-center justify-center text-on-primary-fixed mr-4">
+<span class="text-[10px] font-bold uppercase">Oct</span>
+<span class="text-lg font-headline leading-none">24</span>
+</div>
+<div class="flex-1">
+<h5 class="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">Brand Strategy Workshop</h5>
+<p class="text-xs text-on-surface-variant mt-0.5">10:00 AM • Creative Wing</p>
+</div>
+<div class="flex items-center gap-2">
+<img class="h-6 w-6 rounded-full border border-surface" data-alt="Professional profile headshot of a female executive with clear background and natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1kZS6dWigYJ5YrZH5FiaXnsuaBEP8ZfQcKrJwCiZtvwP44vdtKpK6yLruo2i_oeKKZLoDD57GYZCaYenA_RHZ3_a6S8Lua823xATb8i4k2caBB5RCqRCspOJZN1Lwyd4CUiuwnI4mc1IHpC5Te1oOpCrEAsJy9vbPPtunJMCU0XXXcfU4ydbMIfGc5dLERGJp0dRPmwj3pqZGUun0ot7j5kJaZ9jd6jXhxd2Fc2cY145NWkzTDnCP5aGYerFbjUcL9HRt3V0KA0Y"/>
+<span class="text-[10px] font-mono text-on-surface-variant">Elena V.</span>
+</div>
+</div>
+<!-- Meeting Item -->
+<div class="group flex items-center p-4 bg-surface-container-lowest hover:bg-surface-container-low rounded-lg transition-all">
+<div class="h-12 w-12 rounded bg-surface-container-high flex flex-col items-center justify-center text-on-surface-variant mr-4">
+<span class="text-[10px] font-bold uppercase">Oct</span>
+<span class="text-lg font-headline leading-none">25</span>
+</div>
+<div class="flex-1">
+<h5 class="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">Product Sync: Mobile V2</h5>
+<p class="text-xs text-on-surface-variant mt-0.5">02:30 PM • Virtual Atelier</p>
+</div>
+<div class="flex items-center gap-2">
+<img class="h-6 w-6 rounded-full border border-surface" data-alt="Portrait of a young male professional in a casual studio setting with soft warm light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBj-2mqtY_Mz3ypqJziutkamRE1VezeLzEbNZmx1dP3Trsd96JDsLYiLnwqu_Rtyrd_z-RlFm6HbWWlbiXSK0BRDH1ZunDBHfadRoQGp4DmQfR6EfT94YUy1f0GZIFhZaNJlnlVzitpcrJADeJMdM8rMZjI_7CDpwtCldlNfoGKvKgruNx20rlRiU6MAK9vh4d8dsIKl9KUNZaJocgAw7OiCUpWkzZacn3y1RGde5qi0iiU7P9BUgldr1JNp38a8Hs_R8iHrFm3VV4"/>
+<span class="text-[10px] font-mono text-on-surface-variant">Marcus T.</span>
+</div>
+</div>
+<!-- Meeting Item -->
+<div class="group flex items-center p-4 bg-surface-container-lowest hover:bg-surface-container-low rounded-lg transition-all">
+<div class="h-12 w-12 rounded bg-surface-container-high flex flex-col items-center justify-center text-on-surface-variant mr-4">
+<span class="text-[10px] font-bold uppercase">Oct</span>
+<span class="text-lg font-headline leading-none">27</span>
+</div>
+<div class="flex-1">
+<h5 class="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">Quarterly Review</h5>
+<p class="text-xs text-on-surface-variant mt-0.5">09:00 AM • Boardroom 01</p>
+</div>
+<div class="flex items-center gap-2">
+<img class="h-6 w-6 rounded-full border border-surface" data-alt="Close up portrait of a senior businesswoman with professional lighting and neutral tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2uJqmsf2P4l6N1JVlJofcAhV8T3dqxiJvyb-Ju3Uaot1DCL-E6mj1pK4rboOk9s-SLGD-cjx9zTd0F8Wz6CREKT-4QDIjjKmeTUS-Rz96cHMRKwg8LvGUd6gU48LogTi_8NUnYJNSOqUhtWyUeg7mV_smfOBGamGkQIikbQ2WPNbEiXeJLo0ts09fyTul7l1Zdzah8r1JpPuWGbV9TMKAUuyMBxnKDPECEQ-7HuYc1BUW0DSe6fSn5LFoGgjh5ikJ6g-429jm5ak"/>
+<span class="text-[10px] font-mono text-on-surface-variant">Sarah J.</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: My Tasks Table -->
+<div class="col-span-12 lg:col-span-7 space-y-6">
+<div class="flex items-center justify-between">
+<h4 class="font-headline text-xl text-on-surface">My Tasks</h4>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-mono text-on-surface-variant px-2 py-1 bg-surface-container-high rounded uppercase">Updated 2m ago</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/10">
+<th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-on-surface-variant/70">Task Name</th>
+<th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-on-surface-variant/70">Priority</th>
+<th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-on-surface-variant/70">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary/40 mr-3" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+<span class="text-sm text-on-surface">Finalize design audit report</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 text-[10px] font-bold text-tertiary-fixed-dim bg-tertiary/10 rounded uppercase">High</span>
+</td>
+<td class="px-6 py-4">
+<select class="text-xs border-none bg-surface-container-high/50 rounded-md focus:ring-1 focus:ring-primary py-1 px-3 appearance-none cursor-pointer">
+<option>To Do</option>
+<option selected="">In Progress</option>
+<option>Done</option>
+</select>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary/40 mr-3" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+<span class="text-sm text-on-surface">Weekly client sync prep</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 text-[10px] font-bold text-on-secondary-container bg-secondary-container/20 rounded uppercase">Medium</span>
+</td>
+<td class="px-6 py-4">
+<select class="text-xs border-none bg-surface-container-high/50 rounded-md focus:ring-1 focus:ring-primary py-1 px-3 appearance-none cursor-pointer">
+<option selected="">To Do</option>
+<option>In Progress</option>
+<option>Done</option>
+</select>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary/40 mr-3" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+<span class="text-sm text-on-surface">Update design tokens in Figma</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 text-[10px] font-bold text-on-surface-variant/70 bg-surface-variant rounded uppercase">Low</span>
+</td>
+<td class="px-6 py-4">
+<select class="text-xs border-none bg-surface-container-high/50 rounded-md focus:ring-1 focus:ring-primary py-1 px-3 appearance-none cursor-pointer">
+<option>To Do</option>
+<option>In Progress</option>
+<option selected="">Done</option>
+</select>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary/40 mr-3" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+<span class="text-sm text-on-surface">Stakeholder feedback synthesis</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 text-[10px] font-bold text-tertiary-fixed-dim bg-tertiary/10 rounded uppercase">High</span>
+</td>
+<td class="px-6 py-4">
+<select class="text-xs border-none bg-surface-container-high/50 rounded-md focus:ring-1 focus:ring-primary py-1 px-3 appearance-none cursor-pointer">
+<option>To Do</option>
+<option selected="">In Progress</option>
+<option>Done</option>
+</select>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Bottom Section: Recent MOMs -->
+<section class="space-y-8 pb-20">
+<div class="flex items-baseline gap-4 border-b border-outline-variant/10 pb-4">
+<h4 class="font-headline text-2xl text-on-surface">Recent MOMs</h4>
+<p class="text-sm text-on-surface-variant italic font-headline">Editorial archives and takeaways</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- MOM Card -->
+<div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant/5 hover:shadow-xl hover:shadow-on-surface/5 transition-all duration-300">
+<div class="flex items-center justify-between mb-4">
+<span class="text-[10px] font-mono text-primary uppercase tracking-widest">Oct 20, 2023</span>
+<span class="material-symbols-outlined text-on-surface-variant/40" data-icon="push_pin">push_pin</span>
+</div>
+<h5 class="font-headline text-lg font-medium mb-3 group-hover:text-primary">Q4 Visual Identity Review</h5>
+<p class="text-sm text-on-surface-variant leading-relaxed line-clamp-3">
+                            The team reviewed the upcoming changes to the brand's typography and color hierarchy. Decisions were made to pivot towards more serif usage for display moments...
+                        </p>
+<div class="mt-6 pt-4 border-t border-outline-variant/10 flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="h-6 w-6 rounded-full border-2 border-surface bg-surface-container-high overflow-hidden">
+<img data-alt="Close up face of a female professional in high-key lighting studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDV3nTTaz2o2h3L9u63G96uL5wyxVvtMPU4XBOhDAjoYgsmuYDSLh66e6_nAP8T_XqJTKkxFNLZIYWKH1XO04wA5tyKYNuwP3dcsl2QZZrRcEgyg6QVX1n_N02YDVM7vAlKIlN6uv1ZU5YM6EmeDoU8eIz3PsWuVkSvdNuD5XDKZieKMCjZyy1p5fHoyKsAjAFERLMx_Om2V3bFeapn07m9t9yrslR2wCUK2YzRli_NyVFCmmP4Vk7R9tfxko8ppxbILMX0dKAFtM0"/>
+</div>
+<div class="h-6 w-6 rounded-full border-2 border-surface bg-surface-container-high overflow-hidden">
+<img data-alt="Portrait of a young male creative director with professional studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByj__fPfrfE9_p83CLlIQMDjg40ryNuoP2Vdcun4odqLdEO4Zm5t3nsT_VC7e8NXDhYMrBRitCdUP1gjMnn4YLWXnmqdHoD_ZO4rcuc4bUiY5PW9pz9-XfbJbK8D0bAcinnXWXOUJ_rSVp_bpY8qJDs0r0j-WGv8Z-mV3V498468hcMlxQW1WkrCBZzlMZEPy3LvljQrJnUq4J1HnQl2V1qAeGALXuUryJYFLwwHEyjN3a0UoYhmEiCnTxSKv3RjXfbiBjeq4-9BU"/>
+</div>
+</div>
+<button class="text-xs font-semibold uppercase tracking-wider text-primary flex items-center gap-1 hover:gap-2 transition-all">
+                                Read More <span class="material-symbols-outlined text-xs" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- MOM Card -->
+<div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant/5 hover:shadow-xl hover:shadow-on-surface/5 transition-all duration-300">
+<div class="flex items-center justify-between mb-4">
+<span class="text-[10px] font-mono text-primary uppercase tracking-widest">Oct 18, 2023</span>
+</div>
+<h5 class="font-headline text-lg font-medium mb-3">API Integration Kickoff</h5>
+<p class="text-sm text-on-surface-variant leading-relaxed line-clamp-3">
+                            Technical requirements for the new sync engine were outlined. The focus remains on low-latency data transmission and robust error handling during peak hours...
+                        </p>
+<div class="mt-6 pt-4 border-t border-outline-variant/10 flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="h-6 w-6 rounded-full border-2 border-surface bg-surface-container-high overflow-hidden">
+<img data-alt="Profile of a male engineer in bright outdoor natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCepJMlv24wOdgcn0FesyXJLGqWYPXl0ClyfTTAIeum9nxCOZgoC0vgKQOMIaeHS8aHZzsEyL5qRNdMimJapzE7vT1oq9GHwzzc7vY17YgJr5_MCY7rime4ho1WOh_KzJ9V_PrSC37TR031b6rAd1wXtwiVjk-dyIpXYO8pXk6-lnhLatJZ2kh5Bco2iHbRoQNFvo5r7y1rBdoVcx6DK6KI5iGKepwCYIE5NPhBif0wSCiI_f00WSsl0VCIxAHxFY_d_QwMcheg1ig"/>
+</div>
+</div>
+<button class="text-xs font-semibold uppercase tracking-wider text-primary flex items-center gap-1 hover:gap-2 transition-all">
+                                Read More <span class="material-symbols-outlined text-xs" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- MOM Card -->
+<div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant/5 hover:shadow-xl hover:shadow-on-surface/5 transition-all duration-300">
+<div class="flex items-center justify-between mb-4">
+<span class="text-[10px] font-mono text-primary uppercase tracking-widest">Oct 15, 2023</span>
+</div>
+<h5 class="font-headline text-lg font-medium mb-3">Workspace Design Audit</h5>
+<p class="text-sm text-on-surface-variant leading-relaxed line-clamp-3">
+                            Initial feedback on the 'Atelier' concept was overwhelmingly positive. Minor adjustments needed for mobile responsiveness and sidebar density targets...
+                        </p>
+<div class="mt-6 pt-4 border-t border-outline-variant/10 flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="h-6 w-6 rounded-full border-2 border-surface bg-surface-container-high overflow-hidden">
+<img data-alt="Portrait of a female architect in creative workspace setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-IDpf23uTLBKBIz9rzcZAmgMtXwegmf1BPmWWtnZrLQ3kFKZnSk-ea0zbSG42udqSxlZVUq0kwRWMTLNBhwDb1hjFQ3ofzgX_lqg2pD1lP1tAFLXfc84gOPIjCjF5be0F9fjN3tM2ooV17sHkggClBxkRbRix8slN8sDBRpOaSVZvEMG8T-mwPWFTN5xA2t2dBA3rC1JQWwFcepXtxZQJjNUGQdas-RckS8UOP3e1K2UEHGW8Pf0F4O4rAaXkoy4LiGLexhHcHyg"/>
+</div>
+<div class="h-6 w-6 rounded-full border-2 border-surface bg-surface-container-high overflow-hidden flex items-center justify-center bg-primary-fixed text-[8px] font-bold text-on-primary-fixed">
+                                    +3
+                                </div>
+</div>
+<button class="text-xs font-semibold uppercase tracking-wider text-primary flex items-center gap-1 hover:gap-2 transition-all">
+                                Read More <span class="material-symbols-outlined text-xs" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Floating Action Pulse Chip -->
+<div class="fixed bottom-8 right-8 z-50">
+<div class="flex items-center gap-3 bg-inverse-surface text-inverse-on-surface px-4 py-2.5 rounded-full shadow-2xl">
+<div class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+</div>
+<span class="text-xs font-medium font-label uppercase tracking-widest">Live Syncing</span>
+</div>
+</div>
+</body></html>

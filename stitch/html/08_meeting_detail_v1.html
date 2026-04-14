@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Product Strategy Sync | TeamSync</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "surface-container-highest": "#e3e2df",
+                "primary": "#0037b0",
+                "outline": "#747686",
+                "on-surface": "#1b1c1a",
+                "surface-container-lowest": "#ffffff",
+                "inverse-on-surface": "#f2f1ee",
+                "primary-container": "#1d4ed8",
+                "secondary-container": "#b0befe",
+                "on-tertiary-fixed-variant": "#832700",
+                "on-secondary": "#ffffff",
+                "on-secondary-fixed": "#03164d",
+                "surface-container-low": "#f4f3f0",
+                "on-tertiary": "#ffffff",
+                "on-background": "#1b1c1a",
+                "on-secondary-fixed-variant": "#35437b",
+                "on-error-container": "#93000a",
+                "tertiary-fixed-dim": "#ffb59c",
+                "surface-tint": "#2151da",
+                "surface-dim": "#dbdad7",
+                "on-tertiary-fixed": "#390c00",
+                "secondary": "#4d5b94",
+                "tertiary": "#7f2500",
+                "surface-variant": "#e3e2df",
+                "on-error": "#ffffff",
+                "tertiary-fixed": "#ffdbcf",
+                "surface-container-high": "#e9e8e5",
+                "on-surface-variant": "#434655",
+                "surface-container": "#efeeeb",
+                "tertiary-container": "#a73400",
+                "on-primary-fixed-variant": "#0039b5",
+                "on-primary-fixed": "#001551",
+                "surface": "#faf9f6",
+                "background": "#faf9f6",
+                "on-primary-container": "#cad3ff",
+                "primary-fixed": "#dce1ff",
+                "inverse-surface": "#2f312f",
+                "error": "#ba1a1a",
+                "surface-bright": "#faf9f6",
+                "on-tertiary-container": "#ffc9b7",
+                "error-container": "#ffdad6",
+                "inverse-primary": "#b7c4ff",
+                "on-primary": "#ffffff",
+                "primary-fixed-dim": "#b7c4ff",
+                "outline-variant": "#c4c5d7",
+                "secondary-fixed": "#dce1ff",
+                "secondary-fixed-dim": "#b7c4ff",
+                "on-secondary-container": "#3d4c83"
+              },
+              fontFamily: {
+                "headline": ["Newsreader", "serif"],
+                "body": ["Inter", "sans-serif"],
+                "label": ["Inter", "sans-serif"],
+                "mono": ["JetBrains Mono", "monospace"]
+              },
+              borderRadius: {"DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'wght' 300, 'opsz' 24; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex">
+<!-- SideNavBar (Shared Component) -->
+<aside class="bg-stone-800 dark:bg-stone-950 fixed left-0 top-0 h-full w-64 flex flex-col z-50">
+<div class="px-8 py-10 flex flex-col gap-1">
+<span class="text-xl font-serif text-stone-50 dark:text-stone-100">TeamSync</span>
+<span class="text-[10px] uppercase tracking-wider font-label text-stone-400">Digital Atelier</span>
+</div>
+<nav class="flex-1 px-2 space-y-1">
+<a class="flex items-center gap-3 px-6 py-3 text-stone-400 hover:bg-stone-700 hover:text-stone-100 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[11px] uppercase tracking-wider font-label font-medium">Dashboard</span>
+</a>
+<a class="relative flex items-center gap-3 px-6 py-3 text-blue-100 bg-stone-700/50 before:absolute before:left-0 before:w-1 before:h-6 before:bg-blue-400 before:rounded-r-full" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="text-[11px] uppercase tracking-wider font-label font-medium">Meetings</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-stone-400 hover:bg-stone-700 hover:text-stone-100 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="text-[11px] uppercase tracking-wider font-label font-medium">Transcript</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-stone-400 hover:bg-stone-700 hover:text-stone-100 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="task_alt">task_alt</span>
+<span class="text-[11px] uppercase tracking-wider font-label font-medium">Tasks</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-stone-400 hover:bg-stone-700 hover:text-stone-100 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-[11px] uppercase tracking-wider font-label font-medium">Settings</span>
+</a>
+</nav>
+<div class="p-6">
+<button class="w-full bg-gradient-to-br from-primary to-primary-container text-white py-3 rounded-lg text-sm font-medium shadow-xl shadow-primary/20 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                New Meeting
+            </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen overflow-x-hidden">
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-[#faf9f6] dark:bg-stone-900 flex justify-between items-center w-full px-12 py-6 sticky top-0 z-40 transition-all duration-300">
+<div class="flex items-center gap-4 bg-surface-container px-4 py-2 rounded-full w-96 transition-all focus-within:ring-2 focus-within:ring-primary/20">
+<span class="material-symbols-outlined text-outline" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-stone-400" placeholder="Search interactions..." type="text"/>
+</div>
+<div class="flex items-center gap-8">
+<nav class="flex items-center gap-6">
+<a class="text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 font-semibold pb-1 px-1 text-sm" href="#">Overview</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-blue-500 transition-colors pb-1 px-1 text-sm" href="#">Transcript</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-blue-500 transition-colors pb-1 px-1 text-sm" href="#">Tasks</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-blue-500 transition-colors pb-1 px-1 text-sm" href="#">Suggestions</a>
+</nav>
+<div class="flex items-center gap-4 border-l border-outline-variant/20 pl-8">
+<button class="material-symbols-outlined text-stone-500 hover:text-primary transition-colors" data-icon="notifications">notifications</button>
+<div class="h-8 w-8 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="User Profile" data-alt="close-up portrait of professional male executive in modern office setting with natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlBeFZhmoXTNImM2n7rXaVExoacRHdojAHD5O8nP9byxrJknURkfbzzc86IP421bkljkKGG1IlaQorHkHFZplRmQah637OzUqWMtX5ZvSWnOVrYAH1VrjOmRpqxacLi1C51HMbFbwejt437PLJH7_TTWRj2tlvpPTz_mFl_ZOlLX_lbP5cBEllL_nrtyifocxp0uZfitTV5xYImQcJlWztU7zPDFu6eVCN14hWb3E1Ql_4lv4SUim3tpVYMr3-OkhIVUNC3lb1BA8"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Meeting Header Section -->
+<section class="px-12 pt-16 pb-8 max-w-7xl mx-auto w-full">
+<div class="flex justify-between items-start mb-12">
+<div class="space-y-4">
+<div class="flex items-center gap-3 mb-2">
+<span class="bg-primary-fixed text-on-primary-fixed text-[10px] font-mono px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+                            Scheduled
+                        </span>
+</div>
+<h1 class="text-5xl font-headline text-on-surface tracking-tight">Product Strategy Sync</h1>
+<p class="text-stone-500 font-mono text-sm tracking-tight flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+                        Oct 24, 2023 <span class="text-stone-300">·</span> 10:30 AM - 11:15 AM <span class="text-stone-400">(45 mins)</span>
+</p>
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-white px-6 py-3 rounded-lg font-medium shadow-xl shadow-primary/20 flex items-center gap-3 hover:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined" data-icon="upload_file">upload_file</span>
+                    Upload MOM
+                </button>
+</div>
+<!-- Bento Grid Content -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Meeting Info Card -->
+<div class="col-span-12 lg:col-span-4 glass-card p-8 rounded-xl ring-1 ring-outline-variant/10">
+<h2 class="text-sm font-label font-medium uppercase tracking-[0.2em] text-stone-400 mb-6">Meeting Details</h2>
+<div class="space-y-8">
+<div>
+<label class="text-[10px] font-mono uppercase text-stone-400 block mb-1">Title</label>
+<p class="text-lg font-headline">Product Strategy Sync</p>
+</div>
+<div>
+<label class="text-[10px] font-mono uppercase text-stone-400 block mb-1">Organizer</label>
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-600">SM</div>
+<p class="text-sm font-medium">Sarah Miller</p>
+</div>
+</div>
+<div>
+<label class="text-[10px] font-mono uppercase text-stone-400 block mb-1">Location</label>
+<p class="text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="hub">hub</span>
+                                Virtual Atelier
+                            </p>
+</div>
+</div>
+</div>
+<!-- Participants Card -->
+<div class="col-span-12 lg:col-span-5 glass-card p-8 rounded-xl ring-1 ring-outline-variant/10">
+<h2 class="text-sm font-label font-medium uppercase tracking-[0.2em] text-stone-400 mb-6">Participants</h2>
+<div class="grid grid-cols-2 gap-y-6">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full grayscale hover:grayscale-0 transition-all" data-alt="professional portrait of a young creative woman smiling in soft daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-KvRDC_jfGVJpmzzWCvI780TRQ_HGxo_10zjUEaATgBzwxo6jYUxPAHx4HT06uUF_15PCOBMCisYrmk-f93bCEn_0dc_Z8luoN44K0VeSBt9uoF4_3wMMkhP9zAglsujcst5rpzf2VE0VEB4QikPsrYs1o_bH2KglPoW6jcyAV7liUrok0XrbV0x6Y_Ewo8m41Phssua7COfGJUuFETJLg7Mqn-FDKvXlJMhOrWf1TYT31wECtqpaHG-5pRQujJpGdFpj5HBcW3k"/>
+<div>
+<p class="text-sm font-medium leading-none">Sarah Miller</p>
+<p class="text-[10px] text-stone-400 mt-1">Product Lead</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full grayscale hover:grayscale-0 transition-all" data-alt="headshot of male software engineer with warm studio lighting and neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQeu3-vYY4WjtkwybiOSVAfXfbaHqzeB-j6JxtU0KWEwNwOaIZRiXPbvgMRLMMwoTTo-QXL47R_cyzGZUTAud6YUHN5xSc2Cz8VXSO9sMbK3uM_I7xJNrQAr0uk7CrkbKJVruWv3kDd8x6Gbsv9hxeyil7k7oU7lpWvr0k5U-zWF3LoTxF_f-aHL48YsslYuddkC82XTN95xL9BWlYnZlzQEjpdcsxrDKEJYJwAXuk_NCAzXw7XP2uNqay2ULl1cdW1SZksjo2C4U"/>
+<div>
+<p class="text-sm font-medium leading-none">David Chen</p>
+<p class="text-[10px] text-stone-400 mt-1">Design Director</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full grayscale hover:grayscale-0 transition-all" data-alt="candid portrait of mid-adult woman in minimalist office environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5aecs4JV2Lu-lM_k_saI7ImLnxO0BVhTV0LvHL1J3H_jz8-_X7IdGPy2BPLFnYi8-iJgs8Qd2AmWjLmLJd0FUz_osRsCshG5Nm0ETA-msMkNRq97zH2eP_jsTcd_kwPK_rZZ6sRoRmPsaKjuavnFPfa8-nrfaR7XCywu_Z-qF8NLMMCcGIuzYlx8fnj20DOsB62vgA4I9lnpnjme4ruj09hPbS6sZ6wxodEFtpSO4APguPgdW1fugE46QKbrg3SwYl5ue-LHY3p0"/>
+<div>
+<p class="text-sm font-medium leading-none">Jane Doe</p>
+<p class="text-[10px] text-stone-400 mt-1">Tech Architect</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full grayscale hover:grayscale-0 transition-all" data-alt="outdoor portrait of business executive in soft sunlight with urban park background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDph9lnvTwtkLk7OPMb6bkZqT-uqeT1owDGXnlaxTkm2gkO7uqD3LrAfjVPCVdxfeg0Xw268yV9tgRP9PYRyST5pM8p8STc3Wz928xcpllkbeF00ZSG1m-SBlFjIBNUBPVyNj0bni7CJ2Z8SmSxwvZMd4zV0CcHH1t7Phpseq2Ik3UJOkklioIbkRwL7SvKuW5GNinHKd1FYBMoSSdNMHmN_rcpFjlb7MjoxBw6qJIejDUW_X7tXPgF5wHVSFHnsZM_gQ4I9MfV5i4"/>
+<div>
+<p class="text-sm font-medium leading-none">Marcus V.</p>
+<p class="text-[10px] text-stone-400 mt-1">QA Manager</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Linked MOM Card -->
+<div class="col-span-12 lg:col-span-3 bg-surface-container-low p-8 rounded-xl flex flex-col justify-between overflow-hidden relative group">
+<div class="relative z-10">
+<h2 class="text-sm font-label font-medium uppercase tracking-[0.2em] text-stone-400 mb-6">MOM Artifact</h2>
+<div class="flex items-center gap-3 bg-white p-4 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="article">article</span>
+<div>
+<p class="text-sm font-medium">Draft MOM</p>
+<p class="text-[10px] font-mono text-stone-400">PDF · 1.2 MB</p>
+</div>
+</div>
+</div>
+<a class="mt-8 text-primary font-medium text-sm flex items-center gap-2 group-hover:gap-3 transition-all" href="#">
+                        Review Document
+                        <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</a>
+<div class="absolute -bottom-8 -right-8 opacity-5 text-on-surface transform rotate-12 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-9xl" data-icon="description">description</span>
+</div>
+</div>
+<!-- Tasks Section (Full Width) -->
+<div class="col-span-12 mt-12">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-2xl font-headline tracking-tight">Active Tasks</h2>
+<button class="text-sm font-medium text-stone-500 hover:text-primary transition-colors flex items-center gap-1">
+                            View All <span class="material-symbols-outlined text-sm" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-separate border-spacing-y-3">
+<thead>
+<tr class="text-[10px] font-mono uppercase text-stone-400 tracking-widest">
+<th class="px-6 py-2">Task Name</th>
+<th class="px-6 py-2 text-center">Assignee</th>
+<th class="px-6 py-2 text-center">Priority</th>
+<th class="px-6 py-2 text-right">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="bg-surface-container-lowest group hover:bg-white transition-colors">
+<td class="px-6 py-5 rounded-l-xl">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-blue-400 text-lg" data-icon="check_circle">check_circle</span>
+<p class="text-sm font-medium">Refactor Auth Middleware</p>
+</div>
+</td>
+<td class="px-6 py-5 text-center">
+<div class="flex -space-x-2 justify-center">
+<div class="w-8 h-8 rounded-full ring-2 ring-white bg-blue-100 flex items-center justify-center text-[10px] font-bold">JD</div>
+</div>
+</td>
+<td class="px-6 py-5 text-center">
+<span class="text-[10px] font-mono bg-error-container text-on-error-container px-2 py-1 rounded">CRITICAL</span>
+</td>
+<td class="px-6 py-5 rounded-r-xl text-right">
+<span class="text-xs text-stone-500 font-medium">In Progress</span>
+</td>
+</tr>
+<tr class="bg-surface-container-lowest group hover:bg-white transition-colors">
+<td class="px-6 py-5 rounded-l-xl">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-stone-300 text-lg" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+<p class="text-sm font-medium">Update API Documentation</p>
+</div>
+</td>
+<td class="px-6 py-5 text-center">
+<div class="flex -space-x-2 justify-center">
+<div class="w-8 h-8 rounded-full ring-2 ring-white bg-stone-100 flex items-center justify-center text-[10px] font-bold">DC</div>
+</div>
+</td>
+<td class="px-6 py-5 text-center">
+<span class="text-[10px] font-mono bg-surface-container-high text-on-surface-variant px-2 py-1 rounded">MEDIUM</span>
+</td>
+<td class="px-6 py-5 rounded-r-xl text-right">
+<span class="text-xs text-stone-400 font-medium">Pending</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Suggestions Section -->
+<div class="col-span-12 mt-12 pb-24">
+<h2 class="text-2xl font-headline tracking-tight mb-8">Suggestions</h2>
+<div class="space-y-6 max-w-3xl">
+<div class="flex gap-4 group">
+<div class="w-10 h-10 rounded-full bg-stone-200 shrink-0 overflow-hidden">
+<img data-alt="headshot of a young professional man in a tech office environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhrGQ2pMV2KmypKzaX9N8WPgY2sqqI1bJVpPplno68adFQK08dxsimQcuSeZbejIHUG7RNdWnBW8qrGhLPi8ygPLb9ePmK9bEoct4o8zLJRpEZuBg5HooOt_hyfBM07plVeUotiUwANAp2CCVsA9O7t_93YE5rhcrKTIEmmYqZvEFKR6YYsWAR4rj17BG1zU1HyLJ_Le_lgQFNQwAZaER-7oR2ze5pHXPPz2X-XvvY5hM5whttWLkPV5FgtXTiPhaEwjWex--VXnw"/>
+</div>
+<div class="flex-1">
+<div class="bg-surface-container-low p-5 rounded-2xl rounded-tl-none">
+<p class="text-[10px] font-mono text-stone-400 mb-1">David Chen · 10:45 AM</p>
+<p class="text-sm text-on-surface leading-relaxed">Should we consider shifting the auth refactor to Q1 to prioritize the new onboarding flow?</p>
+</div>
+<div class="flex gap-4 mt-2 px-1">
+<button class="text-[10px] font-bold uppercase text-stone-400 hover:text-primary transition-colors">Reply</button>
+<button class="text-[10px] font-bold uppercase text-stone-400 hover:text-primary transition-colors">Like (3)</button>
+</div>
+</div>
+</div>
+<div class="flex gap-4 group">
+<div class="w-10 h-10 rounded-full bg-stone-200 shrink-0 overflow-hidden">
+<img data-alt="portrait of a focused female software engineer working in a modern studio" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB11e5DB3fzDZNFfSsM-osMgtT_RQe9gw9yBDi6IItDQsPcjQ8dxNrA3mr-AYMmdBQpKR6Nj_Lbz6DWSuI1VoNAvma86AlofZTmotmL0SGzMZ-BaY9DLlCZ0VUrpCRa4tcXBRM6nMjnJSs-djwK-IDmaxp09xUkxLn9bVHpi027SxS1EQJ89Gq5JTyiwT5O7ymiPg5rM1NN4vyzVvpxU40hl1HeDMnP6_xKM2lA-QNQ-ImSfKZk_K5hfnS3mHOo4LS6vkviKgzUB7o"/>
+</div>
+<div class="flex-1">
+<div class="bg-surface-container-low p-5 rounded-2xl rounded-tl-none">
+<p class="text-[10px] font-mono text-stone-400 mb-1">Jane Doe · 11:02 AM</p>
+<p class="text-sm text-on-surface leading-relaxed">Agreed with David. The tech debt is manageable for another sprint.</p>
+</div>
+<div class="flex gap-4 mt-2 px-1">
+<button class="text-[10px] font-bold uppercase text-stone-400 hover:text-primary transition-colors">Reply</button>
+<button class="text-[10px] font-bold uppercase text-stone-400 hover:text-primary transition-colors">Like (1)</button>
+</div>
+</div>
+</div>
+<!-- Input Field -->
+<div class="pt-8 relative">
+<div class="flex items-center gap-4 bg-white ring-1 ring-outline-variant/20 focus-within:ring-primary/50 focus-within:ring-2 p-2 rounded-xl transition-all shadow-sm">
+<input class="flex-1 border-none focus:ring-0 text-sm bg-transparent px-4" placeholder="Leave a suggestion..." type="text"/>
+<button class="bg-primary text-white px-5 py-2 rounded-lg text-xs font-medium hover:bg-primary-container transition-colors">
+                                    Submit
+                                </button>
+</div>
+<p class="text-[10px] font-mono text-stone-400 mt-2 px-4">Press Enter to send. Use @ to mention team members.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</body></html>

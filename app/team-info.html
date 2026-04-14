@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Team Details — TeamSync</title>
+  <meta name="description" content="View team roster, tasks, and sprint progress in TeamSync." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="../assets/css/teamsync.css" />
+</head>
+<body class="ts-shell">
+  <aside id="ts-sidebar"></aside>
+  <div class="ts-main">
+    <header id="ts-topnav"></header>
+    <main class="ts-content fade-in">
+
+      <!-- Back breadcrumb -->
+      <a href="teams.html" class="inline-flex items-center gap-2 text-primary text-sm font-medium hover:-translate-x-1 transition-transform mb-8">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        Back to Teams
+      </a>
+
+      <!-- Team Header -->
+      <div class="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-10" id="team-header">
+        <!-- Filled by JS -->
+      </div>
+
+      <!-- Content Grid -->
+      <div class="grid grid-cols-12 gap-6">
+
+        <!-- Left: Members + Tasks -->
+        <div class="col-span-12 lg:col-span-8 space-y-6">
+
+          <!-- Member Roster -->
+          <div class="ts-card overflow-hidden" id="member-section">
+            <div class="px-6 py-5 flex items-center justify-between border-b border-outline-variant/10">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary text-sm">groups</span></div>
+                <h2 class="font-headline text-xl text-on-surface">Team Members</h2>
+              </div>
+              <span class="text-[10px] font-bold uppercase tracking-wider bg-surface-container text-on-surface-variant px-2 py-0.5 rounded" id="member-count">—</span>
+            </div>
+            <table class="ts-table" id="member-table">
+              <thead>
+                <tr>
+                  <th>Member</th>
+                  <th>Role</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <!-- Team Tasks -->
+          <div class="ts-card overflow-hidden" id="tasks-section">
+            <div class="px-6 py-5 flex items-center justify-between border-b border-outline-variant/10">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary text-sm">assignment</span></div>
+                <h2 class="font-headline text-xl text-on-surface">Team Tasks</h2>
+              </div>
+              <a href="tasks.html" class="text-xs font-medium text-primary hover:underline">View all →</a>
+            </div>
+            <table class="ts-table" id="task-table">
+              <thead>
+                <tr>
+                  <th>Task</th>
+                  <th>Assignee</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Due</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Right: Stats + Recent Meetings -->
+        <div class="col-span-12 lg:col-span-4 space-y-6">
+
+          <!-- Sprint Stats -->
+          <div class="ts-card p-6" id="sprint-stats">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary text-sm">speed</span></div>
+              <h2 class="font-headline text-xl text-on-surface">Sprint Progress</h2>
+            </div>
+            <div class="mb-6" id="progress-area"></div>
+            <div class="grid grid-cols-2 gap-4" id="stat-cards"></div>
+          </div>
+
+          <!-- Recent Meetings -->
+          <div class="ts-card p-6" id="meetings-section">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary text-sm">calendar_today</span></div>
+              <h2 class="font-headline text-xl text-on-surface">Recent Meetings</h2>
+            </div>
+            <div class="space-y-4" id="meetings-list"></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+    const user = requireAuth(['admin','leader']);
+    if (user) {
+      renderSidebar(user, 'teams');
+      renderTopNav('Team Details', user);
+    }
+
+    // ── Demo Data ──────────────────────────────────────────────────
+    const TEAM_DATA = {
+      alpha: {
+        name: 'Atelier Alpha', letter: 'Α', dept: 'Design & Brand', color: 'bg-primary', progress: 84,
+        members: [
+          { initials: 'JP', name: 'James Parker', role: 'Team Leader', email: 'j.parker@teamsync.io', status: 'Active', color: 'bg-primary' },
+          { initials: 'SK', name: 'Sara Kim', role: 'UI Designer', email: 's.kim@teamsync.io', status: 'Active', color: 'bg-secondary' },
+          { initials: 'EV', name: 'Elena Vance', role: 'Brand Lead', email: 'e.vance@teamsync.io', status: 'Active', color: 'bg-tertiary' },
+          { initials: 'RT', name: 'Ryan Torres', role: 'Illustrator', email: 'r.torres@teamsync.io', status: 'Active', color: 'bg-outline' },
+          { initials: 'LW', name: 'Lisa Wong', role: 'UX Researcher', email: 'l.wong@teamsync.io', status: 'Invited', color: 'bg-primary' },
+          { initials: 'DM', name: 'Derek Miles', role: 'Motion Designer', email: 'd.miles@teamsync.io', status: 'Active', color: 'bg-secondary' },
+        ],
+        tasks: [
+          { name: 'Design System V2 — Component Audit', assignee: 'EV', priority: 'High', status: 'In Progress', due: 'Apr 20, 2026' },
+          { name: 'Brand Guidelines Update', assignee: 'SK', priority: 'Medium', status: 'To Do', due: '—' },
+          { name: 'Icon Library Expansion', assignee: 'RT', priority: 'Low', status: 'To Do', due: 'Apr 28, 2026' },
+          { name: 'Motion Principles Doc', assignee: 'DM', priority: 'Medium', status: 'Completed', due: 'Apr 10, 2026' },
+        ],
+        stats: { open: 3, completed: 9, meetings: 6, members: 6 },
+        meetings: [
+          { title: 'Sprint Review #12', date: 'Apr 12, 2026', status: 'Completed' },
+          { title: 'Design Critique Session', date: 'Apr 14, 2026', status: 'Scheduled' },
+          { title: 'Brand Alignment Sync', date: 'Apr 18, 2026', status: 'Scheduled' },
+        ]
+      },
+      beta: {
+        name: 'Studio Beta', letter: 'Β', dept: 'Engineering', color: 'bg-secondary', progress: 61,
+        members: [
+          { initials: 'DC', name: 'David Chen', role: 'Tech Lead', email: 'd.chen@teamsync.io', status: 'Active', color: 'bg-secondary' },
+          { initials: 'JD', name: 'Jane Doe', role: 'Backend Dev', email: 'j.doe@teamsync.io', status: 'Active', color: 'bg-primary' },
+          { initials: 'AP', name: 'Alex Park', role: 'DevOps', email: 'a.park@teamsync.io', status: 'Active', color: 'bg-outline' },
+          { initials: 'KR', name: 'Kim Reyes', role: 'API Engineer', email: 'k.reyes@teamsync.io', status: 'Active', color: 'bg-tertiary' },
+          { initials: 'NO', name: 'Nina Ortiz', role: 'QA Engineer', email: 'n.ortiz@teamsync.io', status: 'Active', color: 'bg-secondary' },
+          { initials: 'TL', name: 'Tom Lee', role: 'SRE', email: 't.lee@teamsync.io', status: 'Active', color: 'bg-primary' },
+        ],
+        tasks: [
+          { name: 'Refactor Auth Middleware', assignee: 'JD', priority: 'Critical', status: 'In Progress', due: 'Apr 16, 2026' },
+          { name: 'Update API Documentation', assignee: 'DC', priority: 'Medium', status: 'To Do', due: '—' },
+          { name: 'Optimize Asset Pipeline', assignee: 'AP', priority: 'Low', status: 'To Do', due: '—' },
+          { name: 'Cloud Security Audit', assignee: 'KR', priority: 'High', status: 'Completed', due: 'Apr 8, 2026' },
+        ],
+        stats: { open: 5, completed: 14, meetings: 8, members: 6 },
+        meetings: [
+          { title: 'Architecture Sprint Planning', date: 'Apr 11, 2026', status: 'Completed' },
+          { title: 'API Review', date: 'Apr 15, 2026', status: 'Scheduled' },
+          { title: 'Infra Cost Analysis', date: 'Apr 19, 2026', status: 'Draft' },
+        ]
+      },
+      gamma: {
+        name: 'Craft Gamma', letter: 'Γ', dept: 'Product', color: 'bg-tertiary', progress: 92,
+        members: [
+          { initials: 'MV', name: 'Marcus Vega', role: 'Product Manager', email: 'm.vega@teamsync.io', status: 'Active', color: 'bg-tertiary' },
+          { initials: 'AK', name: 'Anya Kapoor', role: 'Data Analyst', email: 'a.kapoor@teamsync.io', status: 'Active', color: 'bg-outline' },
+          { initials: 'BT', name: 'Ben Torres', role: 'Growth Lead', email: 'b.torres@teamsync.io', status: 'Active', color: 'bg-primary' },
+          { initials: 'CH', name: 'Clara Hughes', role: 'User Researcher', email: 'c.hughes@teamsync.io', status: 'Active', color: 'bg-secondary' },
+        ],
+        tasks: [
+          { name: 'Roadmap Q2 Planning', assignee: 'MV', priority: 'High', status: 'Completed', due: 'Apr 5, 2026' },
+          { name: 'User Interview Synthesis', assignee: 'CH', priority: 'Medium', status: 'In Progress', due: 'Apr 22, 2026' },
+        ],
+        stats: { open: 1, completed: 7, meetings: 4, members: 4 },
+        meetings: [
+          { title: 'Quarterly Roadmap Review', date: 'Apr 10, 2026', status: 'Completed' },
+          { title: 'Growth Metrics Standup', date: 'Apr 16, 2026', status: 'Scheduled' },
+        ]
+      },
+      delta: {
+        name: 'Nexus Delta', letter: 'Δ', dept: 'Sales & Operations', color: 'bg-inverse-surface', progress: 45,
+        members: [
+          { initials: 'CJ', name: 'Chris Jordan', role: 'Sales Director', email: 'c.jordan@teamsync.io', status: 'Active', color: 'bg-inverse-surface' },
+          { initials: 'LM', name: 'Laura Mendez', role: 'Account Manager', email: 'l.mendez@teamsync.io', status: 'Active', color: 'bg-secondary' },
+        ],
+        tasks: [
+          { name: 'Pipeline Cleanup Sprint', assignee: 'CJ', priority: 'High', status: 'In Progress', due: 'Apr 18, 2026' },
+          { name: 'CRM Migration Phase 2', assignee: 'LM', priority: 'Critical', status: 'To Do', due: 'Apr 25, 2026' },
+        ],
+        stats: { open: 4, completed: 11, meetings: 5, members: 2 },
+        meetings: [
+          { title: 'Client Onboarding Sync', date: 'Apr 13, 2026', status: 'Completed' },
+          { title: 'Pipeline Review', date: 'Apr 17, 2026', status: 'Scheduled' },
+        ]
+      },
+      epsilon: {
+        name: 'Studio Epsilon', letter: 'Ε', dept: 'Marketing & Content', color: 'bg-outline', progress: 78,
+        members: [
+          { initials: 'NR', name: 'Nadia Rossi', role: 'Content Lead', email: 'n.rossi@teamsync.io', status: 'Active', color: 'bg-outline' },
+          { initials: 'PL', name: 'Peter Lin', role: 'Social Media', email: 'p.lin@teamsync.io', status: 'Active', color: 'bg-primary-fixed text-primary' },
+          { initials: 'SW', name: 'Sophie Webb', role: 'Copywriter', email: 's.webb@teamsync.io', status: 'Active', color: 'bg-secondary' },
+        ],
+        tasks: [
+          { name: 'Q2 Campaign Launch', assignee: 'NR', priority: 'High', status: 'In Progress', due: 'Apr 20, 2026' },
+          { name: 'Blog Content Calendar', assignee: 'SW', priority: 'Medium', status: 'To Do', due: '—' },
+        ],
+        stats: { open: 3, completed: 8, meetings: 4, members: 3 },
+        meetings: [
+          { title: 'Content Strategy Retro', date: 'Apr 9, 2026', status: 'Completed' },
+          { title: 'Campaign Kickoff', date: 'Apr 16, 2026', status: 'Scheduled' },
+        ]
+      }
+    };
+
+    // ── Render ──────────────────────────────────────────────────────
+    const params = new URLSearchParams(window.location.search);
+    const teamId = params.get('id') || 'alpha';
+    const team = TEAM_DATA[teamId] || TEAM_DATA.alpha;
+
+    // Header
+    document.getElementById('team-header').innerHTML = `
+      <div class="flex items-center gap-5">
+        <div class="w-16 h-16 rounded-2xl ${team.color} text-white flex items-center justify-center text-2xl font-bold font-headline shadow-lg">${team.letter}</div>
+        <div>
+          <h1 class="font-headline text-4xl text-on-surface tracking-tight">${team.name}</h1>
+          <p class="font-headline italic text-lg text-outline mt-1">${team.dept}</p>
+        </div>
+      </div>
+    `;
+
+    // Members
+    document.getElementById('member-count').textContent = `${team.members.length} Members`;
+    const memberTbody = document.querySelector('#member-table tbody');
+    team.members.forEach(m => {
+      const statusBadge = m.status === 'Active'
+        ? `<span class="badge-active text-[9px]"><span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>${m.status}</span>`
+        : `<span class="badge-draft text-[9px]">${m.status}</span>`;
+      memberTbody.innerHTML += `
+        <tr class="group">
+          <td>
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full ${m.color} text-white flex items-center justify-center text-[10px] font-bold">${m.initials}</div>
+              <span class="font-medium text-on-surface">${m.name}</span>
+            </div>
+          </td>
+          <td><span class="text-xs text-on-surface-variant">${m.role}</span></td>
+          <td><span class="text-xs font-mono text-outline">${m.email}</span></td>
+          <td>${statusBadge}</td>
+        </tr>`;
+    });
+
+    // Tasks
+    const PRIORITY_CLASSES = { Critical: 'badge-critical', High: 'badge-high', Medium: 'badge-medium', Low: 'badge-low' };
+    const taskTbody = document.querySelector('#task-table tbody');
+    team.tasks.forEach(t => {
+      let statusHtml;
+      if (t.status === 'In Progress') {
+        statusHtml = `<span class="flex items-center gap-1.5 text-xs font-medium"><span class="animate-ping inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>In Progress</span>`;
+      } else if (t.status === 'Completed') {
+        statusHtml = `<span class="flex items-center gap-1.5 text-xs font-medium text-secondary"><span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">check_circle</span>Completed</span>`;
+      } else {
+        statusHtml = `<span class="text-xs text-outline">To Do</span>`;
+      }
+      taskTbody.innerHTML += `
+        <tr>
+          <td class="font-medium ${t.status === 'Completed' ? 'line-through opacity-60' : ''}">${t.name}</td>
+          <td><div class="w-7 h-7 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center">${t.assignee}</div></td>
+          <td><span class="text-[10px] font-bold px-2 py-0.5 rounded ${PRIORITY_CLASSES[t.priority]}">${t.priority}</span></td>
+          <td>${statusHtml}</td>
+          <td class="font-mono text-xs text-outline">${t.due}</td>
+        </tr>`;
+    });
+
+    // Sprint Stats
+    document.getElementById('progress-area').innerHTML = `
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-[10px] uppercase tracking-widest text-outline font-bold">Overall Progress</span>
+        <span class="font-mono text-sm text-primary font-bold">${team.progress}%</span>
+      </div>
+      <div class="ts-progress-track h-3"><div class="ts-progress-fill h-3" style="width:${team.progress}%"></div></div>
+    `;
+    document.getElementById('stat-cards').innerHTML = `
+      <div class="stat-card text-center !p-4">
+        <p class="font-headline text-2xl font-bold text-primary mb-0.5">${team.stats.open}</p>
+        <p class="text-[9px] text-outline uppercase tracking-widest font-mono">Open Tasks</p>
+      </div>
+      <div class="stat-card text-center !p-4">
+        <p class="font-headline text-2xl font-bold text-secondary mb-0.5">${team.stats.completed}</p>
+        <p class="text-[9px] text-outline uppercase tracking-widest font-mono">Completed</p>
+      </div>
+      <div class="stat-card text-center !p-4">
+        <p class="font-headline text-2xl font-bold text-on-surface mb-0.5">${team.stats.meetings}</p>
+        <p class="text-[9px] text-outline uppercase tracking-widest font-mono">Meetings</p>
+      </div>
+      <div class="stat-card text-center !p-4">
+        <p class="font-headline text-2xl font-bold text-on-surface mb-0.5">${team.stats.members}</p>
+        <p class="text-[9px] text-outline uppercase tracking-widest font-mono">Members</p>
+      </div>
+    `;
+
+    // Recent Meetings
+    const MEETING_STATUS = { Completed: 'badge-completed', Scheduled: 'badge-scheduled', Draft: 'badge-draft' };
+    const meetingsList = document.getElementById('meetings-list');
+    team.meetings.forEach(m => {
+      const badge = m.status === 'Scheduled'
+        ? `<span class="badge-scheduled text-[9px]"><span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>${m.status}</span>`
+        : `<span class="${MEETING_STATUS[m.status]} text-[9px]">${m.status}</span>`;
+      meetingsList.innerHTML += `
+        <a href="meeting-detail.html" class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors">
+          <div>
+            <p class="text-sm font-medium text-on-surface">${m.title}</p>
+            <p class="text-[10px] font-mono text-outline mt-0.5">${m.date}</p>
+          </div>
+          ${badge}
+        </a>`;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MOM Detail | TeamSync Digital Atelier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Newsreader:ital,wght@0,400;0,600;1,400;1,600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-container": "#cad3ff",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#ffb59c",
+                        "primary": "#0037b0",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#f2f1ee",
+                        "surface-container": "#efeeeb",
+                        "background": "#faf9f6",
+                        "surface-container-low": "#f4f3f0",
+                        "secondary-container": "#b0befe",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#434655",
+                        "inverse-primary": "#b7c4ff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#1d4ed8",
+                        "on-tertiary-fixed-variant": "#832700",
+                        "secondary-fixed-dim": "#b7c4ff",
+                        "primary-fixed": "#dce1ff",
+                        "tertiary-fixed": "#ffdbcf",
+                        "on-primary-fixed": "#001551",
+                        "inverse-surface": "#2f312f",
+                        "outline-variant": "#c4c5d7",
+                        "surface-variant": "#e3e2df",
+                        "surface": "#faf9f6",
+                        "on-tertiary-container": "#ffc9b7",
+                        "surface-dim": "#dbdad7",
+                        "on-primary-fixed-variant": "#0039b5",
+                        "on-secondary-container": "#3d4c83",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "on-tertiary-fixed": "#390c00",
+                        "tertiary": "#7f2500",
+                        "outline": "#747686",
+                        "surface-container-high": "#e9e8e5",
+                        "surface-tint": "#2151da",
+                        "on-secondary-fixed": "#03164d",
+                        "surface-bright": "#faf9f6",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#1b1c1a",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e3e2df",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#35437b",
+                        "on-background": "#1b1c1a",
+                        "secondary-fixed": "#dce1ff",
+                        "tertiary-container": "#a73400",
+                        "secondary": "#4d5b94"
+                    },
+                    fontFamily: {
+                        "headline": ["Newsreader", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"],
+                        "monospace": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .editorial-shadow {
+            box-shadow: 0px 10px 40px rgba(27, 28, 26, 0.05);
+        }
+        body {
+            background-color: #faf9f6;
+            color: #1b1c1a;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- SideNavBar (Shared Component Anchor) -->
+<aside class="fixed left-0 top-0 h-full w-[200px] bg-zinc-900 dark:bg-black shadow-[10px_0px_40px_rgba(0,0,0,0.1)] flex flex-col py-8 z-50">
+<div class="px-6 mb-12">
+<h1 class="font-['Newsreader'] italic tracking-tight text-white text-xl">TeamSync</h1>
+<p class="text-[10px] uppercase tracking-widest text-zinc-500 mt-1">Digital Atelier</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-zinc-400 hover:text-zinc-100 pl-4 py-2 flex items-center transition-colors hover:bg-zinc-800" href="#">
+<span class="material-symbols-outlined mr-3 text-sm">dashboard</span>
+<span class="text-sm">Dashboard</span>
+</a>
+<a class="text-zinc-400 hover:text-zinc-100 pl-4 py-2 flex items-center transition-colors hover:bg-zinc-800" href="#">
+<span class="material-symbols-outlined mr-3 text-sm">calendar_today</span>
+<span class="text-sm">Meetings</span>
+</a>
+<!-- Active State: MOMs -->
+<a class="text-white font-medium border-l-2 border-blue-400 pl-4 py-2 flex items-center bg-white/5 translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined mr-3 text-sm">description</span>
+<span class="text-sm">MOMs</span>
+</a>
+<a class="text-zinc-400 hover:text-zinc-100 pl-4 py-2 flex items-center transition-colors hover:bg-zinc-800" href="#">
+<span class="material-symbols-outlined mr-3 text-sm">assignment</span>
+<span class="text-sm">Tasks</span>
+</a>
+<a class="text-zinc-400 hover:text-zinc-100 pl-4 py-2 flex items-center transition-colors hover:bg-zinc-800" href="#">
+<span class="material-symbols-outlined mr-3 text-sm">person</span>
+<span class="text-sm">Profile</span>
+</a>
+<a class="text-zinc-400 hover:text-zinc-100 pl-4 py-2 flex items-center transition-colors hover:bg-zinc-800" href="#">
+<span class="material-symbols-outlined mr-3 text-sm">group</span>
+<span class="text-sm">Users</span>
+</a>
+<a class="text-zinc-400 hover:text-zinc-100 pl-4 py-2 flex items-center transition-colors hover:bg-zinc-800" href="#">
+<span class="material-symbols-outlined mr-3 text-sm">hub</span>
+<span class="text-sm">Teams</span>
+</a>
+</nav>
+</aside>
+<!-- TopNavBar (Shared Component Anchor) -->
+<header class="fixed top-0 right-0 left-[200px] h-16 bg-[#faf9f6]/80 backdrop-blur-md z-40 flex justify-between items-center px-8 tonal-shift">
+<div class="flex items-center space-x-6">
+<div class="bg-surface-container rounded-lg px-3 py-1.5 flex items-center space-x-2 w-64">
+<span class="material-symbols-outlined text-outline text-sm">search</span>
+<input class="bg-transparent border-none text-sm focus:ring-0 w-full placeholder:text-outline" placeholder="Search Atelier..." type="text"/>
+</div>
+<nav class="flex space-x-6">
+<a class="text-zinc-600 hover:text-blue-600 text-sm" href="#">Analytics</a>
+<a class="text-zinc-600 hover:text-blue-600 text-sm" href="#">Reports</a>
+<a class="text-zinc-600 hover:text-blue-600 text-sm" href="#">Archive</a>
+</nav>
+</div>
+<div class="flex items-center space-x-4">
+<button class="bg-surface-container-high text-on-surface px-4 py-2 text-xs font-medium rounded-lg hover:bg-surface-variant transition-colors">Support</button>
+<button class="bg-gradient-to-br from-primary to-primary-container text-white px-4 py-2 text-xs font-medium rounded-lg shadow-sm">New Project</button>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary transition-colors">notifications</span>
+<div class="h-8 w-8 rounded-full bg-surface-container overflow-hidden ring-1 ring-outline-variant/20">
+<img alt="User Avatar" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZWSfMdnO637DWJH44IOjXHZddyUwtLQP5lyCQ4gS-YXFtP7d_0ALKWYC8_vTSqSw2gpWAnogqPZCqsbn_PCq4fGYJ6_O9bpfJlIDCaZvGzD2GhQA9JjPTOjBkFQpltP8Cnz7LTeiCdeTUXOJXpkSKTbIoYkYuVWkoPvnPVke8pdy5lbetSa__hye-UR_TRbteLo4P3yTFHiJPwBWf7D0s1PZumPVh7bJiGqsbwh7JT6lDqh50lqUArP90GRAfBmqAFH77e3Li-sY"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[200px] pt-16 min-h-screen">
+<div class="max-w-5xl mx-auto px-12 py-16">
+<!-- Breadcrumb & Back Action -->
+<div class="mb-12">
+<a class="group inline-flex items-center text-primary font-medium text-sm transition-all hover:-translate-x-1" href="#">
+<span class="material-symbols-outlined text-sm mr-2">arrow_back</span>
+                    Back to Meeting
+                </a>
+</div>
+<!-- Page Header Section -->
+<div class="flex justify-between items-start mb-16">
+<div class="max-w-2xl">
+<div class="flex items-center space-x-3 mb-4">
+<span class="font-monospace text-xs tracking-tighter text-outline bg-surface-container-low px-2 py-0.5 rounded uppercase">MOM-2023-Q4-01</span>
+<div class="flex items-center space-x-1 text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span class="text-[10px] font-bold tracking-widest uppercase">Archived</span>
+</div>
+</div>
+<h2 class="font-headline text-5xl text-on-surface leading-tight mb-4">Q4 Brand Strategy &amp; Visual Language Sync</h2>
+<p class="font-monospace text-sm text-outline">Oct 24, 2023 • 10:00 AM — 11:30 AM EST</p>
+</div>
+<button class="bg-primary-container text-white px-6 py-3 rounded-lg flex items-center space-x-2 font-medium shadow-lg hover:shadow-xl transition-all active:scale-95">
+<span class="material-symbols-outlined text-sm">edit</span>
+<span>Edit Minutes</span>
+</button>
+</div>
+<!-- Asymmetric Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Main Document Body -->
+<div class="col-span-8 space-y-16">
+<!-- Summary Section -->
+<section>
+<h3 class="font-headline text-2xl text-on-surface mb-6 italic opacity-80">The Narrative</h3>
+<div class="bg-surface-container-lowest p-8 editorial-shadow rounded-xl">
+<p class="font-body text-lg text-on-surface-variant leading-relaxed first-letter:text-4xl first-letter:font-headline first-letter:mr-2 first-letter:float-left first-letter:text-primary">
+                                The discussion centered on evolving our visual identity to reflect a more sophisticated, "Digital Atelier" aesthetic. We scrutinized the current SaaS dashboard fatigue and agreed to pivot toward high-contrast typography and tonal layering to differentiate TeamSync in a crowded productivity market.
+                            </p>
+</div>
+</section>
+<!-- Decisions Section -->
+<section>
+<h3 class="font-headline text-2xl text-on-surface mb-6 italic opacity-80">Key Decisions</h3>
+<div class="space-y-4">
+<div class="flex items-start space-x-4 p-5 bg-surface-container-lowest editorial-shadow rounded-lg">
+<span class="font-headline text-primary text-2xl italic">01.</span>
+<p class="font-body text-on-surface py-1">Standardize <span class="font-monospace text-xs bg-surface-container px-1 rounded">#faf9f6</span> as the primary canvas color across all workspace modules to reduce digital eye strain.</p>
+</div>
+<div class="flex items-start space-x-4 p-5 bg-surface-container-lowest editorial-shadow rounded-lg border-l-4 border-primary">
+<span class="font-headline text-primary text-2xl italic">02.</span>
+<p class="font-body text-on-surface py-1">Adopt <span class="font-semibold italic">Newsreader</span> for all editorial-style headers while maintaining Inter for functional UI elements.</p>
+</div>
+<div class="flex items-start space-x-4 p-5 bg-surface-container-lowest editorial-shadow rounded-lg">
+<span class="font-headline text-primary text-2xl italic">03.</span>
+<p class="font-body text-on-surface py-1">De-prioritize 1px borders in favor of tonal background shifts for section delineation.</p>
+</div>
+</div>
+</section>
+<!-- Action Items -->
+<section>
+<h3 class="font-headline text-2xl text-on-surface mb-6 italic opacity-80">Pending Actions</h3>
+<div class="bg-surface-container-lowest editorial-shadow rounded-xl overflow-hidden">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/10">
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-outline">Task Details</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-outline">Assignee</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-outline">Priority</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center space-x-3">
+<div class="h-5 w-5 rounded border border-outline-variant group-hover:border-primary transition-colors cursor-pointer"></div>
+<span class="text-sm font-medium">Update Brand Style Guide PDF</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center space-x-2">
+<img alt="Avatar" class="h-6 w-6 rounded-full grayscale opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEEW2l__06NXIhm5Ld5S7lWLlsaTS8LaxO0irxtVpVTOdbDL2vI15RrzigCewRCJCcdVy7HtHqsBWEleH72QvRW-i6xW0J9XTwT9XgVGvinLdr__lFQudZ9kvVGF8DYVp1QCHB4if_IU4Pcfj38TCVTwNHy9uFj63uufOdfnlkwi5xIp11VB0I4-L_4zr6uL6NYBrXKkksZMck6GIyg4j8VegwxxV0LMulIw_yjoqH3jhUCEMsnhPevJlxHfuBOkbOIex7ihYaiGw"/>
+<span class="text-xs text-on-surface-variant">Aria V.</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-error-container text-on-error-container">Critical</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center space-x-3">
+<div class="h-5 w-5 rounded border border-outline-variant group-hover:border-primary transition-colors cursor-pointer"></div>
+<span class="text-sm font-medium">Develop Tailwind Config for Atelier Palette</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center space-x-2">
+<img alt="Avatar" class="h-6 w-6 rounded-full grayscale opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPnmm2JniO_HTfrMzqSdMUuVMtnTxDWIfDmWWic4B16XL-R7YIxQbUFxnSwdi4zGTkxSkWXfy-GjIU2SOh02nQcTtHGpa_AFFerptlLOOMf9LfB92got5dmzYX6urmiEMQheIdHJcnhK7cg_n2pyAEi95-uyir8UWc7I8M4PXcK0dZ_ZRWkPBm7wCg9LUZQ8tc3Wt136QLcASIWqZhKM71myiLuggwxIX6GS0m6czJ09-as9p5Y9_Z3YlVV6lrLYYVvrFrxqS-roc"/>
+<span class="text-xs text-on-surface-variant">Marcus T.</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-secondary-container text-on-secondary-container">Medium</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center space-x-3">
+<div class="h-5 w-5 rounded border border-outline-variant group-hover:border-primary transition-colors cursor-pointer"></div>
+<span class="text-sm font-medium">Draft internal announcement memo</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center space-x-2">
+<img alt="Avatar" class="h-6 w-6 rounded-full grayscale opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd_ubCLVqbdlkaQCdEcyFPrCuiNh_LyLmR4Uqrc3BYjaPS7IVGGyTm3GsV7523WvGCo1ywbSVWwi3Z00oLTBOR8xVxzdHcHEXew6TKXFxm97S7Yb4Uo8ReoMsjpsOGC0XEVjE6kksoprAuCFj0DHhdNGDSN6imb7DYUtEnaLIIWt0tVLcGqIbINHcvYoreXNFEszblkQrJRKdFu6MPoqhHlVJWr9F3dCTLJxVwtxGW5sagFAYx7bO_P3v7H9LdRf6BjaqPAikzmyo"/>
+<span class="text-xs text-on-surface-variant">Chloe J.</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-surface-container-high text-on-surface-variant">Low</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<!-- Sidebar Contextual Panel -->
+<div class="col-span-4 space-y-12">
+<!-- Participants -->
+<section>
+<h4 class="font-headline text-xl text-on-surface mb-6 italic">Participants</h4>
+<div class="bg-surface-container-low p-6 rounded-xl space-y-4">
+<div class="flex items-center space-x-3 group">
+<img alt="Julian" class="h-10 w-10 rounded-lg editorial-shadow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxssFa4YeRnpKIGdXc2ukHcSSRGFN0Y31ii7O9PMTnYauvpuwCghiUi_uOWCFAYg7xnHajI7i6TuaVB3uoV5wxsiK-GDvbZyKuPlXZsIaRexTTe-1wNEIRJz5oTr3dIr1xkLWxd0Y8NslQEEqATU21Oa33Y8wfxLuRJNKr3WOeLO4jr00yhS469lfzr0SGBMHU0JtOL93qfvfO7Ce469Nfn45kVAfGpUC5SjHVFGS246TxIeznjncq4v5846onI8lB5z7M_Jr6fso"/>
+<div>
+<p class="text-sm font-semibold">Julian Pierce</p>
+<p class="text-[10px] uppercase text-outline tracking-wider">Design Lead</p>
+</div>
+</div>
+<div class="flex items-center space-x-3 group">
+<img alt="Sarah" class="h-10 w-10 rounded-lg editorial-shadow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvwiECa1cKhVzWvlKix_CQVJ-NM8clcv3N2L-o0CfKWdQA5SWdEoSiOnOP3m6U-mnMTYdoub4UG392BoLJXMeqDGMiQFXhe9TjOoFefciZ_OzoETm8PSBwjDKqPoElezIVNGTXhnPU9gvQDwQNFv3H0VetGLe5oegiMfKAMRIRR9X0JjnsSLUGAreDLwcCyEClwSm_Y9QhM4fPtRMhFsASSME_o584CNj2gsF_-flPDH5b7CYI-Fnx3Q3PElZhQDr8-POpYY6_v1k"/>
+<div>
+<p class="text-sm font-semibold">Sarah Kim</p>
+<p class="text-[10px] uppercase text-outline tracking-wider">Product Manager</p>
+</div>
+</div>
+<div class="flex items-center space-x-3 group">
+<img alt="Liam" class="h-10 w-10 rounded-lg editorial-shadow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrBjg0JUO3nBJiNkwTcxIuMZ2wVs3eloKkuRKiPG9rgy1hIswW_Eavk96ylOfhMuw3o5A4M1NuLy1ATgkKWY-Mj5vD_Om3fJlz7kMYS6iTkl3S6gwPEnqFpkFnQcU1lQgto9KudyVG6f3RZ4PItqvn5Pr9hKXHu8N_CIXL0ALQ8hphXUje7sVE4P4AkMjyc31NZ1lXjFiD0c3nz0Z9fPQREdQxxGu5ABWZpC2aY0nf2locbVKCDwBHZlxAXHOOfa5XfBoVjxWE1uo"/>
+<div>
+<p class="text-sm font-semibold">Liam O'Brien</p>
+<p class="text-[10px] uppercase text-outline tracking-wider">CTO</p>
+</div>
+</div>
+<div class="flex items-center space-x-3 group">
+<img alt="Elena" class="h-10 w-10 rounded-lg editorial-shadow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3dHjp4AtFi-HSmnvURzdTpLjuScr2h7Q4v3TXTEcHcqGBI_IXg7rk5Oo7H9izFueEgHQkExCNvzX85drJn9PBgDs2ELM0I2ik7lXzNZJhsfQVmV1IoZo1ifK4-VlgmtMRCAqPtDPUn-h6qefGMNxgz9pZNRVBjRzzpLO3bMIsr4JCry3SLwtksZHtt04N947AHIChnPj13CjnUBh5FYrNLMD0U_s7z6OiEtM7JBAiJAVZ0dPUWBMweCI_1yivAzobh_f6V9mZwXc"/>
+<div>
+<p class="text-sm font-semibold">Elena Rossi</p>
+<p class="text-[10px] uppercase text-outline tracking-wider">Brand Strategist</p>
+</div>
+</div>
+<div class="flex items-center space-x-3 group">
+<img alt="David" class="h-10 w-10 rounded-lg editorial-shadow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnqlhhk0aa6uQjJP_slueNPmTZ2Wi-di8xIzkwTg7KUVs8DqW-lOdRmIwVyBJ1pgobvPOuktVi2HFiwYfnWrvHtW4fz7mahTHUwBV4XJYfBjohaMZKaF2PtjxlQpEnYtIJ0AoLlc5KT4gJOq3mhA4pAHmlSll-nJvB2kdug-5S7-ox_El_R6q-q9lGnOvEhswn8CXi7LZHeDwJVMuAE-X8mO-f1frfH_YRFUAh-oWsabX0MjfXIijt6d9uD8jdSASBS04TLOmBRho"/>
+<div>
+<p class="text-sm font-semibold">David Wu</p>
+<p class="text-[10px] uppercase text-outline tracking-wider">Frontend Lead</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Suggestions & Workspace Dialogue -->
+<section>
+<h4 class="font-headline text-xl text-on-surface mb-6 italic">Dialogue</h4>
+<div class="space-y-6">
+<div class="relative pl-6 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-px before:bg-outline-variant/30">
+<p class="text-xs font-monospace text-outline mb-1 uppercase">Elena Rossi</p>
+<p class="text-sm text-on-surface-variant italic leading-relaxed">"Should we consider a darker mode for the Atelier concept, or keep it strictly paper-light?"</p>
+</div>
+<div class="relative pl-6 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-px before:bg-outline-variant/30">
+<p class="text-xs font-monospace text-outline mb-1 uppercase">Julian Pierce</p>
+<p class="text-sm text-on-surface-variant italic leading-relaxed">"Let's focus on the light foundation first. The 'warmth' is our differentiator."</p>
+</div>
+<!-- Suggestion Input -->
+<div class="mt-8">
+<div class="bg-surface-container-lowest p-4 rounded-xl editorial-shadow border border-outline-variant/10 focus-within:ring-2 focus-within:ring-primary/10 transition-all">
+<textarea class="w-full bg-transparent border-none text-sm placeholder:text-outline focus:ring-0 resize-none h-20 font-body" placeholder="Add a suggestion or comment..."></textarea>
+<div class="flex justify-between items-center mt-2 pt-2 border-t border-outline-variant/5">
+<div class="flex space-x-2">
+<span class="material-symbols-outlined text-outline text-lg cursor-pointer hover:text-primary">attach_file</span>
+<span class="material-symbols-outlined text-outline text-lg cursor-pointer hover:text-primary">mood</span>
+</div>
+<button class="text-xs font-bold text-primary uppercase tracking-widest hover:bg-primary-fixed px-3 py-1 rounded transition-colors">Post</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Contextual Banner -->
+<div class="bg-primary/5 rounded-2xl p-6 overflow-hidden relative group">
+<div class="relative z-10">
+<h5 class="font-headline text-lg mb-2">Workspace Insight</h5>
+<p class="text-xs text-on-surface-variant leading-relaxed">This MOM is linked to the <span class="text-primary font-medium">Brand Vision 2024</span> project epic.</p>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-700">
+<span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">architecture</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Navigation -->
+<footer class="mt-24 pt-12 border-t border-outline-variant/10 flex justify-between items-center">
+<div class="flex items-center space-x-4">
+<button class="text-on-surface-variant hover:text-primary text-sm flex items-center space-x-2">
+<span class="material-symbols-outlined text-sm">share</span>
+<span>Share MOM</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary text-sm flex items-center space-x-2">
+<span class="material-symbols-outlined text-sm">download</span>
+<span>Export PDF</span>
+</button>
+</div>
+<div class="text-[10px] font-monospace uppercase text-outline tracking-widest">
+                    Last sync: Today at 2:45 PM
+                </div>
+</footer>
+</div>
+</main>
+<!-- FAB (Suppressed on this transactional/focused screen as per rules) -->
+</body></html>

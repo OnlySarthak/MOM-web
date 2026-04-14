@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-highest": "#e3e2df",
+                        "secondary-fixed": "#dce1ff",
+                        "secondary": "#4d5b94",
+                        "on-secondary-fixed-variant": "#35437b",
+                        "surface-dim": "#dbdad7",
+                        "on-background": "#1b1c1a",
+                        "tertiary-container": "#a73400",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#faf9f6",
+                        "on-tertiary-container": "#ffc9b7",
+                        "secondary-container": "#b0befe",
+                        "outline-variant": "#c4c5d7",
+                        "tertiary-fixed": "#ffdbcf",
+                        "surface-container-low": "#f4f3f0",
+                        "primary-container": "#1d4ed8",
+                        "inverse-primary": "#b7c4ff",
+                        "secondary-fixed-dim": "#b7c4ff",
+                        "on-tertiary-fixed-variant": "#832700",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#0037b0",
+                        "surface-variant": "#e3e2df",
+                        "inverse-on-surface": "#f2f1ee",
+                        "outline": "#747686",
+                        "on-surface-variant": "#434655",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb59c",
+                        "background": "#faf9f6",
+                        "surface": "#faf9f6",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#cad3ff",
+                        "on-primary-fixed": "#001551",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e9e8e5",
+                        "on-secondary-container": "#3d4c83",
+                        "on-secondary-fixed": "#03164d",
+                        "on-surface": "#1b1c1a",
+                        "surface-container": "#efeeeb",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#dce1ff",
+                        "surface-tint": "#2151da",
+                        "on-primary-fixed-variant": "#0039b5",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#2f312f",
+                        "tertiary": "#7f2500",
+                        "on-tertiary-fixed": "#390c00",
+                        "on-error-container": "#93000a"
+                    },
+                    fontFamily: {
+                        "headline": ["Newsreader", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"],
+                        "monospace": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-pill {
+            position: relative;
+        }
+        .active-pill::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 25%;
+            height: 50%;
+            width: 2px;
+            background-color: #dce1ff;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased flex overflow-hidden">
+<!-- SideNavBar Component -->
+<aside class="fixed left-0 top-0 h-screen w-64 bg-zinc-900 dark:bg-black flex flex-col h-full py-8 px-4 z-50 shadow-2xl">
+<div class="mb-10 px-4">
+<h1 class="font-['Newsreader'] text-xl italic text-white">TeamSync</h1>
+<p class="text-zinc-500 text-[10px] tracking-widest uppercase mt-1">Digital Atelier</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-white/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg border-l-2 border-blue-400 bg-white/5 text-white font-medium transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="text-sm">Meetings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-white/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="text-sm">Team</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-white/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="text-sm">Projects</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-white/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto space-y-4 px-2">
+<button class="w-full bg-primary-container text-white py-2.5 rounded-lg text-sm font-medium hover:brightness-110 transition-all">
+                New Workspace
+            </button>
+<div class="pt-4 border-t border-white/10 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-zinc-400 hover:text-zinc-100 text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="help">help</span>
+                    Help
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 text-zinc-400 hover:text-zinc-100 text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="logout">logout</span>
+                    Logout
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 h-screen overflow-y-auto bg-surface">
+<!-- TopNavBar Component -->
+<header class="sticky top-0 z-40 w-full bg-[#faf9f6]/80 backdrop-blur-md flex justify-between items-center h-16 px-10 transition-all">
+<div class="flex items-center gap-8">
+<h2 class="font-headline text-2xl text-zinc-900 tracking-tight">Meetings</h2>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-blue-700 font-bold border-b-2 border-blue-700 py-1 text-sm" href="#">Upcoming</a>
+<a class="text-zinc-500 hover:text-zinc-800 text-sm transition-colors" href="#">Past</a>
+<a class="text-zinc-500 hover:text-zinc-800 text-sm transition-colors" href="#">Calendar</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 bg-primary-container text-white px-5 py-2 rounded-lg text-sm font-medium hover:shadow-lg transition-all">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+                    Schedule Meeting
+                </button>
+<div class="h-6 w-[1px] bg-outline-variant/30 mx-2"></div>
+<button class="p-2 text-zinc-500 hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-1 rounded-full border border-outline-variant/20">
+<img alt="User Profile" class="w-8 h-8 rounded-full" data-alt="professional portrait of a creative director in a minimalist studio setting with soft natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT4t4b1WKNPvoOEFKttv3-bIZV0wsfKoRrp_etsUsZCCe--rV1iYbgBWqoFvZi3v_-9tss7Vz8xNNi7z5H8M9olC2gU-bpNbUd3PcYPpzRZZCX1xpQ0943l46MbXb5RYtoKPGleekJ55paKzzN81PJxpW_FyynKKWy1b2AN08l1N0-bp20DXn2Rwszzo5UZCLpcz7vPJukjRSpvJkRJq-1XLmnh3Gflh-79EncVTAmQIKkZJBnDk-5Utz5aEtpig-WPC8Fg2s6Rrc"/>
+</button>
+</div>
+</header>
+<section class="px-10 py-12 max-w-7xl mx-auto">
+<!-- Filter Bar -->
+<div class="flex flex-col md:flex-row gap-4 mb-10 items-center justify-between">
+<div class="relative w-full md:w-96">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-xl" data-icon="search">search</span>
+<input class="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border-none ring-1 ring-outline-variant/15 focus:ring-primary/40 rounded-xl text-sm transition-all outline-none" placeholder="Search meetings, clients or notes..." type="text"/>
+</div>
+<div class="flex items-center gap-3 w-full md:w-auto">
+<div class="relative flex-1 md:flex-none">
+<select class="appearance-none w-full md:w-48 pl-4 pr-10 py-3 bg-surface-container-lowest border-none ring-1 ring-outline-variant/15 focus:ring-primary/40 rounded-xl text-sm cursor-pointer transition-all outline-none">
+<option>Status: All</option>
+<option>Scheduled</option>
+<option>Completed</option>
+<option>Draft</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+<button class="flex items-center gap-2 px-4 py-3 bg-surface-container-high text-zinc-700 rounded-xl text-sm font-medium hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="tune">tune</span>
+                        Filters
+                    </button>
+</div>
+</div>
+<!-- Table Section -->
+<div class="bg-surface-container-lowest rounded-2xl shadow-[0px_10px_40px_rgba(27,28,26,0.03)] overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-8 py-5 text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.1em] border-none">Meeting Title</th>
+<th class="px-6 py-5 text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.1em] border-none">Date &amp; Time</th>
+<th class="px-6 py-5 text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.1em] border-none">Organizer</th>
+<th class="px-6 py-5 text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.1em] border-none">Status</th>
+<th class="px-6 py-5 text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.1em] border-none">Participants</th>
+<th class="px-6 py-5 text-right border-none"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-zinc-50">
+<!-- Row 1 -->
+<tr class="group hover:bg-surface-container-low transition-all cursor-pointer">
+<td class="px-8 py-6">
+<h3 class="font-headline text-lg text-zinc-900 group-hover:text-primary transition-colors">Quarterly Brand Alignment</h3>
+<p class="text-xs text-zinc-500 mt-0.5">Project: Rebranding 2024</p>
+</td>
+<td class="px-6 py-6 font-monospace text-xs text-zinc-600">
+                                Oct 24, 2023 · 10:00 AM
+                            </td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-3">
+<img alt="Sarah Miller" class="w-8 h-8 rounded-full object-cover" data-alt="portrait of a professional woman with blonde hair in a soft lit office background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8Ja-1j4XVy3BqulwUxONCOAkTvJ2YsTbpjRF_C439pxdWy_XgwRrPDE54wUnpI4naPk7Kfgsaqn7oTCO0qSF0lXJ_fFBaalzA22U_AzLEpeXLmJ6RyJfAKhtuEj7kcWJEvmfhNzu9yJzeDND61LZ43XFlKGXH2bKQzL2fLwGz5Ral36gvS3ORNmNtiBZvhI4Ix5g1iytF1L-hbtOcQrpqEQzfLpspB-2bqUQm1y4CjDYMlVAUcD-FNh64I2ChvQ8PWM1tS02xvOk"/>
+<span class="text-sm font-medium text-zinc-800">Sarah Miller</span>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[11px] font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                                    Scheduled
+                                </span>
+</td>
+<td class="px-6 py-6">
+<div class="flex -space-x-2">
+<img class="w-7 h-7 rounded-full border-2 border-white" data-alt="close up of a young man smiling with short hair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA74pQDVtCDFz4yhPpeqDJxoU4hKu__VcUoyBfOyCmqNAnz1LJDn2M3EVs9V6vD9GkAXJftHwVj03WI55zkHDHcGFg6VKG7uvYdTSlLMa2R_ZUQtF2HNuYXWGPEDeWIyDTTpFo1CCdAlsDc5bCA-EU_siOj3wyk-1AoKQbRjAWA88HPOLTVOqvYcUy7L_tuFgZbGeG4hTPX6qsSGIOA7mVplZ8w_n-r6Bdr2_OW_Ca3Qdxd9WDMMRsiB5ofxmBx-vy_nz1mIVqPLao"/>
+<img class="w-7 h-7 rounded-full border-2 border-white" data-alt="close up of a woman with dark hair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUXezzgPWUlOfczuG3ok7hCrb896lq1RGTJuwUMs_-05yvPeC-aIqPuadgelnef0t9962-PLiw_QYHRKku5edQ5dqktgvgQCC2dx0gFLpoAqHljROpo8e74H_ivhgTVev18qhtQ8ZSPq67av8Hj8Wr16-Y6M-Ii4QCjaQhOoNwvOgAVpptPGL5Zq5ArMUl3X-AmQ1xXiCrJ81aARVjKY8qr4daqLp0ePTsQRvBlWIJBzbGIB0Tg8ptZrEKrYWEv6g6PoTocPG5Wuw"/>
+<div class="w-7 h-7 rounded-full border-2 border-white bg-surface-container-high flex items-center justify-center text-[10px] font-bold text-zinc-500">+4</div>
+</div>
+</td>
+<td class="px-6 py-6 text-right">
+<span class="material-symbols-outlined text-zinc-400 group-hover:text-zinc-900 transition-colors" data-icon="more_vert">more_vert</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="group hover:bg-surface-container-low transition-all cursor-pointer">
+<td class="px-8 py-6">
+<h3 class="font-headline text-lg text-zinc-900 group-hover:text-primary transition-colors">Mobile App UX Review</h3>
+<p class="text-xs text-zinc-500 mt-0.5">Project: TeamSync Mobile</p>
+</td>
+<td class="px-6 py-6 font-monospace text-xs text-zinc-600">
+                                Oct 22, 2023 · 02:30 PM
+                            </td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-3">
+<img alt="David Chen" class="w-8 h-8 rounded-full object-cover" data-alt="professional male headshot with modern neutral office background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7rGpFKDWWekeEhrH2WU6gzNyCSr_fvsVX2puCSHaqkStonrpvfsf5xbhxJ_4b81xS71cV2txMxo3gNxaJmB6rG7P2Z0MlYdg3BFOIFG9oo7GrWeJgQ20u4A7JrrhvY1GbDOTyPotNHPsNGzLzNo4UzlvxOcoQ7WLgApamI6F3w9iJgnNooxrITcJI6x8cpjvvHHnzpspUWO4_PMNdTFGiFAT0OMtZ4vgHmzgCszWA8cI8IlURI8gHSc9DsX0kVS6PW6QbARlalAA"/>
+<span class="text-sm font-medium text-zinc-800">David Chen</span>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-zinc-500 text-[11px] font-semibold">
+                                    Completed
+                                </span>
+</td>
+<td class="px-6 py-6">
+<div class="flex -space-x-2">
+<img class="w-7 h-7 rounded-full border-2 border-white" data-alt="portrait of a female designer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDk3-vHchhF0J42FK7J_Eeoq_J53b8B6GtptiIVXq-NCBr_v0ybMcW8u3fPaMPbscr--eQgi5ptvxnXUbBvH-JCLQV6Z404ONDujRb2cFqZfEJ-FrWxEuzo9Ql-IaBWkg3FVT3GqDEwwRn2T3B29XspS-kFnlVlXQlN7Bje0IvYgucmo8ZNPO431pYNOo6uCu0QXstQ7woG0DD57VGUtFjsj-ftBlsYztQhE2bJMU12fbxp4jSK618VCkVmByDujB7qUIslr1kI_Kk"/>
+<img class="w-7 h-7 rounded-full border-2 border-white" data-alt="portrait of a man in glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHBjZceO3QAfmm2l7CY1r6ciqL83kTdo7j4Vlvbk1W7idqCfV9TsVSGD2YhXU1Pg6M8ylVg-QxDyomxLpVyTTjMbhPsP_1SQ17aYTtq2ZhvDlHwg9qTVpz5r52IoRPYmbB2rlP39mqiCTTTzujzjgWgyC64atPfYsjEOWnF1y8x-4Kci0Vd7-_BoZaLbwhDpEPF84rEVU55uJ0kFLB1qUPGDhgsYx63i0nfw_LWi6dtpHqyngFwGUtBEXIeheNHioFHbCH-MT_nlg"/>
+</div>
+</td>
+<td class="px-6 py-6 text-right">
+<span class="material-symbols-outlined text-zinc-400 group-hover:text-zinc-900 transition-colors" data-icon="more_vert">more_vert</span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="group hover:bg-surface-container-low transition-all cursor-pointer">
+<td class="px-8 py-6">
+<h3 class="font-headline text-lg text-zinc-900 group-hover:text-primary transition-colors">Client Onboarding: Atelier Inc.</h3>
+<p class="text-xs text-zinc-500 mt-0.5">Sales Pipeline</p>
+</td>
+<td class="px-6 py-6 font-monospace text-xs text-zinc-600">
+                                Oct 25, 2023 · 09:00 AM
+                            </td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs font-bold">JD</div>
+<span class="text-sm font-medium text-zinc-800">Jane Doe</span>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant text-[11px] font-semibold">
+                                    Draft
+                                </span>
+</td>
+<td class="px-6 py-6">
+<div class="flex -space-x-2">
+<img class="w-7 h-7 rounded-full border-2 border-white" data-alt="creative female professional profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDykQq1r3djB07vuqXzr1hviK5cO6MUsQBdwczyFR05o9HDKr1KxPt9jzJcxCRfICWSVtnrl5jmV1yavRXhMNejdbrZTjQG415go4AJAcFVkaEvG9NBoSUkTT5MEeueF8-Uo7AlHNzae88fwH9cEZ7RaXSc3nInoy5V4w7b2Pxxz7NLUIevKKM7qF39MFDeN5VKRyT4JaXymKADCj3A88MHLhR34TamqmGSMZYfaxiBQDr7gZJY97QOnZEw6M1-XpN8PSow6fZjIFU"/>
+</div>
+</td>
+<td class="px-6 py-6 text-right">
+<span class="material-symbols-outlined text-zinc-400 group-hover:text-zinc-900 transition-colors" data-icon="more_vert">more_vert</span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="group hover:bg-surface-container-low transition-all cursor-pointer">
+<td class="px-8 py-6">
+<h3 class="font-headline text-lg text-zinc-900 group-hover:text-primary transition-colors">Architecture Sprint Planning</h3>
+<p class="text-xs text-zinc-500 mt-0.5">Engineering</p>
+</td>
+<td class="px-6 py-6 font-monospace text-xs text-zinc-600">
+                                Oct 26, 2023 · 11:30 AM
+                            </td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-3">
+<img alt="Marcus V." class="w-8 h-8 rounded-full object-cover" data-alt="casual headshot of a male software engineer with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7Qfn96u6CHBICUFCedEXh3i8dAKtgIXG-lspOGLQ-vmN462mvS5oUqm2HEpTAWJpfd-D2SsF6GoNRiY_HAW_sIqqSegvXImA5ZQRlbaD_B1Tqepvxtg6r0MxWDb1V7IXHF0Y-7ucnfhtXqb5HicFqC1UvrchPJqWzv9AxIIvTU_9FbQ_bIuc4O8UGHSa6K8kKVVuDTwcSlrjOm3CgxQpMgDnSJRnnfYTHi0tTqmP-DgXfJSsVkxIzNCaVW1FnHy71apGYvDjEcXA"/>
+<span class="text-sm font-medium text-zinc-800">Marcus V.</span>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[11px] font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                    Scheduled
+                                </span>
+</td>
+<td class="px-6 py-6">
+<div class="flex -space-x-2">
+<img class="w-7 h-7 rounded-full border-2 border-white" data-alt="profile of a professional woman with brown hair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4cumoPKHr8f6-7P4MM1lfTGAWDjb8EZi1PUzShisu2gfhvRp3uJg92whWxR6TGgMIGjZYCPRZqcpNGXmG1yOleZnzbZ5OUQL6z4v-hUzTIrnhVwS8sIuhp0xyl6yz6Fg8gsFW8vSr0GiGC7pao1anbFrWYt1X-pWjUJBPoVlY68E3zyK8w5rOq73l9gaq6Qq9XPOISs9AsCSSDx2mvroHGar5keBXy8h3wB35YqZOqqaT2iLT1Aiw50Lg3TwLY4KrxMuoVaDSVGw"/>
+<img class="w-7 h-7 rounded-full border-2 border-white" data-alt="headshot of a young man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXV4Mr7XAYKGCD84JIUj32SQHeZYcKn81avn_XLaMDyR9MuACLgNd_L2sk3cfucCx8K-2nLICQMZOmdeOj1VvAc4ktraFMDn3Z1YFTihKeZr2VCImr3_jFApQ2HbIXX2qxLYLlaeaWscMrWf_dPECsAW0m1lZ1gEI1ixEXMffX4jMe_ALjb0ycLO11Mo4Cntcv-7SQFgNa3ovIZSzd8Ei9WwVAh0K6pg0jN5GZk4QNUzau3JV6qPmEcbejmae16wa5faDdLr1vAUM"/>
+<img class="w-7 h-7 rounded-full border-2 border-white" data-alt="smiling female profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRNmp2-uKnObUc1LAj7X8iiNGMO7SiQGkI3w9VECMfYcxfsfHV9paTZrGrJIvY-gvnr5fo7StJaKV7dEcd2atfKQanpxezf7pNPvZvyxqOITYhPanc3CUof4d_kgg5dDf1TOnOJ-zr7VFqJmY5DRaCAfnyFWlyBgN8YES0vRk-9hS3aSdtfE_9Lxe_EUpllXI5cuil_BdL1Rie7-TL7bB1YOK_AYQ7WVNdzFNy83FYeOWFLm9hG7tIDj8L1Tfp3cEWvrY6f3hjuN0"/>
+<div class="w-7 h-7 rounded-full border-2 border-white bg-surface-container-high flex items-center justify-center text-[10px] font-bold text-zinc-500">+8</div>
+</div>
+</td>
+<td class="px-6 py-6 text-right">
+<span class="material-symbols-outlined text-zinc-400 group-hover:text-zinc-900 transition-colors" data-icon="more_vert">more_vert</span>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination/Footer -->
+<div class="px-8 py-5 border-t border-zinc-50 flex items-center justify-between">
+<p class="text-xs text-zinc-400 font-medium">Showing <span class="text-zinc-800">1 to 4</span> of 24 meetings</p>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg border border-outline-variant/10 text-zinc-400 hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="p-2 rounded-lg border border-outline-variant/10 text-zinc-800 bg-surface-container-low hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Contextual Insight (Bento/Modern UI touch) -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="p-6 bg-blue-50/30 rounded-2xl flex flex-col justify-between h-40 group cursor-pointer hover:bg-blue-50 transition-colors">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-blue-600 bg-white p-2 rounded-xl" data-icon="analytics">analytics</span>
+<span class="material-symbols-outlined text-blue-300 group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</div>
+<div>
+<h4 class="font-headline text-lg text-zinc-900">Meeting Pulse</h4>
+<p class="text-xs text-zinc-500">You have 12 hours of meetings this week.</p>
+</div>
+</div>
+<div class="p-6 bg-secondary-fixed/20 rounded-2xl flex flex-col justify-between h-40 group cursor-pointer hover:bg-secondary-fixed/30 transition-colors">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-secondary bg-white p-2 rounded-xl" data-icon="history">history</span>
+<span class="material-symbols-outlined text-zinc-300 group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</div>
+<div>
+<h4 class="font-headline text-lg text-zinc-900">Summary Recap</h4>
+<p class="text-xs text-zinc-500">View AI-generated notes from completed calls.</p>
+</div>
+</div>
+<div class="p-6 bg-surface-container-high rounded-2xl flex flex-col justify-between h-40 group cursor-pointer hover:bg-surface-container-highest transition-colors">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-zinc-600 bg-white p-2 rounded-xl" data-icon="auto_awesome">auto_awesome</span>
+<span class="material-symbols-outlined text-zinc-400 group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</div>
+<div>
+<h4 class="font-headline text-lg text-zinc-900">Schedule Assistant</h4>
+<p class="text-xs text-zinc-500">Automate your upcoming availability.</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+</body></html>

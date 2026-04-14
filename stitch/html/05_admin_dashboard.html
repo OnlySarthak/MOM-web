@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TeamSync Admin Dashboard</title>
+<!-- Fonts: Newsreader & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary": "#ffffff",
+              "outline": "#747686",
+              "on-secondary": "#ffffff",
+              "on-primary-fixed-variant": "#0039b5",
+              "surface-container-low": "#f4f3f0",
+              "surface-container-high": "#e9e8e5",
+              "error": "#ba1a1a",
+              "surface": "#faf9f6",
+              "inverse-primary": "#b7c4ff",
+              "tertiary-fixed-dim": "#ffb59c",
+              "surface-variant": "#e3e2df",
+              "on-surface-variant": "#434655",
+              "error-container": "#ffdad6",
+              "on-secondary-fixed-variant": "#35437b",
+              "inverse-surface": "#2f312f",
+              "on-error-container": "#93000a",
+              "tertiary-container": "#a73400",
+              "on-background": "#1b1c1a",
+              "secondary-container": "#b0befe",
+              "inverse-on-surface": "#f2f1ee",
+              "on-tertiary-container": "#ffc9b7",
+              "on-primary-container": "#cad3ff",
+              "outline-variant": "#c4c5d7",
+              "surface-container-lowest": "#ffffff",
+              "secondary-fixed-dim": "#b7c4ff",
+              "primary": "#0037b0",
+              "on-tertiary-fixed": "#390c00",
+              "tertiary-fixed": "#ffdbcf",
+              "surface-bright": "#faf9f6",
+              "on-secondary-container": "#3d4c83",
+              "primary-fixed": "#dce1ff",
+              "background": "#faf9f6",
+              "secondary": "#4d5b94",
+              "on-surface": "#1b1c1a",
+              "tertiary": "#7f2500",
+              "surface-dim": "#dbdad7",
+              "on-primary": "#ffffff",
+              "on-error": "#ffffff",
+              "on-secondary-fixed": "#03164d",
+              "surface-container-highest": "#e3e2df",
+              "surface-container": "#efeeeb",
+              "primary-container": "#1d4ed8",
+              "on-primary-fixed": "#001551",
+              "primary-fixed-dim": "#b7c4ff",
+              "on-tertiary-fixed-variant": "#832700",
+              "secondary-fixed": "#dce1ff",
+              "surface-tint": "#2151da"
+            },
+            fontFamily: {
+              "headline": ["Newsreader"],
+              "body": ["Inter"],
+              "label": ["Inter"],
+              "mono": ["JetBrains Mono"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+        }
+        body {
+            background-color: #faf9f6;
+            color: #1b1c1a;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Sidebar Component (Shared JSON Reference) -->
+<aside class="fixed left-0 top-0 h-screen w-[200px] bg-[#2f312f] flex flex-col justify-between py-6 z-50">
+<div>
+<div class="px-6 mb-10">
+<h1 class="font-headline text-xl italic text-white leading-none">TeamSync</h1>
+<p class="text-[10px] text-gray-500 tracking-widest uppercase mt-1">Workspace</p>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center text-white border-l-2 border-[#dce1ff] pl-4 py-3 bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mr-3 text-lg" data-icon="dashboard">dashboard</span>
+<span class="font-['Inter'] text-sm font-medium tracking-tight">Dashboard</span>
+</a>
+<a class="flex items-center text-gray-400 hover:text-white pl-4 py-3 hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mr-3 text-lg" data-icon="groups">groups</span>
+<span class="font-['Inter'] text-sm font-medium tracking-tight">Meetings</span>
+</a>
+<a class="flex items-center text-gray-400 hover:text-white pl-4 py-3 hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mr-3 text-lg" data-icon="description">description</span>
+<span class="font-['Inter'] text-sm font-medium tracking-tight">MOMs</span>
+</a>
+<a class="flex items-center text-gray-400 hover:text-white pl-4 py-3 hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mr-3 text-lg" data-icon="assignment">assignment</span>
+<span class="font-['Inter'] text-sm font-medium tracking-tight">Tasks</span>
+</a>
+<a class="flex items-center text-gray-400 hover:text-white pl-4 py-3 hover:bg-white/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mr-3 text-lg" data-icon="person">person</span>
+<span class="font-['Inter'] text-sm font-medium tracking-tight">Profile</span>
+</a>
+</nav>
+</div>
+<div class="px-4 space-y-4">
+<div class="pt-4 border-t border-white/10">
+<a class="flex items-center text-gray-400 hover:text-white px-2 py-2 text-xs transition-colors" href="#">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="badge">badge</span>
+<span>Users</span>
+</a>
+<a class="flex items-center text-gray-400 hover:text-white px-2 py-2 text-xs transition-colors" href="#">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="group_work">group_work</span>
+<span>Teams</span>
+</a>
+</div>
+<div class="flex items-center gap-3 px-2">
+<img alt="Alex's Avatar" class="w-8 h-8 rounded-full bg-surface-container" data-alt="professional portrait avatar of a young creative professional with short hair and glasses on a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbvP3hcHUUxFxF6Aglb2fRfDEhATFXgKCNFWEF28YkNmFcijXf_7kXnJgPkxdQ3k7b4SItXJrppWAUUUod1oJ54wkjMOYWNQkQIf7cT7sjaykXlDO2Y3oiZn0wwS2R0W7yDWy45Luxqrol86vRudSyZIwsmVGCMcSDqzrWFzeBelczmlH5MI5w2pJ1yClXINTHqKqaLFWO2vAD4WLMZF75_dZE-JTrV8hLPbt9JepemFPMsduBY_O59YR6UQq5IF0KrKSS5s84yCI"/>
+<div class="overflow-hidden">
+<p class="text-white text-[11px] font-medium truncate">Alex Carter</p>
+<p class="text-gray-500 text-[10px] truncate">Admin Role</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-[200px] min-h-screen relative">
+<!-- TopNavBar Component (Shared JSON Reference) -->
+<header class="sticky top-0 z-40 w-full bg-[#faf9f6]/80 backdrop-blur-md border-b border-[#c4c5d7]/15 flex justify-between items-center px-8 h-16">
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant material-symbols-outlined text-sm" data-icon="search">search</span>
+<input class="bg-surface-container border-none focus:ring-1 focus:ring-primary rounded-lg pl-9 pr-4 py-1.5 text-sm w-64 transition-all" placeholder="Search workspace..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant font-mono text-[11px] tracking-wider uppercase">Oct 24, 2023</span>
+<div class="h-4 w-[1px] bg-outline-variant/30"></div>
+<button class="flex items-center gap-2 bg-gradient-to-br from-primary to-primary-container text-white px-4 py-2 rounded-lg text-sm font-medium hover:shadow-lg hover:shadow-primary/20 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+<span>+ Schedule Meeting</span>
+</button>
+<div class="relative">
+<button class="p-2 hover:bg-surface-container rounded-lg text-on-surface-variant transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</button>
+</div>
+</div>
+</header>
+<section class="px-10 py-12 max-w-[1440px] mx-auto">
+<!-- Greeting -->
+<div class="mb-12">
+<h2 class="font-headline text-[3.5rem] leading-tight text-on-surface tracking-tight mb-2">Good morning, Alex</h2>
+<p class="text-on-surface-variant font-body italic text-lg opacity-70">Your workspace is synced and ready for today's sessions.</p>
+</div>
+<!-- Stats Row -->
+<div class="grid grid-cols-4 gap-6 mb-16">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/15 flex flex-col">
+<span class="text-label-md text-on-surface-variant uppercase tracking-[0.1em] mb-4">Total Teams</span>
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-4xl text-on-surface">12</span>
+<span class="text-primary text-xs font-medium">+2 this month</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/15 flex flex-col">
+<span class="text-label-md text-on-surface-variant uppercase tracking-[0.1em] mb-4">Meetings</span>
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-4xl text-on-surface">48</span>
+<span class="material-symbols-outlined text-primary text-sm" data-icon="trending_up">trending_up</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/15 flex flex-col">
+<span class="text-label-md text-on-surface-variant uppercase tracking-[0.1em] mb-4">Tasks Done</span>
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-4xl text-on-surface">86<span class="text-outline-variant text-2xl">/120</span></span>
+</div>
+<div class="mt-4 w-full h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 71.6%"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/15 flex flex-col">
+<span class="text-label-md text-on-surface-variant uppercase tracking-[0.1em] mb-4">Active Users</span>
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-4xl text-on-surface">240</span>
+<div class="flex -space-x-2 ml-4">
+<img class="w-6 h-6 rounded-full border-2 border-surface" data-alt="profile avatar 1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQjDXYpxHgo4i_nTCH3lKCM8Ovp5koVGds_P2G45BHuOz5M_iZkN28V97MtMjSwV2oP3xoCyhQlm92UZf7wUIpHSr0XC0pscFzmLJejRm2ZtmREcc3FS6v3DldSf8HgdK6M_t3XdHsahwSUmBUDKJ-8QoFgtku1xq6GZVV-ivED2p6QtDN3pRtdphpt8E5HJF307RTwmiOECCFt1GHdUNu-QaBOM_I0EhKUauG1bIsLuOdYJWchc8QmWmEnT2VKCgpN4bcXG_INP4"/>
+<img class="w-6 h-6 rounded-full border-2 border-surface" data-alt="profile avatar 2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE-SrDIccLWQ9UE4g4q_VdXdJDDRlalah7gbBbpjK4HiFymhKYnLTFOiwOKEJxhIvCjscUAlbug0Ni3wBeTqgpCgXolxfpwGnVgzX41GHnqBked78rABxkjAGpF7iZoOCmqRMCMYQsEpQiuecRSbWQU4MVvQuOqY1wmLZ12bdBIS_yxcfuER_dUXU6iwM5o6C7CaRVb4sAeFdsAWJCkHcZP7uu_bGM9iUfoqu9QxTqC2xHeforEepCh2MpLCkEvPYFhn4eUO_svC8"/>
+<img class="w-6 h-6 rounded-full border-2 border-surface" data-alt="profile avatar 3" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXEkS-7yRw6syyObFD8AUIbnbgQaiKPEalrH4Ke13-Fdnr7cwr31Xg8YoQdwidHc6Rfn7jF3ZPUQaAUMjQ4JRKmyjqI45arw32S61hXf1sjXN2oEh9cNh5DIkHif_kiBcq9UI9i6aSqGLuR9Jx1RLwRvArN24Kwqr78R-t8UFY9Trd-ysd8uPdWCK8-7wQwm_L_HwT0nt24TGUDJWKQ7SWjv1669gBsbyEvZypL4rfIeq4WnfORNuzLeN1C0OPIwcr3BLe98NlkuA"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Two Column Main Layout -->
+<div class="grid grid-cols-12 gap-10">
+<!-- Left Column: Recent Meetings -->
+<div class="col-span-8">
+<div class="flex items-baseline justify-between mb-8">
+<h3 class="font-headline text-2xl text-on-surface">Recent Meetings</h3>
+<a class="text-primary text-sm font-medium hover:underline transition-all" href="#">View all history</a>
+</div>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/15 overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container/30">
+<th class="px-6 py-4 text-[11px] font-medium text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/10">Title</th>
+<th class="px-6 py-4 text-[11px] font-medium text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/10">Date</th>
+<th class="px-6 py-4 text-[11px] font-medium text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/10 text-right">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<tr class="group hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-medium text-on-surface">Q4 Strategic Planning</span>
+<span class="text-[11px] text-on-surface-variant">Marketing Department</span>
+</div>
+</td>
+<td class="px-6 py-5 text-sm font-mono text-on-surface-variant">2023-10-23</td>
+<td class="px-6 py-5 text-right">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-fixed/30 text-primary text-[10px] font-bold uppercase rounded-full">
+<span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                                            Completed
+                                        </span>
+</td>
+</tr>
+<tr class="group hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-medium text-on-surface">Weekly Engineering Sync</span>
+<span class="text-[11px] text-on-surface-variant">Engineering Team</span>
+</div>
+</td>
+<td class="px-6 py-5 text-sm font-mono text-on-surface-variant">2023-10-24</td>
+<td class="px-6 py-5 text-right">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-secondary-fixed/30 text-secondary text-[10px] font-bold uppercase rounded-full">
+<span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>
+                                            Scheduled
+                                        </span>
+</td>
+</tr>
+<tr class="group hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-medium text-on-surface">Design Review: V2 Dashboard</span>
+<span class="text-[11px] text-on-surface-variant">Product Design</span>
+</div>
+</td>
+<td class="px-6 py-5 text-sm font-mono text-on-surface-variant">2023-10-25</td>
+<td class="px-6 py-5 text-right">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface-variant text-on-surface-variant text-[10px] font-bold uppercase rounded-full">
+                                            Draft
+                                        </span>
+</td>
+</tr>
+<tr class="group hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-medium text-on-surface">Stakeholder Interview Series</span>
+<span class="text-[11px] text-on-surface-variant">User Research</span>
+</div>
+</td>
+<td class="px-6 py-5 text-sm font-mono text-on-surface-variant">2023-10-22</td>
+<td class="px-6 py-5 text-right">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-fixed/30 text-primary text-[10px] font-bold uppercase rounded-full">
+<span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                                            Completed
+                                        </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right Column -->
+<div class="col-span-4 space-y-10">
+<!-- Team Progress -->
+<div>
+<h3 class="font-headline text-2xl text-on-surface mb-8">Team Progress</h3>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/15 space-y-6">
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<span class="text-sm font-medium text-on-surface">Engineering</span>
+<span class="font-mono text-xs text-on-surface-variant">92%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 92%"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<span class="text-sm font-medium text-on-surface">Marketing</span>
+<span class="font-mono text-xs text-on-surface-variant">65%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 65%"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<span class="text-sm font-medium text-on-surface">Product Design</span>
+<span class="font-mono text-xs text-on-surface-variant">48%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 48%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent MOMs -->
+<div>
+<h3 class="font-headline text-2xl text-on-surface mb-8">Recent MOMs</h3>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/15 overflow-hidden divide-y divide-outline-variant/10">
+<div class="p-4 flex items-center justify-between group hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed-variant">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-on-surface">Product Kickoff</span>
+<span class="text-[10px] text-on-surface-variant font-mono uppercase tracking-tight">Oct 22, 2023</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="visibility">visibility</span>
+</div>
+<div class="p-4 flex items-center justify-between group hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-on-surface">Q3 Retrospective</span>
+<span class="text-[10px] text-on-surface-variant font-mono uppercase tracking-tight">Oct 20, 2023</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="visibility">visibility</span>
+</div>
+<div class="p-4 flex items-center justify-between group hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-on-surface">Budget Review</span>
+<span class="text-[10px] text-on-surface-variant font-mono uppercase tracking-tight">Oct 18, 2023</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="visibility">visibility</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Floating Contextual FAB (Hidden on this Dashboard per Shell Filter rules) -->
+</main>
+</body></html>

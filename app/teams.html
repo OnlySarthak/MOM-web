@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teams — TeamSync</title>
+  <meta name="description" content="Manage and view all teams in the TeamSync workspace." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="../assets/css/teamsync.css" />
+</head>
+<body class="ts-shell">
+  <aside id="ts-sidebar"></aside>
+  <div class="ts-main">
+    <header id="ts-topnav"></header>
+    <main class="ts-content fade-in">
+
+      <!-- Header -->
+      <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-12">
+        <div>
+          <h1 class="font-headline text-5xl text-on-surface tracking-tight mb-2">Teams</h1>
+          <p class="font-headline italic text-xl text-outline">Your squads, departments, and project groups.</p>
+        </div>
+        <button class="btn-primary gap-2 text-sm flex-shrink-0" id="new-team-btn" onclick="openCreateTeamModal()">
+          <span class="material-symbols-outlined text-sm">add</span>
+          Create Team
+        </button>
+      </div>
+
+      <!-- Team Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="teams-grid">
+        <!-- Cards rendered by JS -->
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Create Team Modal -->
+  <div class="ts-modal-overlay" id="create-team-overlay" onclick="if(event.target===this)closeCreateTeamModal()">
+    <div class="ts-modal">
+      <div class="ts-modal-header">
+        <h2>Create New Team</h2>
+        <button class="ts-close-btn" onclick="closeCreateTeamModal()"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div class="ts-modal-body">
+        <form id="create-team-form" class="space-y-5" onsubmit="handleCreateTeam(event)">
+          <div>
+            <label class="ts-label">Team Name *</label>
+            <input class="ts-field" type="text" id="ct-name" placeholder="e.g. Atelier Alpha" required />
+          </div>
+          <div>
+            <label class="ts-label">Department / Focus</label>
+            <input class="ts-field" type="text" id="ct-department" placeholder="e.g. Design & Brand" />
+          </div>
+          <div>
+            <label class="ts-label">Team Leader</label>
+            <select class="ts-field" id="ct-leader">
+              <option value="">Select a leader…</option>
+              <option value="EV">Elena Vance</option>
+              <option value="JT">Julian Thorne</option>
+              <option value="MC">Marcus Chen</option>
+            </select>
+          </div>
+          <div>
+            <label class="ts-label">Description</label>
+            <textarea class="ts-field resize-none h-20" id="ct-desc" placeholder="Brief team description…"></textarea>
+          </div>
+          <div>
+            <label class="ts-label">Team Color</label>
+            <div class="flex gap-3" id="ct-colors">
+              <button type="button" class="w-8 h-8 rounded-full bg-primary ring-2 ring-primary ring-offset-2 color-pick active" data-color="bg-primary"></button>
+              <button type="button" class="w-8 h-8 rounded-full bg-secondary color-pick" data-color="bg-secondary"></button>
+              <button type="button" class="w-8 h-8 rounded-full bg-tertiary color-pick" data-color="bg-tertiary"></button>
+              <button type="button" class="w-8 h-8 rounded-full bg-outline color-pick" data-color="bg-outline"></button>
+              <button type="button" class="w-8 h-8 rounded-full bg-inverse-surface color-pick" data-color="bg-inverse-surface"></button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="ts-modal-footer">
+        <button class="btn-secondary text-sm" onclick="closeCreateTeamModal()">Cancel</button>
+        <button class="btn-primary text-sm" onclick="document.getElementById('create-team-form').requestSubmit()">
+          <span class="material-symbols-outlined text-sm">add</span>Create Team
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+    const user = requireAuth(['admin','leader']);
+    if (user) {
+      renderSidebar(user, 'teams');
+      renderTopNav('Teams', user);
+    }
+
+    // ── Demo Data ──────────────────────────────────────────────────
+    const TEAMS = [
+      { id: 'alpha', name: 'Atelier Alpha', letter: 'Α', dept: 'Design & Brand — Product UI, Design System, Brand Standards', color: 'bg-primary', progress: 84, members: ['JP','SK','EV'], extraMembers: 3, tasks: 12 },
+      { id: 'beta', name: 'Studio Beta', letter: 'Β', dept: 'Engineering — Backend, Auth, API, Cloud Infrastructure', color: 'bg-secondary', progress: 61, members: ['DC','JD'], extraMembers: 4, tasks: 19 },
+      { id: 'gamma', name: 'Craft Gamma', letter: 'Γ', dept: 'Product — Roadmap, Analytics, Growth, User Research', color: 'bg-tertiary', progress: 92, members: ['MV','AK'], extraMembers: 2, tasks: 8 },
+      { id: 'delta', name: 'Nexus Delta', letter: 'Δ', dept: 'Sales & Operations — Pipeline, CRM, Client Success', color: 'bg-inverse-surface', progress: 45, members: ['CJ','LM'], extraMembers: 0, tasks: 15 },
+      { id: 'epsilon', name: 'Studio Epsilon', letter: 'Ε', dept: 'Marketing & Content — Campaigns, Content, Social Media', color: 'bg-outline', progress: 78, members: ['NR','PL'], extraMembers: 1, tasks: 11 },
+    ];
+
+    const MEMBER_COLORS = {
+      JP: 'bg-primary', SK: 'bg-secondary', EV: 'bg-tertiary', DC: 'bg-secondary',
+      JD: 'bg-primary', MV: 'bg-tertiary', AK: 'bg-outline', CJ: 'bg-inverse-surface',
+      LM: 'bg-secondary', NR: 'bg-outline', PL: 'bg-primary-fixed'
+    };
+
+    function renderTeams() {
+      const grid = document.getElementById('teams-grid');
+      grid.innerHTML = '';
+      TEAMS.forEach((t, idx) => {
+        const memberBubbles = t.members.map(m => 
+          `<div class="w-8 h-8 rounded-full ${MEMBER_COLORS[m] || 'bg-primary'} text-white flex items-center justify-center text-[10px] font-bold ring-2 ring-white">${m}</div>`
+        ).join('');
+        const extra = t.extraMembers > 0 ? `<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-[10px] font-bold ring-2 ring-white">+${t.extraMembers}</div>` : '';
+
+        const card = document.createElement('div');
+        card.className = 'ts-card p-6 hover:-translate-y-1 transition-all duration-300 group cursor-pointer';
+        card.onclick = () => window.location.href = `team-info.html?id=${t.id}`;
+        card.innerHTML = `
+          <div class="flex items-start justify-between mb-5">
+            <div class="w-12 h-12 rounded-2xl ${t.color} text-white flex items-center justify-center text-lg font-bold font-headline">${t.letter}</div>
+            <div class="relative">
+              <button class="text-outline hover:text-on-surface opacity-0 group-hover:opacity-100 transition-all team-menu-btn" data-idx="${idx}" onclick="event.stopPropagation();toggleTeamMenu(${idx})">
+                <span class="material-symbols-outlined">more_vert</span>
+              </button>
+              <div class="ts-dropdown" id="team-dropdown-${idx}">
+                <button class="ts-dropdown-item" onclick="event.stopPropagation();window.location.href='team-info.html?id=${t.id}'">
+                  <span class="material-symbols-outlined text-sm">visibility</span>View Details
+                </button>
+                <button class="ts-dropdown-item" onclick="event.stopPropagation();closeAllDropdowns()">
+                  <span class="material-symbols-outlined text-sm">edit</span>Edit Team
+                </button>
+                <div class="ts-dropdown-sep"></div>
+                <button class="ts-dropdown-item danger" onclick="event.stopPropagation();removeTeam(${idx})">
+                  <span class="material-symbols-outlined text-sm">delete</span>Remove Team
+                </button>
+              </div>
+            </div>
+          </div>
+          <h3 class="font-headline text-2xl text-on-surface mb-1">${t.name}</h3>
+          <p class="text-xs text-on-surface-variant mb-5">${t.dept}</p>
+          <div class="mb-5">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-[10px] uppercase tracking-widest text-outline font-bold">Sprint Progress</span>
+              <span class="font-mono text-xs text-primary font-bold">${t.progress}%</span>
+            </div>
+            <div class="ts-progress-track"><div class="ts-progress-fill" style="width:${t.progress}%"></div></div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex -space-x-2">${memberBubbles}${extra}</div>
+            <div class="flex items-center gap-1.5 text-xs text-on-surface-variant">
+              <span class="material-symbols-outlined text-sm">assignment</span>
+              <span>${t.tasks} tasks</span>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      // Add Team card
+      const addCard = document.createElement('div');
+      addCard.className = 'ts-card p-6 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant/30 hover:border-primary/30 hover:bg-primary/3 transition-all cursor-pointer group';
+      addCard.onclick = openCreateTeamModal;
+      addCard.innerHTML = `
+        <div class="w-16 h-16 rounded-2xl bg-white flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-sm">
+          <span class="material-symbols-outlined text-primary text-3xl">add</span>
+        </div>
+        <h4 class="font-headline text-2xl text-on-surface mb-2">New Team</h4>
+        <p class="text-xs text-outline text-center max-w-[180px]">Create a new squad or department team</p>
+      `;
+      grid.appendChild(addCard);
+    }
+
+    // ── Modal Logic ────────────────────────────────────────────────
+    function openCreateTeamModal() {
+      document.getElementById('create-team-overlay').classList.add('open');
+    }
+    function closeCreateTeamModal() {
+      document.getElementById('create-team-overlay').classList.remove('open');
+      document.getElementById('create-team-form').reset();
+      // Reset color picker
+      document.querySelectorAll('.color-pick').forEach(b => { b.classList.remove('active','ring-2','ring-offset-2'); b.style.removeProperty('--tw-ring-color'); });
+      document.querySelector('.color-pick').classList.add('active','ring-2','ring-offset-2');
+    }
+
+    // Color picker
+    document.querySelectorAll('.color-pick').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.color-pick').forEach(b => b.classList.remove('active','ring-2','ring-offset-2'));
+        btn.classList.add('active','ring-2','ring-offset-2');
+      });
+    });
+
+    const GREEK = ['Ζ','Η','Θ','Ι','Κ','Λ','Μ','Ν','Ξ','Ο'];
+    let greekIdx = 0;
+
+    function handleCreateTeam(e) {
+      e.preventDefault();
+      const name = document.getElementById('ct-name').value.trim();
+      const dept = document.getElementById('ct-department').value.trim() || 'General';
+      const leader = document.getElementById('ct-leader').value || '??';
+      const activeColor = document.querySelector('.color-pick.active');
+      const color = activeColor ? activeColor.dataset.color : 'bg-primary';
+
+      TEAMS.push({
+        id: name.toLowerCase().replace(/\s+/g,'-'),
+        name: name,
+        letter: GREEK[greekIdx++ % GREEK.length],
+        dept: dept,
+        color: color,
+        progress: 0,
+        members: leader !== '??' ? [leader] : [],
+        extraMembers: 0,
+        tasks: 0
+      });
+      renderTeams();
+      closeCreateTeamModal();
+    }
+
+    // ── Dropdown Logic ────────────────────────────────────────────
+    function toggleTeamMenu(idx) {
+      closeAllDropdowns();
+      document.getElementById('team-dropdown-' + idx).classList.add('open');
+    }
+    function closeAllDropdowns() {
+      document.querySelectorAll('.ts-dropdown').forEach(d => d.classList.remove('open'));
+    }
+    function removeTeam(idx) {
+      if (confirm('Remove team "' + TEAMS[idx].name + '"? This action cannot be undone.')) {
+        TEAMS.splice(idx, 1);
+        renderTeams();
+      }
+      closeAllDropdowns();
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.team-menu-btn') && !e.target.closest('.ts-dropdown')) {
+        closeAllDropdowns();
+      }
+    });
+
+    // ── Init ────────────────────────────────────────────────────
+    renderTeams();
+  </script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Team Leader Dashboard — TeamSync</title>
+  <meta name="description" content="TeamSync Team Leader Dashboard — team progress, meetings, MOMs, and task management." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="../assets/css/teamsync.css" />
+  <style>
+    .tab-btn { transition: all 0.2s; }
+    .tab-btn.active { color: #0037b0; border-bottom: 2px solid #0037b0; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+  </style>
+</head>
+<body class="ts-shell">
+  <aside id="ts-sidebar"></aside>
+  <div class="ts-main">
+    <header id="ts-topnav"></header>
+    <main class="ts-content fade-in">
+
+      <!-- Header with progress pill -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div>
+          <h1 class="font-headline text-5xl text-on-surface tracking-tight mb-2">My Dashboard</h1>
+          <p class="font-headline italic text-xl text-outline">Your team's pulse, at a glance.</p>
+        </div>
+        <div class="flex items-center gap-4 px-5 py-3 bg-surface-container-lower rounded-xl border border-outline-variant/15 ts-card">
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-outline font-semibold">Team Progress</p>
+            <div class="flex items-center gap-3 mt-1">
+              <p class="font-headline text-2xl font-bold text-primary">72%</p>
+              <div class="w-24 ts-progress-track"><div class="ts-progress-fill" style="width:72%"></div></div>
+            </div>
+          </div>
+          <button onclick="window.location.href='meetings.html'" class="btn-primary text-sm">+ Schedule Meeting</button>
+        </div>
+      </div>
+
+      <!-- Dashboard Tabs (merging screens 2 + 10) -->
+      <div class="flex gap-8 border-b border-outline-variant/15 mb-8">
+        <button class="tab-btn active pb-4 text-sm font-semibold" data-tab="overview">Overview</button>
+        <button class="tab-btn pb-4 text-sm font-medium text-outline hover:text-on-surface" data-tab="progress">Progress Metrics</button>
+      </div>
+
+      <!-- Tab: Overview -->
+      <div class="tab-panel active" id="tab-overview">
+        <!-- Upcoming Meetings -->
+        <section class="mb-10">
+          <div class="flex items-baseline justify-between mb-5">
+            <h2 class="font-headline text-2xl text-on-surface">Upcoming Meetings</h2>
+            <span class="font-mono text-[10px] uppercase tracking-widest text-outline">Next 24 Hours</span>
+          </div>
+          <div class="ts-card overflow-hidden">
+            <div class="divide-y divide-outline-variant/10">
+              <div class="p-5 flex items-center hover:bg-surface-container-low transition-colors group cursor-pointer" onclick="window.location.href='meeting-detail.html'">
+                <div class="w-24 flex flex-col">
+                  <span class="font-mono text-xs text-primary font-bold">10:30 AM</span>
+                  <span class="text-[10px] text-outline font-medium">45 MINS</span>
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm font-semibold text-on-surface">Product Strategy Sync</p>
+                  <p class="text-xs text-on-surface-variant mt-0.5">Focus: Q3 Roadmap prioritization and resource allocation</p>
+                </div>
+                <div class="flex -space-x-2 mr-6">
+                  <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-[9px] font-bold ring-2 ring-white">SM</div>
+                  <div class="w-7 h-7 rounded-full bg-secondary text-white flex items-center justify-center text-[9px] font-bold ring-2 ring-white">DC</div>
+                  <div class="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center text-[9px] font-bold ring-2 ring-white">+2</div>
+                </div>
+                <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">chevron_right</span>
+              </div>
+              <div class="p-5 flex items-center hover:bg-surface-container-low transition-colors group cursor-pointer">
+                <div class="w-24 flex flex-col">
+                  <span class="font-mono text-xs text-on-surface-variant">02:00 PM</span>
+                  <span class="text-[10px] text-outline font-medium">60 MINS</span>
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm font-semibold text-on-surface">Weekly Engineering Review</p>
+                  <p class="text-xs text-on-surface-variant mt-0.5">Code quality metrics and sprint velocity discussion</p>
+                </div>
+                <div class="flex -space-x-2 mr-6">
+                  <div class="w-7 h-7 rounded-full bg-[#7f2500] text-white flex items-center justify-center text-[9px] font-bold ring-2 ring-white">MV</div>
+                  <div class="w-7 h-7 rounded-full bg-outline text-white flex items-center justify-center text-[9px] font-bold ring-2 ring-white">JD</div>
+                </div>
+                <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">chevron_right</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Two column: MOMs + Tasks -->
+        <div class="grid grid-cols-10 gap-8">
+          <!-- Recent MOMs (40%) -->
+          <div class="col-span-10 lg:col-span-4">
+            <div class="flex items-baseline justify-between mb-5">
+              <h2 class="font-headline text-2xl text-on-surface">Recent MOMs</h2>
+              <a href="mom-list.html" class="text-[11px] font-medium text-primary hover:underline">VIEW ALL</a>
+            </div>
+            <div class="space-y-4">
+              <article class="ts-card p-6 hover:shadow-md transition-shadow cursor-pointer" onclick="window.location.href='mom-detail.html'">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="font-headline text-lg leading-tight text-on-surface">Budget Re-allocation for Cloud Services</h3>
+                  <span class="font-mono text-[10px] bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">JUN 12</span>
+                </div>
+                <p class="text-xs text-on-surface-variant italic font-headline opacity-80 mb-4 line-clamp-2">"Decided to shift 15% of the marketing budget to infrastructure to handle the surge in user traffic..."</p>
+                <div class="flex items-center gap-2">
+                  <div class="h-1.5 w-1.5 rounded-full bg-primary"></div>
+                  <span class="text-[10px] font-label font-medium uppercase tracking-tighter text-outline">Decision Confirmed</span>
+                </div>
+              </article>
+              <article class="ts-card p-6 hover:shadow-md transition-shadow cursor-pointer" onclick="window.location.href='mom-detail.html'">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="font-headline text-lg leading-tight text-on-surface">Design System V2 Launch Timeline</h3>
+                  <span class="font-mono text-[10px] bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">JUN 10</span>
+                </div>
+                <p class="text-xs text-on-surface-variant italic font-headline opacity-80 mb-4 line-clamp-2">"The rollout will be staged over three phases starting July 1st, beginning with core layout components..."</p>
+                <div class="flex items-center gap-2">
+                  <div class="h-1.5 w-1.5 rounded-full bg-secondary"></div>
+                  <span class="text-[10px] font-label font-medium uppercase tracking-tighter text-outline">Phase 1 Drafted</span>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <!-- Team Tasks (60%) -->
+          <div class="col-span-10 lg:col-span-6">
+            <div class="flex items-center justify-between mb-5">
+              <h2 class="font-headline text-2xl text-on-surface">Team Tasks</h2>
+              <button onclick="window.location.href='tasks.html'" class="btn-secondary text-xs px-3 py-1.5">+ Assign Task</button>
+            </div>
+            <div class="ts-card overflow-hidden">
+              <table class="ts-table">
+                <thead><tr><th>Task</th><th class="text-center">Assignee</th><th>Priority</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr class="cursor-pointer" onclick="window.location.href='tasks.html'">
+                    <td class="font-medium text-on-surface">Refactor Auth Middleware</td>
+                    <td class="text-center"><div class="w-7 h-7 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center mx-auto">JD</div></td>
+                    <td><span class="text-[10px] font-bold px-2 py-0.5 rounded badge-high">HIGH</span></td>
+                    <td><span class="flex items-center gap-1.5 text-xs"><span class="animate-ping inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>In Progress</span></td>
+                  </tr>
+                  <tr>
+                    <td class="font-medium text-on-surface">Update API Documentation</td>
+                    <td class="text-center"><div class="w-7 h-7 rounded-full bg-secondary text-white text-[9px] font-bold flex items-center justify-center mx-auto">EV</div></td>
+                    <td><span class="text-[10px] font-bold px-2 py-0.5 rounded badge-medium">MEDIUM</span></td>
+                    <td><span class="text-xs text-outline">To Do</span></td>
+                  </tr>
+                  <tr>
+                    <td class="font-medium text-on-surface">Cloud Security Audit</td>
+                    <td class="text-center"><div class="w-7 h-7 rounded-full bg-[#7f2500] text-white text-[9px] font-bold flex items-center justify-center mx-auto">MV</div></td>
+                    <td><span class="text-[10px] font-bold px-2 py-0.5 rounded badge-high">HIGH</span></td>
+                    <td><span class="flex items-center gap-1.5 text-xs text-secondary"><span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">check_circle</span>Completed</span></td>
+                  </tr>
+                  <tr>
+                    <td class="font-medium text-on-surface">Optimize Asset Pipeline</td>
+                    <td class="text-center"><div class="w-7 h-7 rounded-full bg-primary-fixed text-primary text-[9px] font-bold flex items-center justify-center mx-auto">JD</div></td>
+                    <td><span class="text-[10px] font-bold px-2 py-0.5 rounded badge-low">LOW</span></td>
+                    <td><span class="text-xs text-outline">To Do</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Progress Metrics (from screen 10) -->
+      <div class="tab-panel" id="tab-progress">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+          <div class="stat-card text-center">
+            <p class="font-mono text-[10px] uppercase tracking-widest text-outline mb-2">Sprint Velocity</p>
+            <p class="font-headline text-5xl font-bold text-primary">84%</p>
+            <p class="text-xs text-on-surface-variant mt-1">↑ 12% this sprint</p>
+          </div>
+          <div class="stat-card text-center">
+            <p class="font-mono text-[10px] uppercase tracking-widest text-outline mb-2">Open Tasks</p>
+            <p class="font-headline text-5xl font-bold text-on-surface">12</p>
+            <p class="text-xs text-on-surface-variant mt-1">Across 3 members</p>
+          </div>
+          <div class="stat-card text-center">
+            <p class="font-mono text-[10px] uppercase tracking-widest text-outline mb-2">Hours in Meetings</p>
+            <p class="font-headline text-5xl font-bold text-on-surface">18h</p>
+            <p class="text-xs text-on-surface-variant mt-1">This week</p>
+          </div>
+          <div class="stat-card text-center">
+            <p class="font-mono text-[10px] uppercase tracking-widest text-outline mb-2">MOMs Published</p>
+            <p class="font-headline text-5xl font-bold text-on-surface">8</p>
+            <p class="text-xs text-on-surface-variant mt-1">This quarter</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="ts-card p-6">
+            <h2 class="font-headline text-2xl text-on-surface mb-5">Team Breakdown</h2>
+            <div class="space-y-4">
+              <div class="flex items-center gap-4">
+                <div class="w-8 h-8 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center">EV</div>
+                <div class="flex-1">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-sm font-medium text-on-surface">Elena Vance</span>
+                    <span class="font-mono text-xs text-primary">6/8 tasks</span>
+                  </div>
+                  <div class="ts-progress-track"><div class="ts-progress-fill" style="width:75%"></div></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4">
+                <div class="w-8 h-8 rounded-full bg-secondary text-white text-[9px] font-bold flex items-center justify-center">MC</div>
+                <div class="flex-1">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-sm font-medium text-on-surface">Marcus Chen</span>
+                    <span class="font-mono text-xs text-primary">4/6 tasks</span>
+                  </div>
+                  <div class="ts-progress-track"><div class="ts-progress-fill" style="width:66%"></div></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4">
+                <div class="w-8 h-8 rounded-full bg-[#7f2500] text-white text-[9px] font-bold flex items-center justify-center">JD</div>
+                <div class="flex-1">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-sm font-medium text-on-surface">Jane Doe</span>
+                    <span class="font-mono text-xs text-primary">3/4 tasks</span>
+                  </div>
+                  <div class="ts-progress-track"><div class="ts-progress-fill" style="width:75%"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ts-card p-6">
+            <h2 class="font-headline text-2xl text-on-surface mb-5">Status Distribution</h2>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-low">
+                <span class="flex items-center gap-3 text-sm font-medium"><span class="w-3 h-3 rounded-full bg-primary"></span>In Progress</span>
+                <span class="font-mono text-sm font-bold text-primary">5</span>
+              </div>
+              <div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-low">
+                <span class="flex items-center gap-3 text-sm font-medium"><span class="w-3 h-3 rounded-full bg-outline-variant"></span>To Do</span>
+                <span class="font-mono text-sm font-bold">7</span>
+              </div>
+              <div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-low">
+                <span class="flex items-center gap-3 text-sm font-medium"><span class="w-3 h-3 rounded-full bg-secondary"></span>Completed</span>
+                <span class="font-mono text-sm font-bold text-secondary">14</span>
+              </div>
+              <div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-low">
+                <span class="flex items-center gap-3 text-sm font-medium"><span class="w-3 h-3 rounded-full bg-error"></span>Blocked</span>
+                <span class="font-mono text-sm font-bold text-error">2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+    const user = requireAuth(['leader']);
+    if (user) {
+      renderSidebar(user, 'dashboard');
+      renderTopNav('My Dashboard', user);
+    }
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

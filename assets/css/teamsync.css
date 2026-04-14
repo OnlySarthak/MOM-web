@@ -1,0 +1,451 @@
+/* ============================================================
+   TeamSync — Shared Stylesheet
+   Design system tokens, utilities, and base styles
+   ============================================================ */
+
+/* Google Fonts are loaded inline in each page's <head> */
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  display: inline-block;
+  line-height: 1;
+  user-select: none;
+}
+
+/* ── App Shell Layout ───────────────────────────────────────── */
+html, body { height: 100%; }
+
+.ts-shell {
+  display: flex;
+  min-height: 100vh;
+  background-color: #faf9f6;
+  color: #1b1c1a;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────── */
+#ts-sidebar {
+  position: fixed;
+  left: 0; top: 0;
+  height: 100vh;
+  width: 220px;
+  background-color: #2f312f;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 0;
+  z-index: 50;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+
+/* ── Main Content ─────────────────────────────────────────────── */
+.ts-main {
+  margin-left: 220px;
+  flex: 1;
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Top Nav Bar ─────────────────────────────────────────────── */
+#ts-topnav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  width: 100%;
+  background: rgba(250, 249, 246, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+  padding: 0 2.5rem;
+  border-bottom: 1px solid rgba(196,197,215,0.15);
+}
+
+/* ── Page Content ─────────────────────────────────────────────── */
+.ts-content {
+  flex: 1;
+  padding: 2.5rem;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ── Cards ───────────────────────────────────────────────────── */
+.ts-card {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 24px rgba(27, 28, 26, 0.04);
+  border: 1px solid rgba(196, 197, 215, 0.15);
+  overflow: hidden;
+}
+
+/* ── Glass Card ──────────────────────────────────────────────── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(196, 197, 215, 0.15);
+  border-radius: 0.75rem;
+}
+
+/* ── Editorial shadow ─────────────────────────────────────────── */
+.editorial-shadow {
+  box-shadow: 0 6px 32px rgba(27, 28, 26, 0.05);
+}
+
+/* ── Status Badges ────────────────────────────────────────────── */
+.badge-scheduled {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 10px; border-radius: 9999px;
+  background: #dce1ff; color: #0039b5;
+  font-size: 11px; font-weight: 700;
+}
+.badge-completed {
+  display: inline-flex; align-items: center;
+  padding: 2px 10px; border-radius: 9999px;
+  background: #e9e8e5; color: #434655;
+  font-size: 11px; font-weight: 700;
+}
+.badge-draft {
+  display: inline-flex; align-items: center;
+  padding: 2px 10px; border-radius: 9999px;
+  background: #ffdbcf; color: #832700;
+  font-size: 11px; font-weight: 700;
+}
+
+/* ── Priority Badges ──────────────────────────────────────────── */
+.badge-critical { background: #ffdad6; color: #93000a; }
+.badge-high     { background: #ffdad6; color: #93000a; }
+.badge-medium   { background: #e9e8e5; color: #434655; }
+.badge-low      { background: #efeeeb; color: #747686; }
+
+/* ── Stat Cards ───────────────────────────────────────────────── */
+.stat-card {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(196, 197, 215, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(27, 28, 26, 0.08);
+}
+
+/* ── Table Styles ─────────────────────────────────────────────── */
+.ts-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.ts-table thead tr {
+  background: rgba(244, 243, 240, 0.6);
+}
+.ts-table thead th {
+  padding: 14px 20px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #747686;
+}
+.ts-table tbody tr {
+  border-top: 1px solid rgba(196, 197, 215, 0.1);
+  transition: background 0.15s ease;
+}
+.ts-table tbody tr:hover {
+  background: rgba(244, 243, 240, 0.5);
+}
+.ts-table tbody td {
+  padding: 16px 20px;
+  font-size: 14px;
+}
+
+/* ── Button Styles ────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 20px;
+  background: linear-gradient(135deg, #0037b0, #1d4ed8);
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 14px; font-weight: 600;
+  border: none; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  box-shadow: 0 4px 12px rgba(0, 55, 176, 0.2);
+}
+.btn-primary:hover  { opacity: 0.92; }
+.btn-primary:active { transform: scale(0.98); }
+
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 20px;
+  background: #e9e8e5; color: #1b1c1a;
+  border-radius: 8px; font-size: 14px; font-weight: 500;
+  border: none; cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-secondary:hover { background: #e3e2df; }
+
+/* ── Progress Bar ─────────────────────────────────────────────── */
+.ts-progress-track {
+  height: 6px; border-radius: 9999px;
+  background: rgba(196, 197, 215, 0.3);
+  overflow: hidden;
+}
+.ts-progress-fill {
+  height: 100%; border-radius: 9999px;
+  background: linear-gradient(90deg, #0037b0, #1d4ed8);
+  transition: width 0.5s ease;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(116, 118, 134, 0.3); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(116, 118, 134, 0.5); }
+
+/* ── Fade-in Animation ────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeIn 0.3s ease forwards; }
+
+/* ── Auth Page specific ───────────────────────────────────────── */
+.auth-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid rgba(196, 197, 215, 0.4);
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 14px;
+  color: #1b1c1a;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+}
+.auth-input:focus {
+  border-color: #0037b0;
+  box-shadow: 0 0 0 3px rgba(0, 55, 176, 0.1);
+}
+
+/* ── Responsive tweaks ────────────────────────────────────────── */
+@media (max-width: 768px) {
+  #ts-sidebar { width: 64px; }
+  #ts-sidebar span:not(.material-symbols-outlined) { display: none; }
+  .ts-main { margin-left: 64px; }
+}
+
+/* ── Modal Overlay & Dialog ──────────────────────────────────── */
+.ts-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(27, 28, 26, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.ts-modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.ts-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 24px 80px rgba(27, 28, 26, 0.18);
+  width: 90%;
+  max-width: 540px;
+  max-height: 85vh;
+  overflow-y: auto;
+  transform: translateY(16px) scale(0.97);
+  transition: transform 0.25s ease;
+}
+.ts-modal-overlay.open .ts-modal {
+  transform: translateY(0) scale(1);
+}
+.ts-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px 0;
+}
+.ts-modal-header h2 {
+  font-family: 'Newsreader', serif;
+  font-size: 1.5rem;
+  color: #1b1c1a;
+}
+.ts-modal-body {
+  padding: 20px 28px 28px;
+}
+.ts-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0 28px 24px;
+}
+
+/* ── Modal Form Fields ───────────────────────────────────────── */
+.ts-field {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid rgba(196,197,215,0.3);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: #1b1c1a;
+  background: #ffffff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+.ts-field:focus {
+  border-color: #0037b0;
+  box-shadow: 0 0 0 3px rgba(0,55,176,0.1);
+}
+.ts-field::placeholder { color: #747686; }
+.ts-label {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #747686;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+/* ── Dropdown Menu ───────────────────────────────────────────── */
+.ts-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 60;
+  min-width: 180px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(27, 28, 26, 0.14);
+  border: 1px solid rgba(196, 197, 215, 0.2);
+  padding: 6px 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 0.15s, transform 0.15s;
+}
+.ts-dropdown.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.ts-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  font-size: 13px;
+  color: #1b1c1a;
+  cursor: pointer;
+  transition: background 0.1s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+}
+.ts-dropdown-item:hover { background: #f4f3f0; }
+.ts-dropdown-item.danger { color: #ba1a1a; }
+.ts-dropdown-item.danger:hover { background: #ffdad6; }
+.ts-dropdown-sep {
+  height: 1px;
+  background: rgba(196,197,215,0.2);
+  margin: 4px 0;
+}
+
+/* ── Slide-Over Panel (MOM Preview) ──────────────────────────── */
+.ts-slideover-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(27, 28, 26, 0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.ts-slideover-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.ts-slideover {
+  position: fixed;
+  right: 0; top: 0;
+  width: 480px;
+  max-width: 90vw;
+  height: 100vh;
+  z-index: 91;
+  background: #ffffff;
+  box-shadow: -8px 0 40px rgba(27, 28, 26, 0.12);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+}
+.ts-slideover.open {
+  transform: translateX(0);
+}
+.ts-slideover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px;
+  border-bottom: 1px solid rgba(196,197,215,0.15);
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  z-index: 1;
+}
+.ts-slideover-body {
+  padding: 24px 28px;
+}
+
+/* ── User Status Badges ──────────────────────────────────────── */
+.badge-active {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 10px; border-radius: 9999px;
+  background: #dce1ff; color: #0039b5;
+  font-size: 11px; font-weight: 700;
+}
+.badge-deactivated {
+  display: inline-flex; align-items: center;
+  padding: 2px 10px; border-radius: 9999px;
+  background: #efeeeb; color: #747686;
+  font-size: 11px; font-weight: 700;
+}
+
+/* ── Team Badge Tag ──────────────────────────────────────────── */
+.badge-team {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 6px;
+  font-size: 10px; font-weight: 600;
+  background: #f4f3f0; color: #434655;
+  letter-spacing: 0.02em;
+}
+
+/* ── Close Button ────────────────────────────────────────────── */
+.ts-close-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  border: none; background: none;
+  color: #747686; cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.ts-close-btn:hover { background: #f4f3f0; color: #1b1c1a; }

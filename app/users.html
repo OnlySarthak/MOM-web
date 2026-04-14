@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Management — TeamSync</title>
+  <meta name="description" content="Admin user management dashboard for TeamSync." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="../assets/css/teamsync.css" />
+</head>
+<body class="ts-shell">
+  <aside id="ts-sidebar"></aside>
+  <div class="ts-main">
+    <header id="ts-topnav"></header>
+    <main class="ts-content fade-in">
+
+      <!-- Page header -->
+      <div class="flex flex-col md:flex-row gap-6 mb-12 items-start md:items-end justify-between">
+        <div>
+          <h1 class="font-headline text-5xl text-on-surface tracking-tight mb-2">User Management</h1>
+          <p class="font-headline italic text-xl text-outline">Oversee access, roles, and workspace membership.</p>
+        </div>
+        <div class="flex gap-3 flex-shrink-0">
+          <button class="btn-secondary gap-2 text-sm"><span class="material-symbols-outlined text-sm">upload</span>Import CSV</button>
+          <button class="btn-primary gap-2 text-sm" onclick="openInviteModal()"><span class="material-symbols-outlined text-sm">person_add</span>Invite User</button>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="stats-row">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Search + Filter bar -->
+      <div class="flex flex-col md:flex-row gap-4 mb-8 items-center">
+        <div class="relative w-full md:w-80">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-xl">search</span>
+          <input class="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm focus:outline-none focus:border-primary transition-all" placeholder="Search users…" id="user-search" />
+        </div>
+        <div class="relative">
+          <select class="appearance-none pl-4 pr-10 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm cursor-pointer focus:outline-none" id="role-filter">
+            <option value="">Role: All</option>
+            <option value="Admin">Admin</option>
+            <option value="Team Leader">Team Leader</option>
+            <option value="Member">Member</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+        </div>
+        <div class="relative">
+          <select class="appearance-none pl-4 pr-10 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm cursor-pointer focus:outline-none" id="status-filter">
+            <option value="">Status: All</option>
+            <option value="Active">Active</option>
+            <option value="Invited">Invited</option>
+            <option value="Deactivated">Deactivated</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+        </div>
+      </div>
+
+      <!-- Users Table -->
+      <div class="ts-card overflow-hidden">
+        <table class="ts-table" id="users-table">
+          <thead>
+            <tr>
+              <th class="w-8"><input type="checkbox" class="rounded border-outline-variant" id="select-all" /></th>
+              <th>User</th>
+              <th>Role</th>
+              <th>Department</th>
+              <th class="text-center">Meetings</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+
+        <!-- Pending Invitations section -->
+        <div class="p-6 border-t border-outline-variant/10" id="pending-section">
+          <h3 class="font-headline text-xl text-on-surface mb-4">Pending Invitations</h3>
+          <div class="space-y-3" id="pending-list"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Invite User Modal -->
+  <div class="ts-modal-overlay" id="invite-overlay" onclick="if(event.target===this)closeInviteModal()">
+    <div class="ts-modal">
+      <div class="ts-modal-header">
+        <h2>Invite New User</h2>
+        <button class="ts-close-btn" onclick="closeInviteModal()"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div class="ts-modal-body">
+        <form id="invite-form" class="space-y-5" onsubmit="handleInvite(event)">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="ts-label">First Name *</label>
+              <input class="ts-field" type="text" id="inv-fname" placeholder="First name" required />
+            </div>
+            <div>
+              <label class="ts-label">Last Name *</label>
+              <input class="ts-field" type="text" id="inv-lname" placeholder="Last name" required />
+            </div>
+          </div>
+          <div>
+            <label class="ts-label">Email Address *</label>
+            <input class="ts-field" type="email" id="inv-email" placeholder="name@teamsync.io" required />
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="ts-label">Role</label>
+              <select class="ts-field" id="inv-role">
+                <option>Member</option>
+                <option>Team Leader</option>
+                <option>Admin</option>
+              </select>
+            </div>
+            <div>
+              <label class="ts-label">Department</label>
+              <input class="ts-field" type="text" id="inv-dept" placeholder="e.g. Engineering" />
+            </div>
+          </div>
+          <div>
+            <label class="ts-label">Team Assignment</label>
+            <select class="ts-field" id="inv-team">
+              <option value="">No team yet</option>
+              <option>Atelier Alpha</option>
+              <option>Studio Beta</option>
+              <option>Craft Gamma</option>
+              <option>Nexus Delta</option>
+              <option>Studio Epsilon</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="ts-modal-footer">
+        <button class="btn-secondary text-sm" onclick="closeInviteModal()">Cancel</button>
+        <button class="btn-primary text-sm" onclick="document.getElementById('invite-form').requestSubmit()">
+          <span class="material-symbols-outlined text-sm">send</span>Send Invitation
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit User Modal -->
+  <div class="ts-modal-overlay" id="edit-overlay" onclick="if(event.target===this)closeEditModal()">
+    <div class="ts-modal">
+      <div class="ts-modal-header">
+        <h2>Edit User</h2>
+        <button class="ts-close-btn" onclick="closeEditModal()"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div class="ts-modal-body">
+        <form id="edit-form" class="space-y-5" onsubmit="handleEditSave(event)">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="ts-label">First Name</label>
+              <input class="ts-field" type="text" id="edit-fname" />
+            </div>
+            <div>
+              <label class="ts-label">Last Name</label>
+              <input class="ts-field" type="text" id="edit-lname" />
+            </div>
+          </div>
+          <div>
+            <label class="ts-label">Email Address</label>
+            <input class="ts-field" type="email" id="edit-email" disabled />
+            <p class="text-xs text-outline mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-xs">lock</span>Email cannot be changed.</p>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="ts-label">Role</label>
+              <select class="ts-field" id="edit-role">
+                <option>Member</option>
+                <option>Team Leader</option>
+                <option>Admin</option>
+              </select>
+            </div>
+            <div>
+              <label class="ts-label">Department</label>
+              <input class="ts-field" type="text" id="edit-dept" />
+            </div>
+          </div>
+          <div>
+            <label class="ts-label">Status</label>
+            <select class="ts-field" id="edit-status">
+              <option>Active</option>
+              <option>Deactivated</option>
+            </select>
+          </div>
+          <input type="hidden" id="edit-idx" />
+        </form>
+      </div>
+      <div class="ts-modal-footer">
+        <button class="btn-secondary text-sm" onclick="closeEditModal()">Cancel</button>
+        <button class="btn-primary text-sm" onclick="document.getElementById('edit-form').requestSubmit()">
+          <span class="material-symbols-outlined text-sm">save</span>Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+    const user = requireAuth(['admin']);
+    if (user) {
+      renderSidebar(user, 'users');
+      renderTopNav('User Management', user);
+    }
+
+    // ── Demo Data ──────────────────────────────────────────────────
+    const USERS = [
+      { name: 'Julian Thorne', initials: 'JT', email: 'julian.t@teamsync.io', role: 'Admin', dept: 'Design', meetings: 24, status: 'Active', color: 'bg-inverse-surface' },
+      { name: 'Elena Vance', initials: 'EV', email: 'e.vance@teamsync.io', role: 'Team Leader', dept: 'Engineering', meetings: 18, status: 'Active', color: 'bg-primary' },
+      { name: 'Marcus Chen', initials: 'MC', email: 'm.chen@teamsync.io', role: 'Member', dept: 'Product', meetings: 12, status: 'Active', color: 'bg-secondary' },
+      { name: 'Sienna Brooks', initials: 'SB', email: 's.brooks@teamsync.io', role: 'Member', dept: 'Design', meetings: 5, status: 'Deactivated', color: 'bg-surface-container-high' },
+    ];
+
+    const PENDING = [
+      { email: 'alex.r@teamsync.io', role: 'Team Leader', daysAgo: 2 },
+    ];
+
+    // ── Rendering ──────────────────────────────────────────────────
+    function updateStats() {
+      const total = USERS.length;
+      const active = USERS.filter(u => u.status === 'Active').length;
+      const invited = PENDING.length;
+      const deactivated = USERS.filter(u => u.status === 'Deactivated').length;
+      document.getElementById('stats-row').innerHTML = `
+        <div class="stat-card text-center"><p class="font-headline text-4xl font-bold text-on-surface mb-1">${total}</p><p class="text-xs text-outline uppercase tracking-widest font-mono">Total</p></div>
+        <div class="stat-card text-center"><p class="font-headline text-4xl font-bold text-primary mb-1">${active}</p><p class="text-xs text-outline uppercase tracking-widest font-mono">Active</p></div>
+        <div class="stat-card text-center"><p class="font-headline text-4xl font-bold text-tertiary mb-1">${invited}</p><p class="text-xs text-outline uppercase tracking-widest font-mono">Invited</p></div>
+        <div class="stat-card text-center"><p class="font-headline text-4xl font-bold text-on-surface-variant mb-1">${deactivated}</p><p class="text-xs text-outline uppercase tracking-widest font-mono">Deactivated</p></div>
+      `;
+    }
+
+    function renderUsers() {
+      const tbody = document.getElementById('users-tbody');
+      tbody.innerHTML = '';
+      USERS.forEach((u, idx) => {
+        const isDeactivated = u.status === 'Deactivated';
+        const statusBadge = u.status === 'Active'
+          ? `<span class="badge-active text-[9px]"><span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>Active</span>`
+          : `<span class="badge-deactivated text-[9px]">Deactivated</span>`;
+        const roleColor = u.role === 'Admin' ? 'text-on-surface-variant' : u.role === 'Team Leader' ? 'text-primary' : 'text-on-surface-variant';
+        const toggleIcon = isDeactivated ? 'person' : 'person_off';
+        const toggleLabel = isDeactivated ? 'Reactivate' : 'Deactivate';
+
+        tbody.innerHTML += `
+          <tr class="group ${isDeactivated ? 'opacity-60' : ''}" data-name="${u.name.toLowerCase()}" data-role="${u.role}" data-status="${u.status}">
+            <td><input type="checkbox" class="rounded border-outline-variant row-check" /></td>
+            <td>
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full ${u.color} ${isDeactivated ? 'text-on-surface-variant' : 'text-white'} flex items-center justify-center text-xs font-bold group-hover:ring-2 ring-primary/30 transition-all">${u.initials}</div>
+                <div><p class="font-semibold text-on-surface">${u.name}</p><p class="text-xs text-outline font-mono">${u.email}</p></div>
+              </div>
+            </td>
+            <td><span class="text-xs font-bold uppercase tracking-wider ${roleColor}">${u.role}</span></td>
+            <td><span class="text-sm text-on-surface-variant">${u.dept}</span></td>
+            <td class="text-center font-mono text-sm font-bold">${u.meetings}</td>
+            <td>${statusBadge}</td>
+            <td>
+              <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button class="p-1.5 text-outline hover:text-primary rounded-lg transition-colors" title="Edit user" onclick="openEditModal(${idx})"><span class="material-symbols-outlined text-sm">edit</span></button>
+                <button class="p-1.5 text-outline hover:text-${isDeactivated ? 'primary' : 'error'} rounded-lg transition-colors" title="${toggleLabel}" onclick="toggleUserStatus(${idx})"><span class="material-symbols-outlined text-sm">${toggleIcon}</span></button>
+                <div class="relative">
+                  <button class="p-1.5 text-outline hover:text-on-surface rounded-lg transition-colors user-more-btn" onclick="toggleUserDropdown(${idx})"><span class="material-symbols-outlined text-sm">more_vert</span></button>
+                  <div class="ts-dropdown" id="user-dd-${idx}">
+                    <button class="ts-dropdown-item" onclick="window.location.href='profile.html'"><span class="material-symbols-outlined text-sm">person</span>View Profile</button>
+                    <button class="ts-dropdown-item" onclick="openEditModal(${idx});closeAllUserDropdowns()"><span class="material-symbols-outlined text-sm">swap_horiz</span>Change Role</button>
+                    <div class="ts-dropdown-sep"></div>
+                    <button class="ts-dropdown-item danger" onclick="removeUser(${idx})"><span class="material-symbols-outlined text-sm">person_remove</span>Remove User</button>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>`;
+      });
+
+      updateStats();
+    }
+
+    function renderPending() {
+      const list = document.getElementById('pending-list');
+      list.innerHTML = '';
+      if (PENDING.length === 0) {
+        document.getElementById('pending-section').style.display = 'none';
+        return;
+      }
+      document.getElementById('pending-section').style.display = '';
+      PENDING.forEach((p, idx) => {
+        list.innerHTML += `
+          <div class="flex items-center gap-4 p-4 bg-tertiary-fixed/30 rounded-xl border border-tertiary-fixed">
+            <span class="material-symbols-outlined text-tertiary">mail</span>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-on-surface">${p.email}</p>
+              <p class="text-xs text-outline font-mono">Invited ${p.daysAgo} day${p.daysAgo > 1 ? 's' : ''} ago · ${p.role}</p>
+            </div>
+            <button class="text-xs font-bold text-tertiary hover:underline" onclick="resendInvite(${idx})">Resend</button>
+            <button class="text-xs font-bold text-outline hover:text-on-surface" onclick="revokeInvite(${idx})">Revoke</button>
+          </div>`;
+      });
+    }
+
+    // ── Invite Modal ─────────────────────────────────────────────
+    function openInviteModal() {
+      document.getElementById('invite-overlay').classList.add('open');
+    }
+    function closeInviteModal() {
+      document.getElementById('invite-overlay').classList.remove('open');
+      document.getElementById('invite-form').reset();
+    }
+    function handleInvite(e) {
+      e.preventDefault();
+      const fname = document.getElementById('inv-fname').value.trim();
+      const lname = document.getElementById('inv-lname').value.trim();
+      const email = document.getElementById('inv-email').value.trim();
+      const role = document.getElementById('inv-role').value;
+      const dept = document.getElementById('inv-dept').value.trim() || 'General';
+      const name = fname + ' ' + lname;
+      const initials = (fname[0] + lname[0]).toUpperCase();
+      const colors = ['bg-primary','bg-secondary','bg-tertiary','bg-outline','bg-inverse-surface'];
+
+      USERS.push({
+        name, initials, email, role, dept,
+        meetings: 0, status: 'Active',
+        color: colors[USERS.length % colors.length]
+      });
+      renderUsers();
+      closeInviteModal();
+    }
+
+    // ── Edit Modal ──────────────────────────────────────────────
+    function openEditModal(idx) {
+      closeAllUserDropdowns();
+      const u = USERS[idx];
+      document.getElementById('edit-fname').value = u.name.split(' ')[0];
+      document.getElementById('edit-lname').value = u.name.split(' ').slice(1).join(' ');
+      document.getElementById('edit-email').value = u.email;
+      document.getElementById('edit-role').value = u.role;
+      document.getElementById('edit-dept').value = u.dept;
+      document.getElementById('edit-status').value = u.status;
+      document.getElementById('edit-idx').value = idx;
+      document.getElementById('edit-overlay').classList.add('open');
+    }
+    function closeEditModal() {
+      document.getElementById('edit-overlay').classList.remove('open');
+    }
+    function handleEditSave(e) {
+      e.preventDefault();
+      const idx = parseInt(document.getElementById('edit-idx').value);
+      const u = USERS[idx];
+      u.name = document.getElementById('edit-fname').value.trim() + ' ' + document.getElementById('edit-lname').value.trim();
+      u.initials = (u.name.split(' ')[0][0] + (u.name.split(' ')[1] || '')[0]).toUpperCase();
+      u.role = document.getElementById('edit-role').value;
+      u.dept = document.getElementById('edit-dept').value.trim();
+      u.status = document.getElementById('edit-status').value;
+      renderUsers();
+      closeEditModal();
+    }
+
+    // ── User Actions ─────────────────────────────────────────────
+    function toggleUserStatus(idx) {
+      const u = USERS[idx];
+      const newStatus = u.status === 'Active' ? 'Deactivated' : 'Active';
+      if (confirm(`${newStatus === 'Deactivated' ? 'Deactivate' : 'Reactivate'} ${u.name}?`)) {
+        u.status = newStatus;
+        renderUsers();
+      }
+    }
+    function removeUser(idx) {
+      if (confirm('Remove ' + USERS[idx].name + '? This cannot be undone.')) {
+        USERS.splice(idx, 1);
+        renderUsers();
+      }
+      closeAllUserDropdowns();
+    }
+    function resendInvite(idx) {
+      alert('Invitation resent to ' + PENDING[idx].email);
+    }
+    function revokeInvite(idx) {
+      if (confirm('Revoke invitation for ' + PENDING[idx].email + '?')) {
+        PENDING.splice(idx, 1);
+        renderPending();
+        updateStats();
+      }
+    }
+
+    // ── Dropdown ─────────────────────────────────────────────────
+    function toggleUserDropdown(idx) {
+      const dd = document.getElementById('user-dd-' + idx);
+      const isOpen = dd.classList.contains('open');
+      closeAllUserDropdowns();
+      if (!isOpen) dd.classList.add('open');
+    }
+    function closeAllUserDropdowns() {
+      document.querySelectorAll('.ts-dropdown').forEach(d => d.classList.remove('open'));
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.user-more-btn') && !e.target.closest('.ts-dropdown')) {
+        closeAllUserDropdowns();
+      }
+    });
+
+    // ── Search + Filter ──────────────────────────────────────────
+    function applyFilters() {
+      const q = document.getElementById('user-search').value.toLowerCase();
+      const role = document.getElementById('role-filter').value;
+      const status = document.getElementById('status-filter').value;
+      document.querySelectorAll('#users-tbody tr').forEach(row => {
+        const matchName = !q || row.dataset.name.includes(q);
+        const matchRole = !role || row.dataset.role === role;
+        const matchStatus = !status || row.dataset.status === status;
+        row.style.display = (matchName && matchRole && matchStatus) ? '' : 'none';
+      });
+    }
+
+    document.getElementById('user-search').addEventListener('input', applyFilters);
+    document.getElementById('role-filter').addEventListener('change', applyFilters);
+    document.getElementById('status-filter').addEventListener('change', applyFilters);
+
+    // Select all checkbox
+    document.getElementById('select-all').addEventListener('change', function() {
+      document.querySelectorAll('.row-check').forEach(cb => cb.checked = this.checked);
+    });
+
+    // ── Init ────────────────────────────────────────────────────
+    renderUsers();
+    renderPending();
+  </script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — TeamSync Digital Atelier</title>
+  <meta name="description" content="Sign in to TeamSync to manage your team's meetings, tasks, and minutes of meeting." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="assets/css/teamsync.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary":"#0037b0","primary-container":"#1d4ed8",
+            "primary-fixed":"#dce1ff","on-primary-fixed":"#001551",
+            "on-primary-fixed-variant":"#0039b5",
+            "surface":"#faf9f6","surface-container":"#efeeeb",
+            "surface-container-low":"#f4f3f0","surface-container-lowest":"#ffffff",
+            "on-surface":"#1b1c1a","on-surface-variant":"#434655",
+            "outline":"#747686","outline-variant":"#c4c5d7",
+            "error":"#ba1a1a","error-container":"#ffdad6","on-error-container":"#93000a",
+            "inverse-surface":"#2f312f","secondary":"#4d5b94",
+          },
+          fontFamily: {
+            "headline":["Newsreader","serif"],
+            "body":["Inter","sans-serif"],
+            "mono":["JetBrains Mono","monospace"]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    .fade-in { animation: fadeIn 0.5s ease forwards; }
+    .demo-chip { cursor: pointer; transition: all 0.2s; }
+    .demo-chip:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,55,176,0.15); }
+    .demo-chip:active { transform: scale(0.98); }
+  </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased min-h-screen flex">
+
+<!-- ── Left Panel — Branding ──────────────────────────────── -->
+<div class="hidden lg:flex flex-col justify-between w-[45%] bg-[#2f312f] p-16 relative overflow-hidden">
+  <!-- Background decoration -->
+  <div class="absolute top-0 left-0 right-0 bottom-0 overflow-hidden">
+    <div class="absolute top-20 left-10 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-20 right-10 w-48 h-48 bg-blue-500/10 rounded-full blur-2xl"></div>
+  </div>
+
+  <div class="relative z-10">
+    <div class="flex items-center gap-3 mb-20">
+      <div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center">
+        <span class="material-symbols-outlined text-white text-xl" style="font-variation-settings:'FILL' 1;">sync_alt</span>
+      </div>
+      <div>
+        <h1 class="font-headline text-2xl italic text-white leading-tight">TeamSync</h1>
+        <p class="text-[10px] uppercase tracking-widest text-zinc-500">Digital Atelier</p>
+      </div>
+    </div>
+    <div class="space-y-6">
+      <h2 class="font-headline text-5xl text-white leading-tight">
+        Where great<br/>
+        <span class="italic text-primary-fixed/80">teams align.</span>
+      </h2>
+      <p class="text-zinc-400 text-lg leading-relaxed max-w-sm">
+        Built for modern teams who value clarity, craft, and collaboration in every meeting.
+      </p>
+    </div>
+  </div>
+
+  <!-- Feature highlights -->
+  <div class="relative z-10 space-y-4">
+    <div class="flex items-center gap-4 p-4 rounded-xl bg-white/5">
+      <span class="material-symbols-outlined text-primary-fixed/60">calendar_today</span>
+      <p class="text-zinc-300 text-sm">Smart meeting management & scheduling</p>
+    </div>
+    <div class="flex items-center gap-4 p-4 rounded-xl bg-white/5">
+      <span class="material-symbols-outlined text-primary-fixed/60">description</span>
+      <p class="text-zinc-300 text-sm">Auto-captured minutes of meeting</p>
+    </div>
+    <div class="flex items-center gap-4 p-4 rounded-xl bg-white/5">
+      <span class="material-symbols-outlined text-primary-fixed/60">assignment</span>
+      <p class="text-zinc-300 text-sm">Linked task tracking & accountability</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── Right Panel — Login Form ──────────────────────────── -->
+<div class="flex-1 flex flex-col items-center justify-center px-8 py-16 fade-in">
+  <div class="w-full max-w-md">
+
+    <!-- Mobile logo -->
+    <div class="lg:hidden mb-10 text-center">
+      <h1 class="font-headline text-3xl italic text-on-surface">TeamSync</h1>
+      <p class="text-[10px] uppercase tracking-widest text-outline mt-1">Digital Atelier</p>
+    </div>
+
+    <h2 class="font-headline text-4xl text-on-surface mb-2">Welcome back.</h2>
+    <p class="text-on-surface-variant mb-10">Sign in to your workspace to continue.</p>
+
+    <!-- Error message -->
+    <div id="auth-error" class="hidden mb-6 flex items-center gap-3 px-4 py-3 bg-error-container rounded-lg">
+      <span class="material-symbols-outlined text-on-error-container text-sm">error</span>
+      <span id="auth-error-msg" class="text-on-error-container text-sm font-medium"></span>
+    </div>
+
+    <!-- Login Form -->
+    <form id="login-form" class="space-y-5" novalidate>
+      <div>
+        <label class="block text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold mb-2">Email Address</label>
+        <input id="email" type="email" class="auth-input" placeholder="hello@teamsync.app" autocomplete="email" required />
+      </div>
+      <div>
+        <label class="block text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold mb-2">Password</label>
+        <div class="relative">
+          <input id="password" type="password" class="auth-input pr-12" placeholder="Enter your password" autocomplete="current-password" required />
+          <button type="button" id="toggle-pw" class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors">
+            <span class="material-symbols-outlined text-lg" id="pw-icon">visibility</span>
+          </button>
+        </div>
+      </div>
+      <button type="submit" id="signin-btn" class="btn-primary w-full justify-center py-3 text-base mt-2">
+        <span class="material-symbols-outlined">login</span>
+        <span id="signin-text">Sign In</span>
+      </button>
+    </form>
+
+    <!-- Demo Credentials -->
+    <div class="mt-10">
+      <p class="text-[10px] uppercase tracking-widest text-outline font-semibold mb-4 text-center">— Quick Demo Access —</p>
+      <div class="space-y-3" id="demo-chips">
+        <button class="demo-chip w-full flex items-center gap-4 p-4 border border-outline-variant/20 rounded-xl bg-surface-container-low hover:bg-surface-container" onclick="fillDemo('admin@teamsync.app','admin123')">
+          <div class="w-10 h-10 rounded-xl bg-[#2f312f] flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-white text-lg">shield</span>
+          </div>
+          <div class="text-left flex-1">
+            <p class="text-sm font-semibold text-on-surface">Admin Account</p>
+            <p class="font-mono text-xs text-outline">admin@teamsync.app · admin123</p>
+          </div>
+          <span class="material-symbols-outlined text-outline text-sm">arrow_forward</span>
+        </button>
+        <button class="demo-chip w-full flex items-center gap-4 p-4 border border-primary/20 rounded-xl bg-primary/5 hover:bg-primary/10" onclick="fillDemo('leader@teamsync.app','leader123')">
+          <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-white text-lg">groups</span>
+          </div>
+          <div class="text-left flex-1">
+            <p class="text-sm font-semibold text-on-surface">Team Leader</p>
+            <p class="font-mono text-xs text-outline">leader@teamsync.app · leader123</p>
+          </div>
+          <span class="material-symbols-outlined text-outline text-sm">arrow_forward</span>
+        </button>
+        <button class="demo-chip w-full flex items-center gap-4 p-4 border border-outline-variant/20 rounded-xl bg-surface-container-low hover:bg-surface-container" onclick="fillDemo('member@teamsync.app','member123')">
+          <div class="w-10 h-10 rounded-xl bg-secondary text-white flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-lg">person</span>
+          </div>
+          <div class="text-left flex-1">
+            <p class="text-sm font-semibold text-on-surface">Team Member</p>
+            <p class="font-mono text-xs text-outline">member@teamsync.app · member123</p>
+          </div>
+          <span class="material-symbols-outlined text-outline text-sm">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+
+    <p class="text-center text-xs text-outline mt-8">
+      <a href="index.html" class="hover:text-primary transition-colors inline-flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        Back to Home
+      </a>
+    </p>
+  </div>
+</div>
+
+<script src="assets/js/auth.js"></script>
+<script>
+  // Redirect if already logged in
+  const existingUser = getUser();
+  if (existingUser) {
+    const role = existingUser.role;
+    window.location.href = role === 'admin' ? 'app/dashboard-admin.html'
+      : role === 'leader' ? 'app/dashboard-leader.html'
+      : 'app/dashboard-member.html';
+  }
+
+  // Password toggle
+  document.getElementById('toggle-pw').addEventListener('click', () => {
+    const pw = document.getElementById('password');
+    const icon = document.getElementById('pw-icon');
+    if (pw.type === 'password') { pw.type = 'text'; icon.textContent = 'visibility_off'; }
+    else { pw.type = 'password'; icon.textContent = 'visibility'; }
+  });
+
+  // Form submit
+  document.getElementById('login-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('signin-btn');
+    const txt = document.getElementById('signin-text');
+
+    btn.disabled = true; txt.textContent = 'Signing in…';
+
+    setTimeout(() => {
+      const result = login(email, password);
+      if (result.success) {
+        const user = result.user;
+        window.location.href = user.role === 'admin' ? 'app/dashboard-admin.html'
+          : user.role === 'leader' ? 'app/dashboard-leader.html'
+          : 'app/dashboard-member.html';
+      } else {
+        const err = document.getElementById('auth-error');
+        document.getElementById('auth-error-msg').textContent = result.error;
+        err.classList.remove('hidden');
+        btn.disabled = false; txt.textContent = 'Sign In';
+      }
+    }, 600);
+  });
+
+  // Fill demo credentials
+  function fillDemo(email, password) {
+    document.getElementById('email').value = email;
+    document.getElementById('password').value = password;
+    document.getElementById('auth-error').classList.add('hidden');
+    document.getElementById('login-form').dispatchEvent(new Event('submit'));
+  }
+</script>
+</body>
+</html>
