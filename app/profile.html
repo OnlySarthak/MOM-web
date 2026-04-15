@@ -60,14 +60,14 @@
       </div>
 
       <div class="grid grid-cols-12 gap-8">
-        <!-- Left: Personal Info + Contact -->
+        <!-- Left: Change Name + Change Password -->
         <div class="col-span-12 lg:col-span-7 space-y-8">
 
-          <!-- Personal Info -->
+          <!-- Change Your Name -->
           <section class="ts-card p-8">
             <div class="flex items-center gap-3 mb-6">
-              <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary text-sm">person</span></div>
-              <h2 class="font-headline text-xl text-on-surface">Personal Information</h2>
+              <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary text-sm">badge</span></div>
+              <h2 class="font-headline text-xl text-on-surface">Change Your Name</h2>
             </div>
             <div class="grid grid-cols-2 gap-5">
               <div>
@@ -78,40 +78,32 @@
                 <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Last Name</label>
                 <input class="field-input" type="text" id="field-lastname" placeholder="Last name" />
               </div>
-              <div class="col-span-2">
-                <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Job Title</label>
-                <input class="field-input" type="text" id="field-title" placeholder="e.g. Product Manager" />
-              </div>
-              <div class="col-span-2">
-                <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Department</label>
-                <input class="field-input" type="text" placeholder="e.g. Engineering" value="Design" />
-              </div>
-              <div class="col-span-2">
-                <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Bio</label>
-                <textarea class="field-input resize-none h-24" placeholder="Write a short bio about yourself…">Senior creative director with 10+ years in product design. Passionate about high-craft interfaces and purposeful interaction design.</textarea>
-              </div>
             </div>
           </section>
 
-          <!-- Contact Info -->
+          <!-- Change Password -->
           <section class="ts-card p-8">
             <div class="flex items-center gap-3 mb-6">
-              <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary text-sm">contact_mail</span></div>
-              <h2 class="font-headline text-xl text-on-surface">Contact Details</h2>
+              <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary text-sm">lock</span></div>
+              <h2 class="font-headline text-xl text-on-surface">Change Password</h2>
             </div>
             <div class="grid grid-cols-1 gap-5">
               <div>
-                <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Email Address</label>
-                <input class="field-input" type="email" id="field-email" disabled placeholder="you@teamsync.io" />
-                <p class="text-xs text-outline mt-1.5 flex items-center gap-1"><span class="material-symbols-outlined text-xs">lock</span>Contact your administrator to change email.</p>
+                <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Old Password</label>
+                <input class="field-input" type="password" id="field-old-password" placeholder="Enter your current password" />
               </div>
               <div>
-                <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Phone</label>
-                <input class="field-input" type="tel" placeholder="+1 (555) 000-0000" />
+                <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-2">New Password</label>
+                <input class="field-input" type="password" id="field-new-password" placeholder="Enter new password" />
               </div>
               <div>
-                <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Location</label>
-                <input class="field-input" type="text" placeholder="e.g. San Francisco, CA" value="New York, NY" />
+                <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Re-enter New Password</label>
+                <input class="field-input" type="password" id="field-confirm-password" placeholder="Confirm new password" />
+              </div>
+              <div>
+                <button id="change-password-btn" class="btn-primary text-sm gap-2">
+                  <span class="material-symbols-outlined text-sm">lock_reset</span>Update Password
+                </button>
               </div>
             </div>
           </section>
@@ -170,8 +162,6 @@
       document.getElementById('profile-name').textContent = user.name;
       document.getElementById('profile-title').textContent = user.title;
       document.getElementById('profile-email').textContent = user.email;
-      document.getElementById('field-email').value = user.email;
-      document.getElementById('field-title').value = user.title;
 
       const [fn, ...ln] = user.name.split(' ');
       document.getElementById('field-firstname').value = fn;
@@ -195,12 +185,28 @@
         document.getElementById('role-detail').querySelector('.material-symbols-outlined').textContent = 'person';
       }
 
-      // Save feedback
+      // Save name feedback
       document.getElementById('save-btn').addEventListener('click', function() {
         const original = this.innerHTML;
         this.innerHTML = '<span class="material-symbols-outlined text-sm">check</span> Saved!';
         this.disabled = true;
         setTimeout(() => { this.innerHTML = original; this.disabled = false; }, 2000);
+      });
+
+      // Change password feedback
+      document.getElementById('change-password-btn').addEventListener('click', function() {
+        const oldPwd = document.getElementById('field-old-password').value;
+        const newPwd = document.getElementById('field-new-password').value;
+        const confirmPwd = document.getElementById('field-confirm-password').value;
+        if (!oldPwd || !newPwd || !confirmPwd) { alert('Please fill in all password fields.'); return; }
+        if (newPwd !== confirmPwd) { alert('New passwords do not match.'); return; }
+        const original = this.innerHTML;
+        this.innerHTML = '<span class="material-symbols-outlined text-sm">check</span> Password Updated!';
+        this.disabled = true;
+        document.getElementById('field-old-password').value = '';
+        document.getElementById('field-new-password').value = '';
+        document.getElementById('field-confirm-password').value = '';
+        setTimeout(() => { this.innerHTML = original; this.disabled = false; }, 2500);
       });
     }
   </script>

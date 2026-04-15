@@ -80,13 +80,11 @@
         <table class="ts-table" id="tasks-table">
           <thead>
             <tr>
-              <th class="w-8"></th>
               <th>Task Name</th>
               <th>Team</th>
               <th>Assignee</th>
               <th>Priority</th>
               <th>Status</th>
-              <th>Due Date</th>
               <th></th>
             </tr>
           </thead>
@@ -254,7 +252,6 @@
 
         tbody.innerHTML += `
           <tr class="task-row" data-status="${t.status}" data-team="${t.team}" data-assignee="${a.name}" data-name="${t.name.toLowerCase()}">
-            <td><input type="checkbox" class="rounded border-outline-variant" ${isCompleted ? 'checked' : ''} /></td>
             <td>
               <div class="flex items-center gap-3">
                 ${statusIcon}
@@ -273,7 +270,6 @@
             </td>
             <td><span class="text-[10px] font-bold px-2 py-0.5 rounded ${PRIORITY_CLASS[t.priority]}">${t.priority}</span></td>
             <td>${statusHtml}</td>
-            <td class="font-mono text-xs text-on-surface-variant ${isCompleted ? 'line-through' : ''}">${t.due}</td>
             <td class="task-actions">
               <div class="flex items-center gap-1">
                 <button class="p-1.5 text-outline hover:text-primary rounded-lg transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
