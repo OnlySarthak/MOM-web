@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
+import Avatar from 'react-avatar';
 
 const TEAM_DATA = {
   alpha: {
@@ -173,7 +174,7 @@ export default function AdminTeamInfo() {
                   <tr key={i} className="group">
                     <td>
                       <div className="flex items-center gap-3">
-                        <div className={`w-9 h-9 rounded-full ${m.color} text-white flex items-center justify-center text-[10px] font-bold`}>{m.initials}</div>
+                        <Avatar name={m.name} size="36" round={true} />
                         <span className="font-medium text-on-surface">{m.name}</span>
                       </div>
                     </td>
@@ -212,7 +213,7 @@ export default function AdminTeamInfo() {
                 {team.tasks.map((t, i) => (
                   <tr key={i}>
                     <td className={`font-medium ${t.status === 'Completed' ? 'line-through opacity-60' : ''}`}>{t.name}</td>
-                    <td><div className="w-7 h-7 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center">{t.assignee}</div></td>
+                    <td><Avatar name={t.assignee} size="28" round={true} /></td>
                     <td>
                       {t.status === 'In Progress'
                         ? <span className="flex items-center gap-1.5 text-xs font-medium"><span className="animate-ping inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>In Progress</span>

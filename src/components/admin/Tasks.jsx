@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Avatar from 'react-avatar';
 
 const INIT_TASKS = [
   { name: 'Refactor Auth Middleware', category: 'Engineering · API', team: 'Studio Beta', assignee: 'JD', priority: 'Critical', status: 'in-progress', due: 'Apr 16, 2026' },
@@ -131,7 +132,7 @@ export default function AdminTasks() {
                   <td><span className="badge-team">{t.team}</span></td>
                   <td>
                     <div className="flex items-center gap-2">
-                      <div className={`w-7 h-7 rounded-full ${a.color} text-white text-[9px] font-bold flex items-center justify-center`}>{t.assignee}</div>
+                      <Avatar name={a.name} size="28" round={true} />
                       <span className="text-sm">{a.name}</span>
                     </div>
                   </td>

@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.jsx';
+import Avatar from 'react-avatar';
 
 const NAV_ITEMS = {
   admin: [
@@ -71,12 +72,7 @@ export default function Sidebar() {
       </nav>
       <div className="mt-auto px-4 pt-6 border-t border-white/5 space-y-1">
         <div className="flex items-center gap-3 px-2 py-3 mb-2">
-          <img
-            src={user.avatar}
-            className="w-8 h-8 rounded-full object-cover"
-            alt={user.name}
-            onError={(e) => { e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=1d4ed8&color=fff`; }}
-          />
+          <Avatar name={user.name} size="32" round={true} />
           <div className="overflow-hidden">
             <p className="text-xs font-semibold text-white truncate">{user.name}</p>
             <p className="text-[10px] text-zinc-500 truncate">{user.title}</p>

@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '../../auth/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
+import adminAvatar from '../../assets/images/admin.png';
+import leaderAvatar from '../../assets/images/leader.png';
+import memberAvatar from '../../assets/images/member.png';
+
+const ROLE_AVATARS = { admin: adminAvatar, leader: leaderAvatar, member: memberAvatar };
 
 export default function MemberProfile() {
   const { user, logout } = useAuth();
@@ -12,7 +17,7 @@ export default function MemberProfile() {
   const [confirmPwd, setConfirmPwd] = useState('');
   const [saveFeedback, setSaveFeedback] = useState(false);
   const [pwdFeedback, setPwdFeedback] = useState(false);
-  const avatarUrl = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=1d4ed8&color=fff&size=128`;
+  const avatarUrl = ROLE_AVATARS[user.role] || memberAvatar;
 
   function handleSave() { setSaveFeedback(true); setTimeout(() => setSaveFeedback(false), 2000); }
   function handleChangePwd() {
@@ -27,8 +32,7 @@ export default function MemberProfile() {
     <>
       <div className="flex flex-col md:flex-row items-start md:items-end gap-8 mb-12 pb-10 border-b border-outline-variant/10">
         <div className="relative group">
-          <img src={avatarUrl} alt="Avatar" className="w-28 h-28 rounded-2xl object-cover shadow-lg"
-            onError={e => { e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=1d4ed8&color=fff&size=128`; }} />
+          <img src={avatarUrl} alt="Avatar" className="w-28 h-28 rounded-2xl object-cover shadow-lg" />
           <div className="absolute inset-0 rounded-2xl bg-on-surface/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
             <span className="material-symbols-outlined text-white text-xl">photo_camera</span>
           </div>

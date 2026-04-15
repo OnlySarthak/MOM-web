@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext.jsx';
+import Avatar from 'react-avatar';
 
 const MEETINGS = [
   {
@@ -115,7 +116,7 @@ export default function AdminMeetings() {
                   <div className="flex -space-x-1.5">
                     {m.participants.map((p, pi) => p.extra
                       ? <div key={pi} className="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center text-[9px] font-bold ring-2 ring-white">+{p.extra}</div>
-                      : <div key={pi} className={`w-7 h-7 rounded-full ${p.color} text-white text-[9px] font-bold flex items-center justify-center ring-2 ring-white`}>{p.initials}</div>
+                      : <Avatar key={pi} name={p.initials} size="28" round={true} style={{ marginLeft: '-4px', border: '2px solid white' }} />
                     )}
                   </div>
                 </td>

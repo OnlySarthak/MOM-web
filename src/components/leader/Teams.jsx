@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Avatar from 'react-avatar';
 
 const TEAM_ROLES = ['Developer', 'Designer', 'QA Engineer', 'DevOps', 'Product Manager', 'Data Analyst', 'Tech Lead', 'UX Researcher', 'Illustrator', 'Motion Designer', 'Brand Lead'];
 
@@ -67,7 +68,7 @@ export default function LeaderTeams() {
                   <tr key={i}>
                     <td>
                       <div className="flex items-center gap-3">
-                        <div className={`w-9 h-9 rounded-full ${m.color} text-white text-[10px] font-bold flex items-center justify-center`}>{m.initials}</div>
+                        <Avatar name={m.name} size="36" round={true} />
                         <span className="font-medium text-on-surface">{m.name}</span>
                       </div>
                     </td>
@@ -117,7 +118,7 @@ export default function LeaderTeams() {
                 {MY_TEAM.tasks.map((t, i) => (
                   <tr key={i}>
                     <td className={`font-medium ${t.status === 'completed' ? 'line-through opacity-60' : ''}`}>{t.name}</td>
-                    <td><div className="w-7 h-7 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center">{t.assignee}</div></td>
+                    <td><Avatar name={t.assignee} size="28" round={true} /></td>
                     <td>
                       {t.status === 'in-progress' ? <span className="flex items-center gap-1.5 text-xs"><span className="animate-ping inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>In Progress</span>
                         : t.status === 'completed' ? <span className="flex items-center gap-1.5 text-xs text-secondary"><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>Completed</span>

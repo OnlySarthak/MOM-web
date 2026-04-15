@@ -1,12 +1,13 @@
 import { useNavigate } from 'react-router-dom';
+import Avatar from 'react-avatar';
 
 export default function MemberMomList() {
   const navigate = useNavigate();
 
   const moms = [
-    { project: 'Project Atelier-X', projectColor: 'text-primary', date: 'Oct 24, 2023', title: 'Q4 Brand Strategy & Visual Language Sync', desc: 'Discussed the transition from skeletal wireframes to the "Digital Atelier" concept. Focus on tactile textures, typography hierarchy, and the removal of standard UI borders.', decisions: 8, actions: 12, members: [{ initials: 'JP', color: 'bg-primary' }, { initials: 'SK', color: 'bg-secondary' }], extra: 2 },
-    { project: 'Engineering', projectColor: 'text-[#7f2500]', date: 'Oct 21, 2023', title: 'Micro-interaction Framework & Tailwind Config', desc: 'Review of the new design system tokens. Mapping Material Design roles to the bespoke "Atelier" palette.', decisions: 4, actions: 5, members: [{ initials: 'DC', color: 'bg-[#7f2500]' }], extra: 1 },
-    { project: 'Client Review', projectColor: 'text-secondary', date: 'Oct 15, 2023', title: 'Phase 1 Delivery & Feedback Session', desc: 'The client praised the "paper-like" surface hierarchy. Minor feedback on icon weights in dark mode. Approval to move to Phase 2.', decisions: 15, actions: 2, members: [{ initials: 'CL', color: 'bg-secondary' }], extra: 4 },
+    { project: 'Project Atelier-X', projectColor: 'text-primary', date: 'Oct 24, 2023', title: 'Q4 Brand Strategy & Visual Language Sync', desc: 'Discussed the transition from skeletal wireframes to the "Digital Atelier" concept. Focus on tactile textures, typography hierarchy, and the removal of standard UI borders.', decisions: 8, actions: 12, members: [{ name: 'Julian Pierce' }, { name: 'Sara Kim' }], extra: 2 },
+    { project: 'Engineering', projectColor: 'text-[#7f2500]', date: 'Oct 21, 2023', title: 'Micro-interaction Framework & Tailwind Config', desc: 'Review of the new design system tokens. Mapping Material Design roles to the bespoke "Atelier" palette.', decisions: 4, actions: 5, members: [{ name: 'David Chen' }], extra: 1 },
+    { project: 'Client Review', projectColor: 'text-secondary', date: 'Oct 15, 2023', title: 'Phase 1 Delivery & Feedback Session', desc: 'The client praised the "paper-like" surface hierarchy. Minor feedback on icon weights in dark mode. Approval to move to Phase 2.', decisions: 15, actions: 2, members: [{ name: 'Clara Lin' }], extra: 4 },
   ];
 
   return (
@@ -44,7 +45,7 @@ export default function MemberMomList() {
               </div>
               <div className="flex justify-between items-center pt-4 border-t border-outline-variant/10">
                 <div className="flex -space-x-2">
-                  {m.members.map((mb, mi) => <div key={mi} className={`w-7 h-7 rounded-full ${mb.color} text-white text-[8px] font-bold flex items-center justify-center ring-2 ring-white`}>{mb.initials}</div>)}
+                  {m.members.map((mb, mi) => <Avatar key={mi} name={mb.name} size="28" round={true} style={{ marginLeft: mi > 0 ? '-8px' : '0', border: '2px solid white' }} />)}
                   {m.extra > 0 && <div className="w-7 h-7 rounded-full bg-surface-container text-on-surface flex items-center justify-center text-[8px] font-bold ring-2 ring-white">+{m.extra}</div>}
                 </div>
                 <button className="material-symbols-outlined text-outline hover:text-primary transition-colors">arrow_forward</button>

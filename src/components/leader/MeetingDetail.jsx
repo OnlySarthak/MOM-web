@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Avatar from 'react-avatar';
 
 export default function LeaderMeetingDetail() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -39,7 +40,7 @@ export default function LeaderMeetingDetail() {
               <h2 className="font-headline text-xl text-on-surface">Meeting Details</h2>
             </div>
             <div className="space-y-5">
-              <div><p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Organizer</p><div className="flex items-center gap-3"><div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-[9px] font-bold">SM</div><p className="text-sm font-semibold">Sarah Miller</p></div></div>
+              <div><p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Organizer</p><div className="flex items-center gap-3"><Avatar name="Sarah Miller" size="28" round={true} /><p className="text-sm font-semibold">Sarah Miller</p></div></div>
               <div><p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Location</p><p className="text-sm flex items-center gap-2"><span className="material-symbols-outlined text-sm text-primary">videocam</span>Virtual Atelier</p></div>
               <div><p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Duration</p><p className="text-sm font-medium">45 minutes</p></div>
             </div>
@@ -52,7 +53,7 @@ export default function LeaderMeetingDetail() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               {[{ initials:'SM',name:'Sarah Miller',role:'Product Lead',color:'bg-primary'},{ initials:'DC',name:'David Chen',role:'Design Director',color:'bg-secondary'},{ initials:'JD',name:'Jane Doe',role:'Tech Architect',color:'bg-surface-container-high text-on-surface'},{ initials:'MV',name:'Marcus V.',role:'QA Manager',color:'bg-[#7f2500]'}].map((p,i)=>(
-                <div key={i} className="flex items-center gap-3"><div className={`w-10 h-10 rounded-full ${p.color} text-white flex items-center justify-center text-xs font-bold`}>{p.initials}</div><div><p className="text-sm font-semibold">{p.name}</p><p className="text-[10px] text-outline">{p.role}</p></div></div>
+                <div key={i} className="flex items-center gap-3"><Avatar name={p.name} size="40" round={true} /><div><p className="text-sm font-semibold">{p.name}</p><p className="text-[10px] text-outline">{p.role}</p></div></div>
               ))}
             </div>
           </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Avatar from 'react-avatar';
 
 const INIT_USERS = [
   { name: 'Julian Thorne', initials: 'JT', email: 'julian.t@teamsync.io', role: 'Admin', dept: 'Design', meetings: 24, status: 'Active', color: 'bg-inverse-surface' },
@@ -163,7 +164,7 @@ export default function AdminUsers() {
                 <tr key={idx} className={`group ${isDeactivated ? 'opacity-60' : ''}`}>
                   <td>
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full ${u.color} ${isDeactivated ? 'text-on-surface-variant' : 'text-white'} flex items-center justify-center text-xs font-bold group-hover:ring-2 ring-primary/30 transition-all`}>{u.initials}</div>
+                      <Avatar name={u.name} size="40" round={true} />
                       <div><p className="font-semibold text-on-surface">{u.name}</p><p className="text-xs text-outline font-mono">{u.email}</p></div>
                     </div>
                   </td>

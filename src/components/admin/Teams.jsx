@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Avatar from 'react-avatar';
 
 const TEAMS = [
   { id: 'alpha', name: 'Atelier Alpha', letter: 'Α', dept: 'Design & Brand — Product UI, Design System, Brand Standards', color: 'bg-primary', progress: 84, members: ['JP','SK','EV'], extraMembers: 3, tasks: 12 },
@@ -110,7 +111,7 @@ export default function AdminTeams() {
             <div className="flex items-center justify-between">
               <div className="flex -space-x-2">
                 {t.members.map(m => (
-                  <div key={m} className={`w-8 h-8 rounded-full ${MEMBER_COLORS[m] || 'bg-primary'} text-white flex items-center justify-center text-[10px] font-bold ring-2 ring-white`}>{m}</div>
+                  <Avatar key={m} name={m} size="32" round={true} style={{ marginLeft: '-8px', border: '2px solid white' }} />
                 ))}
                 {t.extraMembers > 0 && <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-[10px] font-bold ring-2 ring-white">+{t.extraMembers}</div>}
               </div>

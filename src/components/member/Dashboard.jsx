@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext.jsx';
+import Avatar from 'react-avatar';
 
 export default function MemberDashboard() {
   const { user } = useAuth();
@@ -48,28 +49,25 @@ export default function MemberDashboard() {
           </div>
           <div className="space-y-4">
             <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 hover:bg-primary/8 transition-colors cursor-pointer group" onClick={() => navigate('/member/meeting-detail')}>
-              <div className="flex justify-between items-start mb-2">
+              <div className="mb-2">
                 <p className="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">Product Strategy Sync</p>
-                <span className="badge-scheduled text-[9px]"><span className="w-1 h-1 rounded-full bg-primary animate-pulse"></span>Scheduled</span>
               </div>
               <p className="text-xs text-on-surface-variant">Apr 24, 2026 · 10:30 AM · 45 mins</p>
               <div className="flex -space-x-1.5 mt-3">
-                <div className="w-6 h-6 rounded-full bg-primary text-white text-[8px] font-bold flex items-center justify-center ring-2 ring-white">SM</div>
-                <div className="w-6 h-6 rounded-full bg-secondary text-white text-[8px] font-bold flex items-center justify-center ring-2 ring-white">DC</div>
-                <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center text-[8px] font-bold ring-2 ring-white">+3</div>
+                <Avatar name="Sarah Miller" size="24" round={true} style={{ border: '2px solid white' }} />
+                <Avatar name="David Chen" size="24" round={true} style={{ marginLeft: '-4px', border: '2px solid white' }} />
+                <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center text-[8px] font-bold ring-2 ring-white" style={{ marginLeft: '-4px' }}>+3</div>
               </div>
             </div>
             <div className="p-4 rounded-xl bg-surface-container-low border border-outline-variant/10 hover:bg-surface-container transition-colors cursor-pointer" onClick={() => navigate('/member/meeting-detail')}>
-              <div className="flex justify-between items-start mb-2">
+              <div className="mb-2">
                 <p className="text-sm font-semibold text-on-surface">Weekly Engineering Review</p>
-                <span className="badge-completed text-[9px]">Completed</span>
               </div>
               <p className="text-xs text-on-surface-variant">Apr 22, 2026 · 14:00 PM · 60 mins</p>
             </div>
             <div className="p-4 rounded-xl bg-surface-container-low border border-outline-variant/10 hover:bg-surface-container transition-colors cursor-pointer" onClick={() => navigate('/member/meeting-detail')}>
-              <div className="flex justify-between items-start mb-2">
+              <div className="mb-2">
                 <p className="text-sm font-semibold text-on-surface">Design Review: Mobile UI</p>
-                <span className="badge-scheduled text-[9px]"><span className="w-1 h-1 rounded-full bg-primary animate-pulse"></span>Scheduled</span>
               </div>
               <p className="text-xs text-on-surface-variant">Apr 26, 2026 · 16:30 PM · 30 mins</p>
             </div>
@@ -131,9 +129,9 @@ export default function MemberDashboard() {
             <p className="text-xs text-on-surface-variant line-clamp-2 mb-4">Discussed the transition to the "Digital Atelier" concept with focus on tactile textures and typography hierarchy.</p>
             <div className="flex justify-between items-center pt-3 border-t border-outline-variant/10">
               <div className="flex -space-x-2">
-                <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-[8px] font-bold ring-2 ring-white">JP</div>
-                <div className="w-6 h-6 rounded-full bg-secondary text-white flex items-center justify-center text-[8px] font-bold ring-2 ring-white">SK</div>
-                <div className="w-6 h-6 rounded-full bg-surface-container text-on-surface flex items-center justify-center text-[8px] font-bold ring-2 ring-white">+2</div>
+                <Avatar name="Julian Pierce" size="24" round={true} style={{ border: '2px solid white' }} />
+                <Avatar name="Sarah Kim" size="24" round={true} style={{ marginLeft: '-8px', border: '2px solid white' }} />
+                <div className="w-6 h-6 rounded-full bg-surface-container text-on-surface flex items-center justify-center text-[8px] font-bold ring-2 ring-white" style={{ marginLeft: '-8px' }}>+2</div>
               </div>
               <span className="font-mono text-[10px] text-outline">Oct 24, 2023</span>
             </div>
@@ -144,8 +142,8 @@ export default function MemberDashboard() {
             <p className="text-xs text-on-surface-variant line-clamp-2 mb-4">Review of new design system tokens, mapping Material Design roles to the bespoke "Atelier" palette.</p>
             <div className="flex justify-between items-center pt-3 border-t border-outline-variant/10">
               <div className="flex -space-x-2">
-                <div className="w-6 h-6 rounded-full bg-[#7f2500] text-white flex items-center justify-center text-[8px] font-bold ring-2 ring-white">DC</div>
-                <div className="w-6 h-6 rounded-full bg-surface-container text-on-surface flex items-center justify-center text-[8px] font-bold ring-2 ring-white">+1</div>
+                <Avatar name="David Chen" size="24" round={true} style={{ border: '2px solid white' }} />
+                <div className="w-6 h-6 rounded-full bg-surface-container text-on-surface flex items-center justify-center text-[8px] font-bold ring-2 ring-white" style={{ marginLeft: '-8px' }}>+1</div>
               </div>
               <span className="font-mono text-[10px] text-outline">Oct 21, 2023</span>
             </div>

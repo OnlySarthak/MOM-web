@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.jsx';
+import Avatar from 'react-avatar';
 
 export default function TopNav({ pageTitle, extraContent }) {
   const { user } = useAuth();
@@ -20,12 +21,7 @@ export default function TopNav({ pageTitle, extraContent }) {
         </button>
         <div className="h-6 w-px bg-outline-variant/30 mx-1"></div>
         <Link to={`${rolePrefix}/profile`} className="flex items-center gap-3 px-3 py-1.5 rounded-lg hover:bg-surface-container transition-colors">
-          <img
-            src={user.avatar}
-            className="w-8 h-8 rounded-full object-cover"
-            alt={user.name}
-            onError={(e) => { e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=1d4ed8&color=fff`; }}
-          />
+          <Avatar name={user.name} size="32" round={true} />
           <span className="text-sm font-medium text-on-surface hidden md:block">{user.name}</span>
         </Link>
       </div>

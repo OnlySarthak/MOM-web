@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import Avatar from 'react-avatar';
 
 export default function AdminDashboard() {
   return (
@@ -71,7 +72,7 @@ export default function AdminDashboard() {
               <tr>
                 <td>
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-[#2f312f] text-white flex items-center justify-center text-xs font-bold">JT</div>
+                    <Avatar name="Julian Thorne" size="36" round={true} />
                     <div><p className="font-medium text-on-surface">Julian Thorne</p><p className="text-xs text-outline font-mono">julian.t@teamsync.io</p></div>
                   </div>
                 </td>
@@ -83,7 +84,7 @@ export default function AdminDashboard() {
               <tr>
                 <td>
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">EV</div>
+                    <Avatar name="Elena Vance" size="36" round={true} />
                     <div><p className="font-medium text-on-surface">Elena Vance</p><p className="text-xs text-outline font-mono">e.vance@teamsync.io</p></div>
                   </div>
                 </td>
@@ -95,7 +96,7 @@ export default function AdminDashboard() {
               <tr>
                 <td>
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-secondary text-white flex items-center justify-center text-xs font-bold">MC</div>
+                    <Avatar name="Marcus Chen" size="36" round={true} />
                     <div><p className="font-medium text-on-surface">Marcus Chen</p><p className="text-xs text-outline font-mono">m.chen@teamsync.io</p></div>
                   </div>
                 </td>
@@ -107,7 +108,7 @@ export default function AdminDashboard() {
               <tr>
                 <td>
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-xs font-bold">SB</div>
+                    <Avatar name="Sienna Brooks" size="36" round={true} />
                     <div><p className="font-medium text-on-surface">Sienna Brooks</p><p className="text-xs text-outline font-mono">s.brooks@teamsync.io</p></div>
                   </div>
                 </td>

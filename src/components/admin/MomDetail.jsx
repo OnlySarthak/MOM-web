@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import Avatar from 'react-avatar';
 
 export default function AdminMomDetail() {
   return (
@@ -65,15 +66,15 @@ export default function AdminMomDetail() {
                 <tbody>
                   <tr>
                     <td><div className="flex items-center gap-3"><span className="text-sm font-medium">Update Brand Style Guide PDF</span></div></td>
-                    <td><div className="flex items-center gap-2"><div className="w-6 h-6 rounded-full bg-outline text-white text-[8px] font-bold flex items-center justify-center">AV</div><span className="text-xs text-on-surface-variant">Aria V.</span></div></td>
+                    <td><div className="flex items-center gap-2"><Avatar name="Aria V." size="24" round={true} /><span className="text-xs text-on-surface-variant">Aria V.</span></div></td>
                   </tr>
                   <tr>
                     <td><div className="flex items-center gap-3"><span className="text-sm font-medium">Develop Tailwind Config for Atelier Palette</span></div></td>
-                    <td><div className="flex items-center gap-2"><div className="w-6 h-6 rounded-full bg-secondary text-white text-[8px] font-bold flex items-center justify-center">MT</div><span className="text-xs text-on-surface-variant">Marcus T.</span></div></td>
+                    <td><div className="flex items-center gap-2"><Avatar name="Marcus T." size="24" round={true} /><span className="text-xs text-on-surface-variant">Marcus T.</span></div></td>
                   </tr>
                   <tr>
                     <td><div className="flex items-center gap-3"><span className="text-sm font-medium">Draft internal announcement memo</span></div></td>
-                    <td><div className="flex items-center gap-2"><div className="w-6 h-6 rounded-full bg-[#7f2500] text-white text-[8px] font-bold flex items-center justify-center">CJ</div><span className="text-xs text-on-surface-variant">Chloe J.</span></div></td>
+                    <td><div className="flex items-center gap-2"><Avatar name="Chloe J." size="24" round={true} /><span className="text-xs text-on-surface-variant">Chloe J.</span></div></td>
                   </tr>
                 </tbody>
               </table>
@@ -93,10 +94,7 @@ export default function AdminMomDetail() {
                 { initials: 'LO', name: "Liam O'Brien", role: 'CTO', color: 'bg-[#7f2500]' },
                 { initials: 'ER', name: 'Elena Rossi', role: 'Brand Strategist', color: 'bg-surface-container-high text-on-surface' },
               ].map((p, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl ${p.color} text-white flex items-center justify-center text-xs font-bold editorial-shadow`}>{p.initials}</div>
-                  <div><p className="text-sm font-semibold">{p.name}</p><p className="text-[10px] uppercase text-outline tracking-wider">{p.role}</p></div>
-                </div>
+                <div key={i} className="flex items-center gap-3"><Avatar name={p.name} size="40" round={true} /><div><p className="text-sm font-semibold">{p.name}</p><p className="text-[10px] uppercase text-outline tracking-wider">{p.role}</p></div></div>
               ))}
             </div>
           </section>

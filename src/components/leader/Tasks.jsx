@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Avatar from 'react-avatar';
 
 const INIT_TASKS = [
   { name: 'Refactor Auth Middleware', category: 'Engineering · API', team: 'My Team', assignee: 'JD', priority: 'Critical', status: 'in-progress', due: 'Apr 16, 2026' },
@@ -95,7 +96,7 @@ export default function LeaderTasks() {
                       <div><p className={`font-medium text-on-surface ${isCompleted ? 'line-through opacity-60' : ''}`}>{t.name}</p><p className="text-xs text-outline">{t.category}</p></div>
                     </div>
                   </td>
-                  <td><div className="flex items-center gap-2"><div className={`w-7 h-7 rounded-full ${a.color} text-white text-[9px] font-bold flex items-center justify-center`}>{t.assignee}</div><span className="text-sm">{a.name}</span></div></td>
+                  <td><div className="flex items-center gap-2"><Avatar name={a.name} size="28" round={true} /><span className="text-sm">{a.name}</span></div></td>
                   <td>{t.status === 'in-progress' ? <span className="flex items-center gap-1.5 text-xs"><span className="animate-ping inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>In Progress</span> : t.status === 'completed' ? <span className="flex items-center gap-1.5 text-xs text-secondary"><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>Completed</span> : <span className="text-xs text-outline">To Do</span>}</td>
                   <td className="task-actions"><div className="flex items-center gap-1">
                     <button className="p-1.5 text-outline hover:text-primary rounded-lg"><span className="material-symbols-outlined text-sm">edit</span></button>

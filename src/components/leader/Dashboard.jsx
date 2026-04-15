@@ -1,5 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Avatar from 'react-avatar';
+
+const ASSIGNEE_FULL_NAMES = {
+  JD: 'Jane Doe',
+  EV: 'Elena Vance',
+  MV: 'Marcus V.',
+  DC: 'David Chen',
+};
 
 export default function LeaderDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -83,7 +91,7 @@ export default function LeaderDashboard() {
                   ].map((t, i) => (
                     <tr key={i} className="cursor-pointer">
                       <td className="font-medium text-on-surface">{t.task}</td>
-                      <td className="text-center"><div className="w-7 h-7 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center mx-auto">{t.assignee}</div></td>
+                      <td className="text-center"><Avatar name={ASSIGNEE_FULL_NAMES[t.assignee] || t.assignee} size="28" round={true} className="mx-auto" /></td>
                       <td><span className={`text-[10px] font-bold px-2 py-0.5 rounded ${t.pClass}`}>{t.priority}</span></td>
                       <td>
                         {t.status === 'in-progress' ? <span className="flex items-center gap-1.5 text-xs"><span className="animate-ping inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>In Progress</span>
@@ -126,7 +134,7 @@ export default function LeaderDashboard() {
                   { initials: 'JD', name: 'Jane Doe', tasks: '3/4 tasks', progress: 75, color: 'bg-[#7f2500]' },
                 ].map((m, i) => (
                   <div key={i} className="flex items-center gap-4">
-                    <div className={`w-8 h-8 rounded-full ${m.color} text-white text-[9px] font-bold flex items-center justify-center`}>{m.initials}</div>
+                    <Avatar name={m.name} size="32" round={true} />
                     <div className="flex-1">
                       <div className="flex justify-between items-center mb-1">
                         <span className="text-sm font-medium text-on-surface">{m.name}</span>

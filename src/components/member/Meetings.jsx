@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../auth/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
+import Avatar from 'react-avatar';
 
 const MEETINGS = [
   { id:1, title:'Product Strategy Sync', project:'Roadmap Q2', date:'Apr 24, 2026 · 10:30 AM', organizer:{name:'Sarah Miller',initials:'SM',color:'bg-primary'}, status:'Scheduled', participants:[{initials:'DC',color:'bg-secondary'},{initials:'JD',color:'bg-tertiary'},{extra:3}], mom:{title:'Product Strategy Sync — MOM',date:'Apr 24, 2026',decisions:['Align on Q2 roadmap top features'],actionItems:[{task:'Prepare deck',assignee:'Sarah Miller',due:'Apr 26'}],notes:'Q2 roadmap priorities discussed.'} },
@@ -37,15 +38,14 @@ export default function MemberMeetings() {
 
       <div className="ts-card overflow-hidden mb-12">
         <table className="ts-table">
-          <thead><tr><th>Meeting Title</th><th>Date & Time</th><th>Organizer</th><th>Status</th><th>Participants</th><th></th></tr></thead>
+          <thead><tr><th>Meeting Title</th><th>Date & Time</th><th>Organizer</th><th>Participants</th><th></th></tr></thead>
           <tbody>
             {filtered.map((m, idx) => (
               <tr key={m.id} className="cursor-pointer group" onClick={() => { setActiveMom(m); setShowMom(true); }}>
                 <td><p className="font-headline text-lg text-on-surface group-hover:text-primary transition-colors">{m.title}</p><p className="text-xs text-outline">Project: {m.project}</p></td>
                 <td className="font-mono text-xs text-on-surface-variant">{m.date}</td>
-                <td><div className="flex items-center gap-2"><div className={`w-7 h-7 rounded-full ${m.organizer.color} text-white text-[9px] font-bold flex items-center justify-center`}>{m.organizer.initials}</div><span className="text-sm font-medium">{m.organizer.name}</span></div></td>
-                <td>{m.status === 'Scheduled' ? <span className="badge-scheduled"><span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>Scheduled</span> : <span className="badge-completed">Completed</span>}</td>
-                <td><div className="flex -space-x-1.5">{m.participants.map((p, pi) => p.extra ? <div key={pi} className="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center text-[9px] font-bold ring-2 ring-white">+{p.extra}</div> : <div key={pi} className={`w-7 h-7 rounded-full ${p.color} text-white text-[9px] font-bold flex items-center justify-center ring-2 ring-white`}>{p.initials}</div>)}</div></td>
+                <td><div className="flex items-center gap-2"><Avatar name={m.organizer.name} size="28" round={true} /><span className="text-sm font-medium">{m.organizer.name}</span></div></td>
+                <td><div className="flex -space-x-1.5">{m.participants.map((p, pi) => p.extra ? <div key={pi} className="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center text-[9px] font-bold ring-2 ring-white">+{p.extra}</div> : <Avatar key={pi} name={p.initials} size="28" round={true} style={{ marginLeft: '-4px', border: '2px solid white' }} />)}</div></td>
                 <td className="text-right relative">
                   <span className="material-symbols-outlined text-outline hover:text-on-surface cursor-pointer" onClick={e => { e.stopPropagation(); setOpenDD(openDD === idx ? null : idx); }}>more_vert</span>
                   <div className={`ts-dropdown ${openDD === idx ? 'open' : ''}`}>

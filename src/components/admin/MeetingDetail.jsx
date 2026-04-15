@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Avatar from 'react-avatar';
 
 export default function AdminMeetingDetail() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -49,7 +50,7 @@ export default function AdminMeetingDetail() {
               <div>
                 <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Organizer</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-[9px] font-bold">SM</div>
+                  <Avatar name="Sarah Miller" size="28" round={true} />
                   <p className="text-sm font-semibold">Sarah Miller</p>
                 </div>
               </div>
@@ -81,7 +82,7 @@ export default function AdminMeetingDetail() {
                 { initials: 'MV', name: 'Marcus V.', role: 'QA Manager', color: 'bg-[#7f2500]' },
               ].map((p, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full ${p.color} text-white flex items-center justify-center text-xs font-bold`}>{p.initials}</div>
+                  <Avatar name={p.name} size="40" round={true} />
                   <div><p className="text-sm font-semibold">{p.name}</p><p className="text-[10px] text-outline">{p.role}</p></div>
                 </div>
               ))}
