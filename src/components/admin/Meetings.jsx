@@ -1,0 +1,231 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../auth/AuthContext.jsx';
+
+const MEETINGS = [
+  {
+    id: 1, title: 'Quarterly Brand Alignment', project: 'Rebranding 2026',
+    date: 'Apr 24, 2026 · 10:00 AM', organizer: { name: 'Sarah Miller', initials: 'SM', color: 'bg-primary' },
+    status: 'Scheduled',
+    participants: [{ initials: 'DC', color: 'bg-secondary' }, { initials: 'JD', color: 'bg-tertiary' }, { extra: 4 }],
+    mom: {
+      title: 'Quarterly Brand Alignment — MOM', date: 'Apr 24, 2026',
+      decisions: ['Finalize brand palette by end of sprint', 'Logo refresh to be presented next review'],
+      actionItems: [{ task: 'Prepare logo concepts', assignee: 'David Chen', due: 'Apr 28' }, { task: 'Compile brand audit report', assignee: 'Sarah Miller', due: 'Apr 30' }],
+      notes: 'The team agreed to prioritize the brand refresh ahead of the product redesign.'
+    }
+  },
+  {
+    id: 2, title: 'Mobile App UX Review', project: 'TeamSync Mobile',
+    date: 'Apr 22, 2026 · 02:30 PM', organizer: { name: 'David Chen', initials: 'DC', color: 'bg-secondary' },
+    status: 'Completed',
+    participants: [{ initials: 'JD', color: 'bg-primary' }, { initials: 'MV', color: 'bg-outline' }],
+    mom: {
+      title: 'Mobile App UX Review — MOM', date: 'Apr 22, 2026',
+      decisions: ['Adopt bottom nav pattern for mobile', 'Dark mode to ship in v2'],
+      actionItems: [{ task: 'Finalize mobile wireframes', assignee: 'David Chen', due: 'Apr 26' }],
+      notes: 'Discussed mobile navigation patterns. Consensus reached on bottom tab bar.'
+    }
+  },
+  {
+    id: 3, title: 'Client Onboarding: Atelier Inc.', project: 'Sales Pipeline',
+    date: 'Apr 25, 2026 · 09:00 AM', organizer: { name: 'Jane Doe', initials: 'JD', color: 'bg-surface-container-high' },
+    status: 'Draft',
+    participants: [{ initials: 'SK', color: 'bg-tertiary' }],
+    mom: { title: 'Client Onboarding: Atelier Inc. — MOM', date: 'Apr 25, 2026', decisions: ['Draft status — meeting not yet conducted'], actionItems: [], notes: 'This meeting is in draft status. No minutes available yet.' }
+  },
+  {
+    id: 4, title: 'Architecture Sprint Planning', project: 'Engineering',
+    date: 'Apr 26, 2026 · 11:30 AM', organizer: { name: 'Marcus V.', initials: 'MV', color: 'bg-tertiary' },
+    status: 'Scheduled',
+    participants: [{ initials: 'EV', color: 'bg-primary' }, { initials: 'JD', color: 'bg-secondary' }, { extra: 8 }],
+    mom: { title: 'Architecture Sprint Planning — MOM', date: 'Apr 26, 2026', decisions: ['Prioritize auth refactor before new features'], actionItems: [{ task: 'Auth middleware refactor', assignee: 'Jane Doe', due: 'May 2' }], notes: 'Sprint planning session focused on technical debt.' }
+  },
+];
+
+export default function AdminMeetings() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [meetings, setMeetings] = useState(MEETINGS);
+  const [searchQ, setSearchQ] = useState('');
+  const [showSchedule, setShowSchedule] = useState(false);
+  const [showMom, setShowMom] = useState(false);
+  const [activeMom, setActiveMom] = useState(null);
+  const [openDD, setOpenDD] = useState(null);
+  const [form, setForm] = useState({ title: '', project: '', date: '', time: '', duration: '45 min', location: 'Virtual Atelier', notes: '' });
+
+  const filtered = meetings.filter(m => !searchQ || m.title.toLowerCase().includes(searchQ.toLowerCase()));
+
+  function openMomPanel(idx) { setActiveMom(meetings[idx]); setShowMom(true); }
+  function closeMomPanel() { setShowMom(false); setActiveMom(null); }
+
+  function cancelMeeting(idx) {
+    if (window.confirm(`Cancel "${meetings[idx].title}"?`)) {
+      const updated = [...meetings]; updated.splice(idx, 1); setMeetings(updated);
+    }
+    setOpenDD(null);
+  }
+
+  function handleSchedule(e) {
+    e.preventDefault();
+    const dateStr = new Date(form.date + 'T' + form.time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const timeStr = new Date(form.date + 'T' + form.time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const initials = user.name.split(' ').map(n => n[0]).join('');
+    setMeetings([{ id: Date.now(), title: form.title, project: form.project || 'General', date: `${dateStr} · ${timeStr}`, organizer: { name: user.name, initials, color: 'bg-primary' }, status: 'Scheduled', participants: [], mom: { title: form.title + ' — MOM', date: dateStr, decisions: ['Meeting scheduled — no minutes yet'], actionItems: [], notes: '' } }, ...meetings]);
+    setShowSchedule(false);
+    setForm({ title: '', project: '', date: '', time: '', duration: '45 min', location: 'Virtual Atelier', notes: '' });
+  }
+
+  return (
+    <>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-10">
+        <div>
+          <h1 className="font-headline text-5xl text-on-surface tracking-tight mb-2">Meetings</h1>
+          <p className="font-headline italic text-xl text-outline">Schedule, review, and track your team syncs.</p>
+        </div>
+        <button className="btn-primary gap-2 text-sm flex-shrink-0" onClick={() => setShowSchedule(true)}>
+          <span className="material-symbols-outlined text-lg">add</span>Schedule Meeting
+        </button>
+      </div>
+
+      {/* Search */}
+      <div className="flex flex-col md:flex-row gap-4 mb-8 items-center justify-between">
+        <div className="relative w-full md:w-96">
+          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-xl">search</span>
+          <input className="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm focus:outline-none focus:border-primary transition-all" placeholder="Search meetings..." value={searchQ} onChange={e => setSearchQ(e.target.value)} />
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="ts-card overflow-hidden mb-12">
+        <table className="ts-table">
+          <thead>
+            <tr><th>Meeting Title</th><th>Date & Time</th><th>Organizer</th><th>Participants</th><th></th></tr>
+          </thead>
+          <tbody>
+            {filtered.map((m, idx) => (
+              <tr key={m.id} className="cursor-pointer group" onClick={() => openMomPanel(idx)}>
+                <td>
+                  <p className="font-headline text-lg text-on-surface group-hover:text-primary transition-colors">{m.title}</p>
+                  <p className="text-xs text-outline">Project: {m.project}</p>
+                </td>
+                <td className="font-mono text-xs text-on-surface-variant">{m.date}</td>
+                <td>
+                  <div className="flex -space-x-1.5">
+                    {m.participants.map((p, pi) => p.extra
+                      ? <div key={pi} className="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center text-[9px] font-bold ring-2 ring-white">+{p.extra}</div>
+                      : <div key={pi} className={`w-7 h-7 rounded-full ${p.color} text-white text-[9px] font-bold flex items-center justify-center ring-2 ring-white`}>{p.initials}</div>
+                    )}
+                  </div>
+                </td>
+                <td className="text-right relative">
+                  <span className="material-symbols-outlined text-outline hover:text-on-surface transition-colors cursor-pointer" onClick={(e) => { e.stopPropagation(); setOpenDD(openDD === idx ? null : idx); }}>more_vert</span>
+                  <div className={`ts-dropdown ${openDD === idx ? 'open' : ''}`}>
+                    <button className="ts-dropdown-item" onClick={(e) => { e.stopPropagation(); navigate('/admin/meeting-detail'); setOpenDD(null); }}><span className="material-symbols-outlined text-sm">visibility</span>View Details</button>
+                    <button className="ts-dropdown-item" onClick={(e) => { e.stopPropagation(); navigate('/admin/mom-detail'); setOpenDD(null); }}><span className="material-symbols-outlined text-sm">description</span>View MOM</button>
+                    <div className="ts-dropdown-sep"></div>
+                    <button className="ts-dropdown-item danger" onClick={(e) => { e.stopPropagation(); cancelMeeting(idx); }}><span className="material-symbols-outlined text-sm">cancel</span>Cancel Meeting</button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="px-6 py-4 border-t border-outline-variant/10 flex items-center justify-between">
+          <p className="text-xs text-outline font-medium">Showing <span className="text-on-surface">{filtered.length}</span> meetings</p>
+          <div className="flex gap-2">
+            <button className="p-2 rounded-lg border border-outline-variant/15 text-outline hover:bg-surface-container-low transition-colors"><span className="material-symbols-outlined text-sm">chevron_left</span></button>
+            <button className="p-2 rounded-lg border border-outline-variant/15 text-on-surface bg-surface-container-low hover:bg-surface-container-high transition-colors"><span className="material-symbols-outlined text-sm">chevron_right</span></button>
+          </div>
+        </div>
+      </div>
+
+      {/* MOM Slider */}
+      <div className={`ts-slideover-overlay ${showMom ? 'open' : ''}`} onClick={closeMomPanel}></div>
+      <div className={`ts-slideover ${showMom ? 'open' : ''}`}>
+        {activeMom && (
+          <>
+            <div className="ts-slideover-header">
+              <h2 className="font-headline text-xl text-on-surface">{activeMom.mom.title}</h2>
+              <button className="ts-close-btn" onClick={closeMomPanel}><span className="material-symbols-outlined">close</span></button>
+            </div>
+            <div className="ts-slideover-body">
+              <div className="mb-6">
+                <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Meeting Date</p>
+                <p className="text-sm font-mono text-on-surface-variant">{activeMom.mom.date}</p>
+              </div>
+              <div className="mb-6">
+                <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-3">Key Decisions</p>
+                <ul className="space-y-2">
+                  {activeMom.mom.decisions.map((d, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="material-symbols-outlined text-secondary text-sm mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                      <span className="text-sm text-on-surface">{d}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="mb-6">
+                <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-3">Action Items</p>
+                {activeMom.mom.actionItems.length > 0
+                  ? <div className="space-y-2">{activeMom.mom.actionItems.map((a, i) => (
+                    <div key={i} className="flex items-start gap-3 p-3 bg-surface-container-lowest rounded-lg">
+                      <span className="material-symbols-outlined text-primary text-sm mt-0.5">task_alt</span>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-on-surface">{a.task}</p>
+                        <p className="text-[10px] text-outline font-mono mt-0.5">{a.assignee} · Due {a.due}</p>
+                      </div>
+                    </div>
+                  ))}</div>
+                  : <p className="text-sm text-outline italic">No action items yet.</p>}
+              </div>
+              <div className="mb-8">
+                <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Notes</p>
+                <p className="text-sm text-on-surface-variant leading-relaxed">{activeMom.mom.notes}</p>
+              </div>
+              <button className="btn-primary gap-2 text-sm w-full justify-center" onClick={() => navigate('/admin/mom-detail')}>
+                <span className="material-symbols-outlined text-sm">open_in_new</span>View Full MOM
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Schedule Modal */}
+      <div className={`ts-modal-overlay ${showSchedule ? 'open' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) setShowSchedule(false); }}>
+        <div className="ts-modal">
+          <div className="ts-modal-header">
+            <h2>Schedule Meeting</h2>
+            <button className="ts-close-btn" onClick={() => setShowSchedule(false)}><span className="material-symbols-outlined">close</span></button>
+          </div>
+          <div className="ts-modal-body">
+            <form id="schedule-form" className="space-y-5" onSubmit={handleSchedule}>
+              <div><label className="ts-label">Meeting Title *</label><input className="ts-field" type="text" placeholder="e.g. Sprint Review #13" required value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} /></div>
+              <div><label className="ts-label">Project / Context</label><input className="ts-field" type="text" placeholder="e.g. Rebranding 2026" value={form.project} onChange={e => setForm({ ...form, project: e.target.value })} /></div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><label className="ts-label">Date *</label><input className="ts-field" type="date" required value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} /></div>
+                <div><label className="ts-label">Time *</label><input className="ts-field" type="time" required value={form.time} onChange={e => setForm({ ...form, time: e.target.value })} /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><label className="ts-label">Duration</label>
+                  <select className="ts-field" value={form.duration} onChange={e => setForm({ ...form, duration: e.target.value })}>
+                    <option>30 min</option><option>45 min</option><option>60 min</option><option>90 min</option>
+                  </select>
+                </div>
+                <div><label className="ts-label">Location</label><input className="ts-field" type="text" placeholder="e.g. Virtual Atelier" value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} /></div>
+              </div>
+              <div><label className="ts-label">Agenda / Notes</label><textarea className="ts-field resize-none h-20" placeholder="Brief agenda..." value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })}></textarea></div>
+            </form>
+          </div>
+          <div className="ts-modal-footer">
+            <button className="btn-secondary text-sm" onClick={() => setShowSchedule(false)}>Cancel</button>
+            <button className="btn-primary text-sm" onClick={() => document.getElementById('schedule-form').requestSubmit()}>
+              <span className="material-symbols-outlined text-sm">event</span>Schedule
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
