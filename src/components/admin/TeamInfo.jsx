@@ -186,8 +186,10 @@ export default function AdminTeamInfo() {
                         : <span className="badge-draft text-[9px]">{m.status}</span>}
                     </td>
                     <td>
-                      {m.isLeader && (
-                        <button className="text-xs font-medium text-primary hover:underline" onClick={() => setShowReplace(true)}>Replace</button>
+                      {m.isLeader ? (
+                        <button className="text-xs font-medium text-primary hover:underline" onClick={() => setShowReplace(true)}>Replace Leader</button>
+                      ) : (
+                        <button className="text-xs font-medium text-error hover:underline" onClick={() => { if(window.confirm(`Remove ${m.name}?`)) alert('Member removed (demo).'); }}>Remove Member</button>
                       )}
                     </td>
                   </tr>

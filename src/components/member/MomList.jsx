@@ -19,9 +19,17 @@ export default function MemberMomList() {
 
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-6 border-b border-outline-variant/10">
         <div className="flex items-center gap-4">
-          <button className="flex items-center gap-2 px-4 py-2 bg-surface-container-lowest border border-outline-variant/15 rounded-xl text-sm font-medium hover:bg-surface-container-low transition-colors">
-            <span className="material-symbols-outlined text-outline">event</span>Last 30 Days<span className="material-symbols-outlined text-outline">expand_more</span>
-          </button>
+          <div className="relative">
+            <select className="appearance-none pl-4 pr-10 py-2 bg-surface-container-lowest border border-outline-variant/15 rounded-xl text-sm font-medium hover:bg-surface-container-low transition-colors cursor-pointer focus:outline-none" defaultValue="All Time">
+              <option value="All Time">All Time</option>
+              <option value="Today">Today</option>
+              <option value="Yesterday">Yesterday</option>
+              <option value="This Week">This Week</option>
+              <option value="Last Week">Last Week</option>
+              <option value="Earlier">Earlier</option>
+            </select>
+            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+          </div>
         </div>
         <div className="flex items-center gap-2 text-xs font-mono text-outline uppercase tracking-tighter">
           <span className="w-2 h-2 rounded-full bg-primary-container inline-block"></span>

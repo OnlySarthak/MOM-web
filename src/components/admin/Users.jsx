@@ -19,11 +19,8 @@ export default function AdminUsers() {
   const [roleFilter, setRoleFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [showInvite, setShowInvite] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
-  const [editIdx, setEditIdx] = useState(null);
   const [openDD, setOpenDD] = useState(null);
-  const [invForm, setInvForm] = useState({ fname: '', lname: '', email: '', role: 'Member', dept: '', team: '' });
-  const [editForm, setEditForm] = useState({ fname: '', lname: '', email: '', role: 'Member', dept: '', status: 'Active' });
+  const [invForm, setInvForm] = useState({ fname: '', lname: '', email: '', role: 'Member', password: '' });
 
   const COLORS = ['bg-primary','bg-secondary','bg-tertiary','bg-outline','bg-inverse-surface'];
 
@@ -39,37 +36,14 @@ export default function AdminUsers() {
   const invited = pending.length;
   const deactivated = users.filter(u => u.status === 'Deactivated').length;
 
-  function openInviteModal() { setInvForm({ fname: '', lname: '', email: '', role: 'Member', dept: '', team: '' }); setShowInvite(true); }
+  function openInviteModal() { setInvForm({ fname: '', lname: '', email: '', role: 'Member', password: '' }); setShowInvite(true); }
   function closeInviteModal() { setShowInvite(false); }
   function handleInvite(e) {
     e.preventDefault();
     const name = invForm.fname + ' ' + invForm.lname;
     const initials = (invForm.fname[0] + invForm.lname[0]).toUpperCase();
-    setUsers([...users, { name, initials, email: invForm.email, role: invForm.role, dept: invForm.dept || 'General', meetings: 0, status: 'Active', color: COLORS[users.length % COLORS.length] }]);
+    setUsers([...users, { name, initials, email: invForm.email, role: invForm.role, dept: 'General', meetings: 0, status: 'Active', color: COLORS[users.length % COLORS.length] }]);
     closeInviteModal();
-  }
-
-  function openEditModal(idx) {
-    const u = users[idx];
-    const parts = u.name.split(' ');
-    setEditForm({ fname: parts[0], lname: parts.slice(1).join(' '), email: u.email, role: u.role, dept: u.dept, status: u.status });
-    setEditIdx(idx);
-    setShowEdit(true);
-    setOpenDD(null);
-  }
-  function closeEditModal() { setShowEdit(false); }
-  function handleEditSave(e) {
-    e.preventDefault();
-    const updated = [...users];
-    const u = { ...updated[editIdx] };
-    u.name = editForm.fname + ' ' + editForm.lname;
-    u.initials = (editForm.fname[0] + (editForm.lname[0] || '')).toUpperCase();
-    u.role = editForm.role;
-    u.dept = editForm.dept;
-    u.status = editForm.status;
-    updated[editIdx] = u;
-    setUsers(updated);
-    closeEditModal();
   }
 
   function toggleUserStatus(idx) {
@@ -109,7 +83,7 @@ export default function AdminUsers() {
           <p className="font-headline italic text-xl text-outline">Oversee access, roles, and workspace membership.</p>
         </div>
         <div className="flex gap-3 flex-shrink-0">
-          <button className="btn-primary gap-2 text-sm" onClick={openInviteModal}><span className="material-symbols-outlined text-sm">person_add</span>Invite User</button>
+          <button className="btn-primary gap-2 text-sm" onClick={openInviteModal}><span className="material-symbols-outlined text-sm">person_add</span>Add New User</button>
         </div>
       </div>
 
@@ -117,7 +91,7 @@ export default function AdminUsers() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="stat-card text-center"><p className="font-headline text-4xl font-bold text-on-surface mb-1">{total}</p><p className="text-xs text-outline uppercase tracking-widest font-mono">Total</p></div>
         <div className="stat-card text-center"><p className="font-headline text-4xl font-bold text-primary mb-1">{active}</p><p className="text-xs text-outline uppercase tracking-widest font-mono">Active</p></div>
-        <div className="stat-card text-center"><p className="font-headline text-4xl font-bold text-tertiary mb-1">{invited}</p><p className="text-xs text-outline uppercase tracking-widest font-mono">Invited</p></div>
+        <div className="stat-card text-center"><p className="font-headline text-4xl font-bold text-tertiary mb-1">{invited}</p><p className="text-xs text-outline uppercase tracking-widest font-mono">Members</p></div>
         <div className="stat-card text-center"><p className="font-headline text-4xl font-bold text-on-surface-variant mb-1">{deactivated}</p><p className="text-xs text-outline uppercase tracking-widest font-mono">Deactivated</p></div>
       </div>
 
@@ -177,13 +151,11 @@ export default function AdminUsers() {
                   </td>
                   <td>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="p-1.5 text-outline hover:text-primary rounded-lg transition-colors" onClick={() => openEditModal(realIdx)}><span className="material-symbols-outlined text-sm">edit</span></button>
                       <button className={`p-1.5 text-outline hover:text-${isDeactivated ? 'primary' : 'error'} rounded-lg transition-colors`} onClick={() => toggleUserStatus(realIdx)}><span className="material-symbols-outlined text-sm">{isDeactivated ? 'person' : 'person_off'}</span></button>
                       <div className="relative">
                         <button className="p-1.5 text-outline hover:text-on-surface rounded-lg transition-colors user-more-btn" onClick={() => setOpenDD(openDD === realIdx ? null : realIdx)}><span className="material-symbols-outlined text-sm">more_vert</span></button>
                         <div className={`ts-dropdown ${openDD === realIdx ? 'open' : ''}`}>
                           <button className="ts-dropdown-item"><span className="material-symbols-outlined text-sm">person</span>View Profile</button>
-                          <button className="ts-dropdown-item" onClick={() => openEditModal(realIdx)}><span className="material-symbols-outlined text-sm">swap_horiz</span>Change Role</button>
                           <div className="ts-dropdown-sep"></div>
                           <button className="ts-dropdown-item danger" onClick={() => removeUser(realIdx)}><span className="material-symbols-outlined text-sm">person_remove</span>Remove User</button>
                         </div>
@@ -197,11 +169,11 @@ export default function AdminUsers() {
         </table>
       </div>
 
-      {/* Invite Modal */}
+      {/* Add User Modal */}
       <div className={`ts-modal-overlay ${showInvite ? 'open' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) closeInviteModal(); }}>
         <div className="ts-modal">
           <div className="ts-modal-header">
-            <h2>Invite New User</h2>
+            <h2>Add New User</h2>
             <button className="ts-close-btn" onClick={closeInviteModal}><span className="material-symbols-outlined">close</span></button>
           </div>
           <div className="ts-modal-body">
@@ -210,69 +182,21 @@ export default function AdminUsers() {
                 <div><label className="ts-label">First Name *</label><input className="ts-field" type="text" placeholder="First name" required value={invForm.fname} onChange={e => setInvForm({ ...invForm, fname: e.target.value })} /></div>
                 <div><label className="ts-label">Last Name *</label><input className="ts-field" type="text" placeholder="Last name" required value={invForm.lname} onChange={e => setInvForm({ ...invForm, lname: e.target.value })} /></div>
               </div>
-              <div><label className="ts-label">Email Address *</label><input className="ts-field" type="email" placeholder="name@teamsync.io" required value={invForm.email} onChange={e => setInvForm({ ...invForm, email: e.target.value })} /></div>
               <div className="grid grid-cols-2 gap-4">
+                <div><label className="ts-label">Email Address *</label><input className="ts-field" type="email" placeholder="name@teamsync.io" required value={invForm.email} onChange={e => setInvForm({ ...invForm, email: e.target.value })} /></div>
                 <div><label className="ts-label">Role</label>
                   <select className="ts-field" value={invForm.role} onChange={e => setInvForm({ ...invForm, role: e.target.value })}>
                     <option>Member</option><option>Team Leader</option><option>Admin</option>
                   </select>
                 </div>
-                <div><label className="ts-label">Department</label><input className="ts-field" type="text" placeholder="e.g. Engineering" value={invForm.dept} onChange={e => setInvForm({ ...invForm, dept: e.target.value })} /></div>
               </div>
-              <div><label className="ts-label">Team Assignment</label>
-                <select className="ts-field" value={invForm.team} onChange={e => setInvForm({ ...invForm, team: e.target.value })}>
-                  <option value="">No team yet</option>
-                  <option>Atelier Alpha</option><option>Studio Beta</option><option>Craft Gamma</option><option>Nexus Delta</option><option>Studio Epsilon</option>
-                </select>
-              </div>
+              <div><label className="ts-label">Password *</label><input className="ts-field" type="password" placeholder="••••••••" required value={invForm.password} onChange={e => setInvForm({ ...invForm, password: e.target.value })} /></div>
             </form>
           </div>
           <div className="ts-modal-footer">
             <button className="btn-secondary text-sm" onClick={closeInviteModal}>Cancel</button>
             <button className="btn-primary text-sm" onClick={() => document.getElementById('invite-form').requestSubmit()}>
-              <span className="material-symbols-outlined text-sm">send</span>Send Invitation
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Edit Modal */}
-      <div className={`ts-modal-overlay ${showEdit ? 'open' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) closeEditModal(); }}>
-        <div className="ts-modal">
-          <div className="ts-modal-header">
-            <h2>Edit User</h2>
-            <button className="ts-close-btn" onClick={closeEditModal}><span className="material-symbols-outlined">close</span></button>
-          </div>
-          <div className="ts-modal-body">
-            <form id="edit-form" className="space-y-5" onSubmit={handleEditSave}>
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="ts-label">First Name</label><input className="ts-field" type="text" value={editForm.fname} onChange={e => setEditForm({ ...editForm, fname: e.target.value })} /></div>
-                <div><label className="ts-label">Last Name</label><input className="ts-field" type="text" value={editForm.lname} onChange={e => setEditForm({ ...editForm, lname: e.target.value })} /></div>
-              </div>
-              <div>
-                <label className="ts-label">Email Address</label>
-                <input className="ts-field" type="email" disabled value={editForm.email} />
-                <p className="text-xs text-outline mt-1 flex items-center gap-1"><span className="material-symbols-outlined text-xs">lock</span>Email cannot be changed.</p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="ts-label">Role</label>
-                  <select className="ts-field" value={editForm.role} onChange={e => setEditForm({ ...editForm, role: e.target.value })}>
-                    <option>Member</option><option>Team Leader</option><option>Admin</option>
-                  </select>
-                </div>
-                <div><label className="ts-label">Department</label><input className="ts-field" type="text" value={editForm.dept} onChange={e => setEditForm({ ...editForm, dept: e.target.value })} /></div>
-              </div>
-              <div><label className="ts-label">Status</label>
-                <select className="ts-field" value={editForm.status} onChange={e => setEditForm({ ...editForm, status: e.target.value })}>
-                  <option>Active</option><option>Deactivated</option>
-                </select>
-              </div>
-            </form>
-          </div>
-          <div className="ts-modal-footer">
-            <button className="btn-secondary text-sm" onClick={closeEditModal}>Cancel</button>
-            <button className="btn-primary text-sm" onClick={() => document.getElementById('edit-form').requestSubmit()}>
-              <span className="material-symbols-outlined text-sm">save</span>Save Changes
+              <span className="material-symbols-outlined text-sm">check</span>Done
             </button>
           </div>
         </div>

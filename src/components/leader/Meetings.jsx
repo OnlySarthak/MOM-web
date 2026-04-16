@@ -73,9 +73,22 @@ export default function LeaderMeetings() {
         </button>
       </div>
       <div className="flex gap-4 mb-8">
-        <div className="relative w-full md:w-96">
-          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-xl">search</span>
-          <input className="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm focus:outline-none focus:border-primary" placeholder="Search meetings..." value={searchQ} onChange={e => setSearchQ(e.target.value)} />
+        <div className="flex w-full md:w-auto gap-4">
+          <div className="relative flex-1 md:w-96">
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-xl">search</span>
+            <input className="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm focus:outline-none focus:border-primary" placeholder="Search meetings..." value={searchQ} onChange={e => setSearchQ(e.target.value)} />
+          </div>
+          <div className="relative">
+            <select className="appearance-none pl-4 pr-10 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm cursor-pointer focus:outline-none" defaultValue="All Time">
+              <option value="All Time">All Time</option>
+              <option value="Today">Today</option>
+              <option value="Yesterday">Yesterday</option>
+              <option value="This Week">This Week</option>
+              <option value="Last Week">Last Week</option>
+              <option value="Earlier">Earlier</option>
+            </select>
+            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+          </div>
         </div>
       </div>
       <div className="ts-card overflow-hidden mb-12">
@@ -131,7 +144,7 @@ export default function LeaderMeetings() {
             <div className="ts-slideover-body">
               <div className="mb-6"><p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Meeting Date</p><p className="text-sm font-mono text-on-surface-variant">{activeMom.mom.date}</p></div>
               <div className="mb-6"><p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-3">Key Decisions</p><ul className="space-y-2">{activeMom.mom.decisions.map((d, i) => <li key={i} className="flex items-start gap-2"><span className="material-symbols-outlined text-secondary text-sm mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span><span className="text-sm text-on-surface">{d}</span></li>)}</ul></div>
-              <div className="mb-8"><p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Notes</p><p className="text-sm text-on-surface-variant leading-relaxed">{activeMom.mom.notes}</p></div>
+              <div className="mb-8"><p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Insights</p><p className="text-sm text-on-surface-variant leading-relaxed">{activeMom.mom.notes}</p></div>
               <button className="btn-primary gap-2 text-sm w-full justify-center" onClick={() => navigate('/leader/mom-detail')}><span className="material-symbols-outlined text-sm">open_in_new</span>View Full MOM</button>
             </div>
           </>

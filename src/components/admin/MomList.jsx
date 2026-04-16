@@ -11,6 +11,21 @@ export default function AdminMomList() {
         <p className="font-headline italic text-xl text-outline max-w-2xl leading-relaxed">Capture the essence of your creative dialogues. Review decisions, track progress, and align your team's vision.</p>
       </div>
 
+      {/* Filters */}
+      <div className="flex gap-4 mb-8">
+        <div className="relative">
+          <select className="appearance-none pl-4 pr-10 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm cursor-pointer focus:outline-none" defaultValue="All Time">
+            <option value="All Time">All Time</option>
+            <option value="Today">Today</option>
+            <option value="Yesterday">Yesterday</option>
+            <option value="This Week">This Week</option>
+            <option value="Last Week">Last Week</option>
+            <option value="Earlier">Earlier</option>
+          </select>
+          <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+        </div>
+      </div>
+
       {/* MOM Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         {[

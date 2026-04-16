@@ -90,11 +90,24 @@ export default function AdminMeetings() {
         </button>
       </div>
 
-      {/* Search */}
+      {/* Search & Filter */}
       <div className="flex flex-col md:flex-row gap-4 mb-8 items-center justify-between">
-        <div className="relative w-full md:w-96">
-          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-xl">search</span>
-          <input className="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm focus:outline-none focus:border-primary transition-all" placeholder="Search meetings..." value={searchQ} onChange={e => setSearchQ(e.target.value)} />
+        <div className="flex w-full md:w-auto gap-4">
+          <div className="relative flex-1 md:w-80">
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-xl">search</span>
+            <input className="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm focus:outline-none focus:border-primary transition-all" placeholder="Search meetings..." value={searchQ} onChange={e => setSearchQ(e.target.value)} />
+          </div>
+          <div className="relative">
+            <select className="appearance-none pl-4 pr-10 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm cursor-pointer focus:outline-none" defaultValue="All Time">
+              <option value="All Time">All Time</option>
+              <option value="Today">Today</option>
+              <option value="Yesterday">Yesterday</option>
+              <option value="This Week">This Week</option>
+              <option value="Last Week">Last Week</option>
+              <option value="Earlier">Earlier</option>
+            </select>
+            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+          </div>
         </div>
       </div>
 
@@ -182,7 +195,7 @@ export default function AdminMeetings() {
                   : <p className="text-sm text-outline italic">No action items yet.</p>}
               </div>
               <div className="mb-8">
-                <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Notes</p>
+                <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Insights</p>
                 <p className="text-sm text-on-surface-variant leading-relaxed">{activeMom.mom.notes}</p>
               </div>
               <button className="btn-primary gap-2 text-sm w-full justify-center" onClick={() => navigate('/admin/mom-detail')}>

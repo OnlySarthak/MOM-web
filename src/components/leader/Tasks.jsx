@@ -93,7 +93,7 @@ export default function LeaderTasks() {
                 <tr key={idx} className="task-row">
                   <td>
                     <div className="flex items-center gap-3">
-                      <div><p className={`font-medium text-on-surface ${isCompleted ? 'line-through opacity-60' : ''}`}>{t.name}</p><p className="text-xs text-outline">{t.category}</p></div>
+                      <div><p className={`font-medium text-on-surface ${isCompleted ? 'line-through opacity-60' : ''}`}>{t.name}</p></div>
                     </div>
                   </td>
                   <td><div className="flex items-center gap-2"><Avatar name={a.name} size="28" round={true} /><span className="text-sm">{a.name}</span></div></td>

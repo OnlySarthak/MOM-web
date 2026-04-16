@@ -25,9 +25,9 @@ export default function AdminTeams() {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [selectedColor, setSelectedColor] = useState('bg-primary');
   const [greekIdx, setGreekIdx] = useState(0);
-  const [form, setForm] = useState({ name: '', dept: '', leader: '', desc: '' });
+  const [form, setForm] = useState({ name: '', dept: 'Engineering', projectName: '', leader: '', desc: '' });
 
-  function openCreateTeamModal() { setShowModal(true); setSelectedColor('bg-primary'); setForm({ name: '', dept: '', leader: '', desc: '' }); }
+  function openCreateTeamModal() { setShowModal(true); setSelectedColor('bg-primary'); setForm({ name: '', dept: 'Engineering', projectName: '', leader: '', desc: '' }); }
   function closeCreateTeamModal() { setShowModal(false); }
 
   function handleCreateTeam(e) {
@@ -36,7 +36,8 @@ export default function AdminTeams() {
       id: form.name.toLowerCase().replace(/\s+/g, '-'),
       name: form.name,
       letter: GREEK[greekIdx % GREEK.length],
-      dept: form.dept || 'General',
+      dept: form.dept,
+      projectName: form.projectName,
       color: selectedColor,
       progress: 0,
       members: form.leader ? [form.leader] : [],
@@ -142,9 +143,27 @@ export default function AdminTeams() {
           </div>
           <div className="ts-modal-body">
             <form id="create-team-form" className="space-y-5" onSubmit={handleCreateTeam}>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="ts-label">Team Name *</label>
+                  <input className="ts-field" type="text" placeholder="e.g. Atelier Alpha" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+                </div>
+                <div>
+                  <label className="ts-label">Project Name</label>
+                  <input className="ts-field" type="text" placeholder="e.g. Website Revamp" value={form.projectName} onChange={e => setForm({ ...form, projectName: e.target.value })} />
+                </div>
+              </div>
               <div>
-                <label className="ts-label">Team Name *</label>
-                <input className="ts-field" type="text" placeholder="e.g. Atelier Alpha" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+                <label className="ts-label">Team Department</label>
+                <select className="ts-field" value={form.dept} onChange={e => setForm({ ...form, dept: e.target.value })}>
+                  <option value="Engineering">Engineering</option>
+                  <option value="Marketing & Content">Marketing & Content</option>
+                  <option value="Design">Design</option>
+                  <option value="Product">Product</option>
+                  <option value="Operations">Operations</option>
+                  <option value="Sales / Business Development">Sales / Business Development</option>
+                  <option value="Research & Strategy">Research & Strategy</option>
+                </select>
               </div>
               <div>
                 <label className="ts-label">Team Leader</label>

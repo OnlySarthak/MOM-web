@@ -129,31 +129,31 @@ export default function AdminDashboard() {
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-on-surface">Team Productivity</span>
-                  <span className="font-mono text-xs text-primary font-bold">84%</span>
-                </div>
-                <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: '84%' }}></div></div>
-              </div>
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-on-surface">Meeting Attendance</span>
-                  <span className="font-mono text-xs text-primary font-bold">91%</span>
-                </div>
-                <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: '91%' }}></div></div>
-              </div>
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-on-surface">Task Completion Rate</span>
-                  <span className="font-mono text-xs text-primary font-bold">72%</span>
+                  <span className="text-sm font-medium text-on-surface">Task Progress</span>
+                  <span className="font-mono text-xs text-primary font-bold">228 / 317</span>
                 </div>
                 <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: '72%' }}></div></div>
               </div>
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-on-surface">MOM Coverage</span>
-                  <span className="font-mono text-xs text-primary font-bold">96%</span>
+                  <span className="text-sm font-medium text-on-surface">Completed Tasks</span>
+                  <span className="font-mono text-xs text-primary font-bold">228</span>
                 </div>
-                <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: '96%' }}></div></div>
+                <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: '72%' }}></div></div>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium text-on-surface">In Progress Tasks</span>
+                  <span className="font-mono text-xs text-primary font-bold">54</span>
+                </div>
+                <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: '17%' }}></div></div>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium text-on-surface">Pending Tasks</span>
+                  <span className="font-mono text-xs text-primary font-bold">35</span>
+                </div>
+                <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: '11%' }}></div></div>
               </div>
             </div>
           </div>

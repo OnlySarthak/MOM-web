@@ -54,10 +54,6 @@ export default function LeaderDashboard() {
                   <span className="font-mono text-[10px] bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">JUN 12</span>
                 </div>
                 <p className="text-xs text-on-surface-variant italic font-headline opacity-80 mb-4 line-clamp-2">"Decided to shift 15% of the marketing budget to infrastructure to handle the surge in user traffic..."</p>
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
-                  <span className="text-[10px] font-medium uppercase tracking-tighter text-outline">Decision Confirmed</span>
-                </div>
               </article>
               <article className="ts-card p-6 hover:shadow-md transition-shadow cursor-pointer">
                 <div className="flex justify-between items-start mb-3">
@@ -65,10 +61,6 @@ export default function LeaderDashboard() {
                   <span className="font-mono text-[10px] bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">JUN 10</span>
                 </div>
                 <p className="text-xs text-on-surface-variant italic font-headline opacity-80 mb-4 line-clamp-2">"The rollout will be staged over three phases starting July 1st, beginning with core layout components..."</p>
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-secondary"></div>
-                  <span className="text-[10px] font-medium uppercase tracking-tighter text-outline">Phase 1 Drafted</span>
-                </div>
               </article>
             </div>
           </div>
@@ -153,7 +145,6 @@ export default function LeaderDashboard() {
                   { color: 'bg-primary', label: 'In Progress', value: 5, textColor: 'text-primary' },
                   { color: 'bg-outline-variant', label: 'To Do', value: 7, textColor: '' },
                   { color: 'bg-secondary', label: 'Completed', value: 14, textColor: 'text-secondary' },
-                  { color: 'bg-error', label: 'Blocked', value: 2, textColor: 'text-error' },
                 ].map((s, i) => (
                   <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-surface-container-low">
                     <span className="flex items-center gap-3 text-sm font-medium"><span className={`w-3 h-3 rounded-full ${s.color}`}></span>{s.label}</span>
