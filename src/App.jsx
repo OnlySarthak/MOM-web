@@ -6,6 +6,7 @@ import MainLayout from './layouts/MainLayout.jsx';
 // Common pages
 import LandingPage from './components/common/LandingPage.jsx';
 import LoginPage from './components/common/LoginPage.jsx';
+import RegisterPage from './components/common/RegisterPage.jsx';
 
 // Admin pages
 import AdminDashboard from './components/admin/Dashboard.jsx';
@@ -46,6 +47,7 @@ export default function App() {
           {/* Public routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
 
           {/* Admin routes */}
           <Route element={<ProtectedRoute allowedRole="admin" />}>

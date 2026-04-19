@@ -154,7 +154,7 @@ export default function AdminTeams() {
                 </div>
               </div>
               <div>
-                <label className="ts-label">Team Department</label>
+                <label className="ts-label">Team Functional Role</label>
                 <select className="ts-field" value={form.dept} onChange={e => setForm({ ...form, dept: e.target.value })}>
                   <option value="Engineering">Engineering</option>
                   <option value="Marketing & Content">Marketing & Content</option>

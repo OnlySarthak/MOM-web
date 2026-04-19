@@ -17,6 +17,9 @@ export default function MemberMeetingDetail() {
           <h1 className="font-headline text-5xl text-on-surface tracking-tight leading-tight">Product Strategy Sync</h1>
           <p className="font-mono text-sm text-outline flex items-center gap-2"><span className="material-symbols-outlined text-sm">calendar_today</span>Oct 24, 2023 · 10:30 AM – 11:15 AM<span className="text-outline/50">·</span><span>45 mins</span></p>
         </div>
+        <Link to="/member/mom-detail" className="btn-secondary gap-2 flex-shrink-0">
+          <span className="material-symbols-outlined text-sm">description</span>View MOM
+        </Link>
       </div>
 
       <nav className="flex gap-8 border-b border-outline-variant/15 mb-8">
@@ -25,7 +28,20 @@ export default function MemberMeetingDetail() {
       </nav>
 
       {activeTab === 'overview' && (
-        <div className="grid grid-cols-12 gap-6 mb-10">
+        <div className="space-y-6 mb-10">
+          {/* Agenda */}
+          <div className="ts-card p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><span className="material-symbols-outlined text-primary text-sm">format_list_bulleted</span></div>
+              <h2 className="font-headline text-xl text-on-surface">Agenda</h2>
+            </div>
+            <ul className="space-y-2 text-sm text-on-surface-variant">
+              <li className="flex items-start gap-3"><span className="material-symbols-outlined text-primary text-sm mt-0.5">chevron_right</span>Align on Q3 roadmap priorities</li>
+              <li className="flex items-start gap-3"><span className="material-symbols-outlined text-primary text-sm mt-0.5">chevron_right</span>Review mobile onboarding wireframes</li>
+              <li className="flex items-start gap-3"><span className="material-symbols-outlined text-primary text-sm mt-0.5">chevron_right</span>Discuss auth refactor blocking mobile team</li>
+            </ul>
+          </div>
+          <div className="grid grid-cols-12 gap-6">
           <div className="col-span-12 lg:col-span-4 glass-card p-8">
             <div className="flex items-center gap-3 mb-6"><div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><span className="material-symbols-outlined">info</span></div><h2 className="font-headline text-xl text-on-surface">Meeting Details</h2></div>
             <div className="space-y-5">
@@ -59,6 +75,7 @@ export default function MemberMeetingDetail() {
               </div>
             </div>
           </div>
+        </div>
         </div>
       )}
 

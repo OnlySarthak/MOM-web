@@ -30,7 +30,7 @@ export default function LandingPage() {
         </div>
         <div className="flex items-center gap-3">
           <Link to="/login" className="text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors px-4 py-2">Sign In</Link>
-          <Link to="/login" className="btn-primary text-sm">Get Started</Link>
+          <Link to="/register" className="btn-primary text-sm gap-2"><span className="material-symbols-outlined text-sm">admin_panel_settings</span>Register as Admin</Link>
         </div>
       </nav>
 

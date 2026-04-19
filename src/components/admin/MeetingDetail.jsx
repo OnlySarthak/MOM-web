@@ -27,6 +27,9 @@ export default function AdminMeetingDetail() {
             <span>45 mins</span>
           </p>
         </div>
+        <Link to="/admin/mom-detail" className="btn-secondary gap-2 flex-shrink-0">
+          <span className="material-symbols-outlined text-sm">description</span>View MOM
+        </Link>
       </div>
 
       {/* Tabs */}
@@ -35,9 +38,22 @@ export default function AdminMeetingDetail() {
         <button className={`tab-btn ${activeTab === 'transcript' ? 'active' : ''} pb-4 text-sm font-medium text-outline hover:text-on-surface`} onClick={() => setActiveTab('transcript')}>Transcript</button>
       </nav>
 
-      {/* Tab: Overview */}
       {activeTab === 'overview' && (
-        <div className="grid grid-cols-12 gap-6 mb-10">
+        <div className="space-y-6 mb-10">
+          {/* Agenda */}
+          <div className="ts-card p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><span className="material-symbols-outlined text-primary text-sm">format_list_bulleted</span></div>
+              <h2 className="font-headline text-xl text-on-surface">Agenda</h2>
+            </div>
+            <ul className="space-y-2 text-sm text-on-surface-variant">
+              <li className="flex items-start gap-3"><span className="material-symbols-outlined text-primary text-sm mt-0.5">chevron_right</span>Align on Q3 roadmap top-priority features</li>
+              <li className="flex items-start gap-3"><span className="material-symbols-outlined text-primary text-sm mt-0.5">chevron_right</span>Review onboarding flow wireframes from Design</li>
+              <li className="flex items-start gap-3"><span className="material-symbols-outlined text-primary text-sm mt-0.5">chevron_right</span>Discuss auth refactor blocking mobile team</li>
+              <li className="flex items-start gap-3"><span className="material-symbols-outlined text-primary text-sm mt-0.5">chevron_right</span>Plan security audit timeline with QA</li>
+            </ul>
+          </div>
+          <div className="grid grid-cols-12 gap-6">
           {/* Meeting Info */}
           <div className="col-span-12 lg:col-span-4 glass-card p-8">
             <div className="flex items-center gap-3 mb-6">
@@ -107,8 +123,10 @@ export default function AdminMeetingDetail() {
               </div>
             </div>
           </div>
+          </div>
         </div>
       )}
+
 
       {/* Tab: Transcript */}
       {activeTab === 'transcript' && (

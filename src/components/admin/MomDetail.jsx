@@ -22,6 +22,9 @@ export default function AdminMomDetail() {
           <h1 className="font-headline text-5xl text-on-surface leading-tight mb-4">Q4 Brand Strategy & Visual Language Sync</h1>
           <p className="font-mono text-sm text-outline">Oct 24, 2023 • 10:00 AM — 11:30 AM EST</p>
         </div>
+        <Link to="/admin/meeting-detail" className="btn-secondary gap-2 flex-shrink-0">
+          <span className="material-symbols-outlined text-sm">calendar_today</span>View Meeting
+        </Link>
       </div>
 
       {/* Bento Grid */}

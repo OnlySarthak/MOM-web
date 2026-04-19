@@ -13,6 +13,10 @@ export default function MemberTasks() {
   const [tasks, setTasks] = useState(INIT_TASKS);
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQ, setSearchQ] = useState('');
+  const [showSelfAssign, setShowSelfAssign] = useState(false);
+  const [selfTaskName, setSelfTaskName] = useState('');
+  const [renamingIdx, setRenamingIdx] = useState(null);
+  const [renameValue, setRenameValue] = useState('');
 
   const filtered = tasks.filter(t => {
     const matchStatus = statusFilter === 'all' || t.status === statusFilter;
@@ -28,7 +32,6 @@ export default function MemberTasks() {
   function cycleStatus(idx) {
     const realIdx = tasks.indexOf(filtered[idx]);
     const t = tasks[realIdx];
-    // Pending → In Progress → Completed → In Progress
     const newStatus = t.status === 'todo' ? 'in-progress' : t.status === 'in-progress' ? 'completed' : 'in-progress';
     const updated = [...tasks];
     updated[realIdx] = { ...t, status: newStatus };
@@ -44,6 +47,29 @@ export default function MemberTasks() {
     }
   }
 
+  function startRename(idx) {
+    const realIdx = tasks.indexOf(filtered[idx]);
+    setRenamingIdx(realIdx);
+    setRenameValue(tasks[realIdx].name);
+  }
+
+  function commitRename() {
+    if (renamingIdx !== null && renameValue.trim()) {
+      const updated = [...tasks];
+      updated[renamingIdx] = { ...updated[renamingIdx], name: renameValue.trim() };
+      setTasks(updated);
+    }
+    setRenamingIdx(null);
+  }
+
+  function handleSelfAssign(e) {
+    e.preventDefault();
+    if (!selfTaskName.trim()) return;
+    setTasks([{ name: selfTaskName.trim(), category: 'General', status: 'todo' }, ...tasks]);
+    setShowSelfAssign(false);
+    setSelfTaskName('');
+  }
+
   return (
     <>
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
@@ -51,6 +77,9 @@ export default function MemberTasks() {
           <h1 className="font-headline text-5xl text-on-surface tracking-tight mb-2">My Tasks</h1>
           <p className="font-headline italic text-xl text-outline">Your assigned work, at a glance.</p>
         </div>
+        <button className="btn-primary gap-2 text-sm" onClick={() => setShowSelfAssign(true)}>
+          <span className="material-symbols-outlined">assignment_ind</span>Assign Task to Self
+        </button>
       </div>
 
       <div className="flex flex-wrap items-center gap-3 mb-8">
@@ -80,16 +109,28 @@ export default function MemberTasks() {
           <thead><tr><th>Task Name</th><th>Status</th><th></th></tr></thead>
           <tbody>
             {filtered.map((t, idx) => {
+              const realIdx = tasks.indexOf(t);
               const isCompleted = t.status === 'completed';
+              const isRenaming = renamingIdx === realIdx;
               return (
-                <tr key={idx} className="task-row">
+                <tr key={idx} className="task-row group">
                   <td>
-                    <div className="flex items-center gap-3">
-                      <div>
-                        <p className={`font-medium text-on-surface ${isCompleted ? 'line-through opacity-60' : ''}`}>{t.name}</p>
-                        <p className="text-xs text-outline">{t.category}</p>
+                    {isRenaming ? (
+                      <input
+                        className="ts-field py-1 text-sm"
+                        value={renameValue}
+                        autoFocus
+                        onChange={e => setRenameValue(e.target.value)}
+                        onBlur={commitRename}
+                        onKeyDown={e => { if (e.key === 'Enter') commitRename(); if (e.key === 'Escape') setRenamingIdx(null); }}
+                      />
+                    ) : (
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <p className={`font-medium text-on-surface ${isCompleted ? 'line-through opacity-60' : ''}`}>{t.name}</p>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </td>
                   <td>
                     <button
@@ -107,6 +148,13 @@ export default function MemberTasks() {
                   <td>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
+                        className="p-1.5 text-outline hover:text-primary rounded-lg transition-colors"
+                        onClick={() => startRename(idx)}
+                        title="Rename task"
+                      >
+                        <span className="material-symbols-outlined text-sm">edit</span>
+                      </button>
+                      <button
                         className="p-1.5 text-outline hover:text-error rounded-lg transition-colors"
                         onClick={() => deleteTask(idx)}
                         title="Delete task"
@@ -120,6 +168,37 @@ export default function MemberTasks() {
             })}
           </tbody>
         </table>
+      </div>
+
+      {/* Assign Task to Self Modal */}
+      <div className={`ts-modal-overlay ${showSelfAssign ? 'open' : ''}`} onClick={e => { if (e.target === e.currentTarget) setShowSelfAssign(false); }}>
+        <div className="ts-modal">
+          <div className="ts-modal-header">
+            <h2>Assign Task to Self</h2>
+            <button className="ts-close-btn" onClick={() => setShowSelfAssign(false)}><span className="material-symbols-outlined">close</span></button>
+          </div>
+          <div className="ts-modal-body">
+            <form id="self-task-form" className="space-y-5" onSubmit={handleSelfAssign}>
+              <div>
+                <label className="ts-label">Task Name *</label>
+                <input
+                  className="ts-field"
+                  type="text"
+                  placeholder="e.g. Review design mockups"
+                  required
+                  value={selfTaskName}
+                  onChange={e => setSelfTaskName(e.target.value)}
+                />
+              </div>
+            </form>
+          </div>
+          <div className="ts-modal-footer">
+            <button className="btn-secondary text-sm" onClick={() => setShowSelfAssign(false)}>Cancel</button>
+            <button className="btn-primary text-sm" onClick={() => document.getElementById('self-task-form').requestSubmit()}>
+              <span className="material-symbols-outlined text-sm">add</span>Assign to Self
+            </button>
+          </div>
+        </div>
       </div>
     </>
   );

@@ -2,15 +2,19 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Avatar from 'react-avatar';
 
-const TEAM_ROLES = ['Developer', 'Designer', 'QA Engineer', 'DevOps', 'Product Manager', 'Data Analyst', 'Tech Lead', 'UX Researcher', 'Illustrator', 'Motion Designer', 'Brand Lead'];
+const TEAM_ROLES = ["Developer", "Designer", "QA Engineer", "DevOps", "Product Manager", "Tester",
+        "Adviser", "Leader", "Bench", "HR", "Sales", "Marketing", "Leader", "Manager"];
+
+// The leader's own name — used to disable role editing for self
+const LEADER_NAME = 'James Parker';
 
 const INIT_MEMBERS = [
-  { initials: 'JP', name: 'James Parker', role: 'Team Leader', teamRole: 'Tech Lead', color: 'bg-primary', status: 'Active' },
-  { initials: 'SK', name: 'Sara Kim', role: 'UI Designer', teamRole: 'Designer', color: 'bg-secondary', status: 'Active' },
-  { initials: 'EV', name: 'Elena Vance', role: 'Brand Lead', teamRole: 'Brand Lead', color: 'bg-tertiary', status: 'Active' },
-  { initials: 'RT', name: 'Ryan Torres', role: 'Illustrator', teamRole: 'Illustrator', color: 'bg-outline', status: 'Active' },
-  { initials: 'LW', name: 'Lisa Wong', role: 'UX Researcher', teamRole: 'UX Researcher', color: 'bg-primary', status: 'Invited' },
-  { initials: 'DM', name: 'Derek Miles', role: 'Motion Designer', teamRole: 'Motion Designer', color: 'bg-secondary', status: 'Active' },
+  { initials: 'JP', name: 'James Parker', role: 'Team Leader', teamRole: 'Tech Lead', color: 'bg-primary', status: 'Active', isLeader: true },
+  { initials: 'SK', name: 'Sara Kim', role: 'UI Designer', teamRole: 'Designer', color: 'bg-secondary', status: 'Active', isLeader: false },
+  { initials: 'EV', name: 'Elena Vance', role: 'Brand Lead', teamRole: 'Brand Lead', color: 'bg-tertiary', status: 'Active', isLeader: false },
+  { initials: 'RT', name: 'Ryan Torres', role: 'Illustrator', teamRole: 'Illustrator', color: 'bg-outline', status: 'Active', isLeader: false },
+  { initials: 'LW', name: 'Lisa Wong', role: 'UX Researcher', teamRole: 'UX Researcher', color: 'bg-primary', status: 'Invited', isLeader: false },
+  { initials: 'DM', name: 'Derek Miles', role: 'Motion Designer', teamRole: 'Motion Designer', color: 'bg-secondary', status: 'Active', isLeader: false },
 ];
 
 const MY_TEAM = {
@@ -62,18 +66,21 @@ export default function LeaderTeams() {
               <span className="text-[10px] font-bold uppercase tracking-wider bg-surface-container text-on-surface-variant px-2 py-0.5 rounded">{members.length} Members</span>
             </div>
             <table className="ts-table">
-              <thead><tr><th>Member</th><th>Team Role</th><th>Status</th><th></th></tr></thead>
+              <thead><tr><th>Member</th><th>Team Role</th><th></th></tr></thead>
               <tbody>
                 {members.map((m, i) => (
                   <tr key={i}>
                     <td>
                       <div className="flex items-center gap-3">
                         <Avatar name={m.name} size="36" round={true} />
-                        <span className="font-medium text-on-surface">{m.name}</span>
+                        <div>
+                          <span className="font-medium text-on-surface block">{m.name}</span>
+                          {m.isLeader && <span className="text-[9px] font-bold uppercase tracking-wider text-primary">Team Lead</span>}
+                        </div>
                       </div>
                     </td>
                     <td>
-                      {editingIdx === i ? (
+                      {editingIdx === i && !m.isLeader ? (
                         <select
                           className="ts-field py-1 text-xs"
                           defaultValue={m.teamRole}
@@ -87,15 +94,17 @@ export default function LeaderTeams() {
                         <span className="text-xs text-on-surface-variant">{m.teamRole}</span>
                       )}
                     </td>
-                    <td>{m.status === 'Active' ? <span className="badge-active text-[9px]"><span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>{m.status}</span> : <span className="badge-draft text-[9px]">{m.status}</span>}</td>
                     <td>
-                      <button
-                        className="p-1 text-outline hover:text-primary rounded-lg transition-colors"
-                        title="Edit team role"
-                        onClick={() => setEditingIdx(editingIdx === i ? null : i)}
-                      >
-                        <span className="material-symbols-outlined text-sm">edit</span>
-                      </button>
+                      {/* Team lead cannot edit their own role */}
+                      {!m.isLeader && (
+                        <button
+                          className="p-1 text-outline hover:text-primary rounded-lg transition-colors"
+                          title="Edit team role"
+                          onClick={() => setEditingIdx(editingIdx === i ? null : i)}
+                        >
+                          <span className="material-symbols-outlined text-sm">edit</span>
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -146,10 +155,10 @@ export default function LeaderTeams() {
               <div className="ts-progress-track h-3"><div className="ts-progress-fill h-3" style={{ width: `${MY_TEAM.progress}%` }}></div></div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="stat-card text-center" style={{ padding: '1rem' }}><p className="font-headline text-2xl font-bold text-primary mb-0.5">{MY_TEAM.stats.open}</p><p className="text-[9px] text-outline uppercase tracking-widest font-mono">Open Tasks</p></div>
+              <div className="stat-card text-center" style={{ padding: '1rem' }}><p className="font-headline text-2xl font-bold text-primary mb-0.5">{MY_TEAM.stats.open}</p><p className="text-[9px] text-outline uppercase tracking-widest font-mono">Total Tasks</p></div>
               <div className="stat-card text-center" style={{ padding: '1rem' }}><p className="font-headline text-2xl font-bold text-secondary mb-0.5">{MY_TEAM.stats.completed}</p><p className="text-[9px] text-outline uppercase tracking-widest font-mono">Completed</p></div>
-              <div className="stat-card text-center" style={{ padding: '1rem' }}><p className="font-headline text-2xl font-bold text-on-surface mb-0.5">{MY_TEAM.stats.meetings}</p><p className="text-[9px] text-outline uppercase tracking-widest font-mono">Meetings</p></div>
-              <div className="stat-card text-center" style={{ padding: '1rem' }}><p className="font-headline text-2xl font-bold text-on-surface mb-0.5">{MY_TEAM.stats.members}</p><p className="text-[9px] text-outline uppercase tracking-widest font-mono">Members</p></div>
+              <div className="stat-card text-center" style={{ padding: '1rem' }}><p className="font-headline text-2xl font-bold text-on-surface mb-0.5">{MY_TEAM.stats.meetings}</p><p className="text-[9px] text-outline uppercase tracking-widest font-mono">Task Completion Rate</p></div>
+              <div className="stat-card text-center" style={{ padding: '1rem' }}><p className="font-headline text-2xl font-bold text-on-surface mb-0.5">{MY_TEAM.stats.members}</p><p className="text-[9px] text-outline uppercase tracking-widest font-mono">Att. Rate</p></div>
             </div>
           </div>
         </div>

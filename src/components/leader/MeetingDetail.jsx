@@ -14,8 +14,7 @@ export default function LeaderMeetingDetail() {
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-10">
         <div className="space-y-3">
           <div className="flex items-center gap-3">
-            <span className="badge-scheduled text-[10px]"><span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>Scheduled</span>
-            <span className="font-mono text-xs text-outline">REF: TS-2023-1024</span>
+            <span className="badge-scheduled text-[10px]"><span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>Scheduled</span><span className="font-mono text-xs text-outline">REF: TS-2023-1024</span>
           </div>
           <h1 className="font-headline text-5xl text-on-surface tracking-tight leading-tight">Product Strategy Sync</h1>
           <p className="font-mono text-sm text-outline flex items-center gap-2">
@@ -25,6 +24,9 @@ export default function LeaderMeetingDetail() {
             <span>45 mins</span>
           </p>
         </div>
+        <Link to="/leader/mom-detail" className="btn-secondary gap-2 flex-shrink-0">
+          <span className="material-symbols-outlined text-sm">description</span>View MOM
+        </Link>
       </div>
 
       <nav className="flex gap-8 border-b border-outline-variant/15 mb-8">
@@ -33,7 +35,21 @@ export default function LeaderMeetingDetail() {
       </nav>
 
       {activeTab === 'overview' && (
-        <div className="grid grid-cols-12 gap-6 mb-10">
+        <div className="space-y-6 mb-10">
+          {/* Agenda */}
+          <div className="ts-card p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><span className="material-symbols-outlined text-primary text-sm">format_list_bulleted</span></div>
+              <h2 className="font-headline text-xl text-on-surface">Agenda</h2>
+            </div>
+            <ul className="space-y-2 text-sm text-on-surface-variant">
+              <li className="flex items-start gap-3"><span className="material-symbols-outlined text-primary text-sm mt-0.5">chevron_right</span>Align on Q3 roadmap top-priority features</li>
+              <li className="flex items-start gap-3"><span className="material-symbols-outlined text-primary text-sm mt-0.5">chevron_right</span>Review onboarding flow wireframes from Design</li>
+              <li className="flex items-start gap-3"><span className="material-symbols-outlined text-primary text-sm mt-0.5">chevron_right</span>Discuss auth refactor blocking mobile team</li>
+              <li className="flex items-start gap-3"><span className="material-symbols-outlined text-primary text-sm mt-0.5">chevron_right</span>Plan security audit timeline with QA</li>
+            </ul>
+          </div>
+          <div className="grid grid-cols-12 gap-6">
           <div className="col-span-12 lg:col-span-4 glass-card p-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><span className="material-symbols-outlined">info</span></div>
@@ -72,8 +88,10 @@ export default function LeaderMeetingDetail() {
               </div>
             </div>
           </div>
+          </div>
         </div>
       )}
+
 
       {activeTab === 'transcript' && (
         <div className="ts-card p-8 max-w-3xl">

@@ -3,6 +3,22 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext.jsx';
 import Avatar from 'react-avatar';
 
+const TEAM_INFO = {
+  name: 'Atelier Alpha',
+  description: 'Design & Brand team focused on UI systems, brand standards, and digital product design.',
+  functionalRoles: ['UI Design', 'Brand Strategy', 'Motion Design', 'UX Research'],
+  project: 'Rebranding 2026',
+  leader: 'James Parker',
+};
+
+const TEAM_MEMBERS = [
+  { name: 'James Parker', teamRole: 'Tech Lead', isLeader: true },
+  { name: 'Sara Kim', teamRole: 'Designer' },
+  { name: 'Elena Vance', teamRole: 'Brand Lead' },
+  { name: 'Ryan Torres', teamRole: 'Illustrator' },
+  { name: 'Derek Miles', teamRole: 'Motion Designer' },
+];
+
 export default function MemberDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -39,39 +55,65 @@ export default function MemberDashboard() {
         ))}
       </div>
 
+      {/* Team Information Card */}
+      <div className="ts-card p-6 mb-8">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <span className="material-symbols-outlined text-primary text-sm">groups</span>
+          </div>
+          <h2 className="font-headline text-xl text-on-surface">My Team</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div>
+            <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Team Name</p>
+            <p className="text-sm font-semibold text-on-surface">{TEAM_INFO.name}</p>
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Project</p>
+            <p className="text-sm font-semibold text-on-surface">{TEAM_INFO.project}</p>
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Team Leader</p>
+            <div className="flex items-center gap-2">
+              <Avatar name={TEAM_INFO.leader} size="24" round={true} />
+              <p className="text-sm font-semibold text-on-surface">{TEAM_INFO.leader}</p>
+            </div>
+          </div>
+          <div className="md:col-span-2">
+            <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Description</p>
+            <p className="text-sm text-on-surface-variant">{TEAM_INFO.description}</p>
+          </div>
+
+        </div>
+      </div>
+
       {/* Main bento grid */}
       <div className="grid grid-cols-12 gap-6 mb-8">
-        {/* Recent Meetings */}
-        <div className="col-span-12 lg:col-span-5 ts-card p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="font-headline text-2xl text-on-surface">Recent Meetings</h2>
-            <Link to="/member/meetings" className="text-xs font-medium text-primary hover:underline">All meetings</Link>
+        {/* Team Members Table */}
+        <div className="col-span-12 lg:col-span-5 ts-card overflow-hidden">
+          <div className="px-6 py-5 flex items-center justify-between border-b border-outline-variant/10">
+            <h2 className="font-headline text-xl text-on-surface">Team Members</h2>
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-surface-container text-on-surface-variant px-2 py-0.5 rounded">{TEAM_MEMBERS.length} Members</span>
           </div>
-          <div className="space-y-4">
-            <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 hover:bg-primary/8 transition-colors cursor-pointer group" onClick={() => navigate('/member/meeting-detail')}>
-              <div className="mb-2">
-                <p className="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">Product Strategy Sync</p>
-              </div>
-              <p className="text-xs text-on-surface-variant">Apr 24, 2026 · 10:30 AM · 45 mins</p>
-              <div className="flex -space-x-1.5 mt-3">
-                <Avatar name="Sarah Miller" size="24" round={true} style={{ border: '2px solid white' }} />
-                <Avatar name="David Chen" size="24" round={true} style={{ marginLeft: '-4px', border: '2px solid white' }} />
-                <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center text-[8px] font-bold ring-2 ring-white" style={{ marginLeft: '-4px' }}>+3</div>
-              </div>
-            </div>
-            <div className="p-4 rounded-xl bg-surface-container-low border border-outline-variant/10 hover:bg-surface-container transition-colors cursor-pointer" onClick={() => navigate('/member/meeting-detail')}>
-              <div className="mb-2">
-                <p className="text-sm font-semibold text-on-surface">Weekly Engineering Review</p>
-              </div>
-              <p className="text-xs text-on-surface-variant">Apr 22, 2026 · 14:00 PM · 60 mins</p>
-            </div>
-            <div className="p-4 rounded-xl bg-surface-container-low border border-outline-variant/10 hover:bg-surface-container transition-colors cursor-pointer" onClick={() => navigate('/member/meeting-detail')}>
-              <div className="mb-2">
-                <p className="text-sm font-semibold text-on-surface">Design Review: Mobile UI</p>
-              </div>
-              <p className="text-xs text-on-surface-variant">Apr 26, 2026 · 16:30 PM · 30 mins</p>
-            </div>
-          </div>
+          <table className="ts-table">
+            <thead><tr><th>Member</th><th>Team Role</th></tr></thead>
+            <tbody>
+              {TEAM_MEMBERS.map((m, i) => (
+                <tr key={i}>
+                  <td>
+                    <div className="flex items-center gap-3">
+                      <Avatar name={m.name} size="32" round={true} />
+                      <div>
+                        <p className="text-sm font-medium text-on-surface">{m.name}</p>
+                        {m.isLeader && <span className="text-[9px] font-bold uppercase tracking-wider text-primary">Leader</span>}
+                      </div>
+                    </div>
+                  </td>
+                  <td><span className="text-xs text-on-surface-variant">{m.teamRole}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         {/* My Tasks */}
@@ -84,28 +126,24 @@ export default function MemberDashboard() {
             <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-surface-container-low transition-colors">
               <div className="flex-1">
                 <p className="text-sm font-medium text-on-surface line-through opacity-60">Cloud Security Audit</p>
-                <p className="text-xs text-outline">Engineering · Security</p>
               </div>
               <span className="flex items-center gap-1.5 text-xs font-medium text-secondary"><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>Completed</span>
             </div>
             <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-surface-container-low transition-colors border border-primary/10 bg-primary/3">
               <div className="flex-1">
-                <p className="text-sm font-medium text-on-surface">Refactor Auth Middleware</p>
-                <p className="text-xs text-outline">Engineering · API</p>
+                <p className="text-sm font-medium text-on-surface">Refactor Auth Middleware</p>   
               </div>
               <span className="flex items-center gap-1.5 text-xs font-medium"><span className="animate-ping inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>In Progress</span>
             </div>
             <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-surface-container-low transition-colors">
               <div className="flex-1">
-                <p className="text-sm font-medium text-on-surface">Update API Documentation</p>
-                <p className="text-xs text-outline">Engineering · Docs</p>
+                <p className="text-sm font-medium text-on-surface">Update API Documentation</p>       
               </div>
               <span className="text-xs text-outline">To Do</span>
             </div>
             <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-surface-container-low transition-colors">
               <div className="flex-1">
                 <p className="text-sm font-medium text-on-surface">Optimize Asset Pipeline</p>
-                <p className="text-xs text-outline">DevOps · Performance</p>
               </div>
               <span className="text-xs text-outline">To Do</span>
             </div>

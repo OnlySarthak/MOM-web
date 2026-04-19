@@ -49,32 +49,17 @@ export default function AdminMeetings() {
   const navigate = useNavigate();
   const [meetings, setMeetings] = useState(MEETINGS);
   const [searchQ, setSearchQ] = useState('');
-  const [showSchedule, setShowSchedule] = useState(false);
-  const [showMom, setShowMom] = useState(false);
-  const [activeMom, setActiveMom] = useState(null);
   const [openDD, setOpenDD] = useState(null);
-  const [form, setForm] = useState({ title: '', project: '', date: '', time: '', duration: '45 min', location: 'Virtual Atelier', notes: '' });
 
   const filtered = meetings.filter(m => !searchQ || m.title.toLowerCase().includes(searchQ.toLowerCase()));
 
-  function openMomPanel(idx) { setActiveMom(meetings[idx]); setShowMom(true); }
-  function closeMomPanel() { setShowMom(false); setActiveMom(null); }
+
 
   function cancelMeeting(idx) {
     if (window.confirm(`Cancel "${meetings[idx].title}"?`)) {
       const updated = [...meetings]; updated.splice(idx, 1); setMeetings(updated);
     }
     setOpenDD(null);
-  }
-
-  function handleSchedule(e) {
-    e.preventDefault();
-    const dateStr = new Date(form.date + 'T' + form.time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    const timeStr = new Date(form.date + 'T' + form.time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    const initials = user.name.split(' ').map(n => n[0]).join('');
-    setMeetings([{ id: Date.now(), title: form.title, project: form.project || 'General', date: `${dateStr} · ${timeStr}`, organizer: { name: user.name, initials, color: 'bg-primary' }, status: 'Scheduled', participants: [], mom: { title: form.title + ' — MOM', date: dateStr, decisions: ['Meeting scheduled — no minutes yet'], actionItems: [], notes: '' } }, ...meetings]);
-    setShowSchedule(false);
-    setForm({ title: '', project: '', date: '', time: '', duration: '45 min', location: 'Virtual Atelier', notes: '' });
   }
 
   return (
@@ -85,9 +70,6 @@ export default function AdminMeetings() {
           <h1 className="font-headline text-5xl text-on-surface tracking-tight mb-2">Meetings</h1>
           <p className="font-headline italic text-xl text-outline">Schedule, review, and track your team syncs.</p>
         </div>
-        <button className="btn-primary gap-2 text-sm flex-shrink-0" onClick={() => setShowSchedule(true)}>
-          <span className="material-symbols-outlined text-lg">add</span>Schedule Meeting
-        </button>
       </div>
 
       {/* Search & Filter */}
@@ -115,11 +97,11 @@ export default function AdminMeetings() {
       <div className="ts-card overflow-hidden mb-12">
         <table className="ts-table">
           <thead>
-            <tr><th>Meeting Title</th><th>Date & Time</th><th>Organizer</th><th>Participants</th><th></th></tr>
+            <tr><th>Meeting Title</th><th>Date & Time</th><th>Participants</th><th></th></tr>
           </thead>
           <tbody>
             {filtered.map((m, idx) => (
-              <tr key={m.id} className="cursor-pointer group" onClick={() => openMomPanel(idx)}>
+              <tr key={m.id} className="cursor-pointer group" onClick={() => navigate('/admin/meeting-detail')}>
                 <td>
                   <p className="font-headline text-lg text-on-surface group-hover:text-primary transition-colors">{m.title}</p>
                   <p className="text-xs text-outline">Project: {m.project}</p>
@@ -155,91 +137,7 @@ export default function AdminMeetings() {
         </div>
       </div>
 
-      {/* MOM Slider */}
-      <div className={`ts-slideover-overlay ${showMom ? 'open' : ''}`} onClick={closeMomPanel}></div>
-      <div className={`ts-slideover ${showMom ? 'open' : ''}`}>
-        {activeMom && (
-          <>
-            <div className="ts-slideover-header">
-              <h2 className="font-headline text-xl text-on-surface">{activeMom.mom.title}</h2>
-              <button className="ts-close-btn" onClick={closeMomPanel}><span className="material-symbols-outlined">close</span></button>
-            </div>
-            <div className="ts-slideover-body">
-              <div className="mb-6">
-                <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Meeting Date</p>
-                <p className="text-sm font-mono text-on-surface-variant">{activeMom.mom.date}</p>
-              </div>
-              <div className="mb-6">
-                <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-3">Key Decisions</p>
-                <ul className="space-y-2">
-                  {activeMom.mom.decisions.map((d, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="material-symbols-outlined text-secondary text-sm mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                      <span className="text-sm text-on-surface">{d}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="mb-6">
-                <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-3">Action Items</p>
-                {activeMom.mom.actionItems.length > 0
-                  ? <div className="space-y-2">{activeMom.mom.actionItems.map((a, i) => (
-                    <div key={i} className="flex items-start gap-3 p-3 bg-surface-container-lowest rounded-lg">
-                      <span className="material-symbols-outlined text-primary text-sm mt-0.5">task_alt</span>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-on-surface">{a.task}</p>
-                        <p className="text-[10px] text-outline font-mono mt-0.5">{a.assignee} · Due {a.due}</p>
-                      </div>
-                    </div>
-                  ))}</div>
-                  : <p className="text-sm text-outline italic">No action items yet.</p>}
-              </div>
-              <div className="mb-8">
-                <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Insights</p>
-                <p className="text-sm text-on-surface-variant leading-relaxed">{activeMom.mom.notes}</p>
-              </div>
-              <button className="btn-primary gap-2 text-sm w-full justify-center" onClick={() => navigate('/admin/mom-detail')}>
-                <span className="material-symbols-outlined text-sm">open_in_new</span>View Full MOM
-              </button>
-            </div>
-          </>
-        )}
-      </div>
 
-      {/* Schedule Modal */}
-      <div className={`ts-modal-overlay ${showSchedule ? 'open' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) setShowSchedule(false); }}>
-        <div className="ts-modal">
-          <div className="ts-modal-header">
-            <h2>Schedule Meeting</h2>
-            <button className="ts-close-btn" onClick={() => setShowSchedule(false)}><span className="material-symbols-outlined">close</span></button>
-          </div>
-          <div className="ts-modal-body">
-            <form id="schedule-form" className="space-y-5" onSubmit={handleSchedule}>
-              <div><label className="ts-label">Meeting Title *</label><input className="ts-field" type="text" placeholder="e.g. Sprint Review #13" required value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} /></div>
-              <div><label className="ts-label">Project / Context</label><input className="ts-field" type="text" placeholder="e.g. Rebranding 2026" value={form.project} onChange={e => setForm({ ...form, project: e.target.value })} /></div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="ts-label">Date *</label><input className="ts-field" type="date" required value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} /></div>
-                <div><label className="ts-label">Time *</label><input className="ts-field" type="time" required value={form.time} onChange={e => setForm({ ...form, time: e.target.value })} /></div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="ts-label">Duration</label>
-                  <select className="ts-field" value={form.duration} onChange={e => setForm({ ...form, duration: e.target.value })}>
-                    <option>30 min</option><option>45 min</option><option>60 min</option><option>90 min</option>
-                  </select>
-                </div>
-                <div><label className="ts-label">Location</label><input className="ts-field" type="text" placeholder="e.g. Virtual Atelier" value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} /></div>
-              </div>
-              <div><label className="ts-label">Agenda / Notes</label><textarea className="ts-field resize-none h-20" placeholder="Brief agenda..." value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })}></textarea></div>
-            </form>
-          </div>
-          <div className="ts-modal-footer">
-            <button className="btn-secondary text-sm" onClick={() => setShowSchedule(false)}>Cancel</button>
-            <button className="btn-primary text-sm" onClick={() => document.getElementById('schedule-form').requestSubmit()}>
-              <span className="material-symbols-outlined text-sm">event</span>Schedule
-            </button>
-          </div>
-        </div>
-      </div>
     </>
   );
 }

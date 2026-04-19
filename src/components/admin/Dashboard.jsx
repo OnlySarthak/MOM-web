@@ -65,7 +65,8 @@ export default function AdminDashboard() {
           <table className="ts-table">
             <thead>
               <tr>
-                <th>Member</th><th>Role</th><th>Department</th><th>Status</th><th></th>
+                <th>Member</th><th>Role</th><th>Team Role</th><th>Status</th><th></th>
+                {/* team role is team functional role in backend */}
               </tr>
             </thead>
             <tbody>

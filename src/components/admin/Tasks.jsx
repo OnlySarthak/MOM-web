@@ -20,16 +20,12 @@ const ASSIGNEE_MAP = {
   MV: { name: 'Marcus V.', color: 'bg-outline' },
 };
 
-const PRIORITY_CLASS = { Critical: 'badge-critical', High: 'badge-high', Medium: 'badge-medium', Low: 'badge-low' };
-
 export default function AdminTasks() {
   const [tasks, setTasks] = useState(INIT_TASKS);
   const [statusFilter, setStatusFilter] = useState('all');
   const [teamFilter, setTeamFilter] = useState('');
   const [assigneeFilter, setAssigneeFilter] = useState('');
   const [searchQ, setSearchQ] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ name: '', category: '', team: '', assignee: '', priority: 'Medium', due: '' });
 
   const filtered = tasks.filter(t => {
     const matchStatus = statusFilter === 'all' || t.status === statusFilter;
@@ -51,15 +47,6 @@ export default function AdminTasks() {
     }
   }
 
-  function handleNewTask(e) {
-    e.preventDefault();
-    const rawDue = form.due;
-    const due = rawDue ? new Date(rawDue).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
-    setTasks([{ ...form, category: form.category || 'General', due, status: 'todo' }, ...tasks]);
-    setShowModal(false);
-    setForm({ name: '', category: '', team: '', assignee: '', priority: 'Medium', due: '' });
-  }
-
   return (
     <>
       {/* Header */}
@@ -68,9 +55,6 @@ export default function AdminTasks() {
           <h1 className="font-headline text-5xl text-on-surface tracking-tight mb-2">Tasks</h1>
           <p className="font-headline italic text-xl text-outline">Track, assign, and deliver with precision — by team.</p>
         </div>
-        <button className="btn-primary gap-2 text-sm" onClick={() => setShowModal(true)}>
-          <span className="material-symbols-outlined">add</span>New Task
-        </button>
       </div>
 
       {/* Filter Chips */}
@@ -125,7 +109,6 @@ export default function AdminTasks() {
                     <div className="flex items-center gap-3">
                       <div>
                         <p className={`font-medium text-on-surface ${isCompleted ? 'line-through opacity-60' : ''}`}>{t.name}</p>
-                        <p className="text-xs text-outline">{t.category}</p>
                       </div>
                     </div>
                   </td>
@@ -143,12 +126,6 @@ export default function AdminTasks() {
                       ? <span className="flex items-center gap-1.5 text-xs font-medium text-secondary"><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>Completed</span>
                       : <span className="text-xs text-outline">To Do</span>}
                   </td>
-                  <td className="task-actions">
-                    <div className="flex items-center gap-1">
-                      <button className="p-1.5 text-outline hover:text-primary rounded-lg transition-colors"><span className="material-symbols-outlined text-sm">edit</span></button>
-                      <button className="p-1.5 text-outline hover:text-error rounded-lg transition-colors" onClick={() => deleteTask(idx)}><span className="material-symbols-outlined text-sm">delete</span></button>
-                    </div>
-                  </td>
                 </tr>
               );
             })}
@@ -159,48 +136,6 @@ export default function AdminTasks() {
           <div className="flex gap-2">
             <button className="p-2 rounded-lg border border-outline-variant/15 text-outline hover:bg-surface-container-low transition-colors"><span className="material-symbols-outlined text-sm">chevron_left</span></button>
             <button className="p-2 rounded-lg border border-outline-variant/15 text-on-surface bg-surface-container-low hover:bg-surface-container-high transition-colors"><span className="material-symbols-outlined text-sm">chevron_right</span></button>
-          </div>
-        </div>
-      </div>
-
-      {/* New Task Modal */}
-      <div className={`ts-modal-overlay ${showModal ? 'open' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) setShowModal(false); }}>
-        <div className="ts-modal">
-          <div className="ts-modal-header">
-            <h2>New Task</h2>
-            <button className="ts-close-btn" onClick={() => setShowModal(false)}><span className="material-symbols-outlined">close</span></button>
-          </div>
-          <div className="ts-modal-body">
-            <form id="newtask-form" className="space-y-5" onSubmit={handleNewTask}>
-              <div><label className="ts-label">Task Name *</label><input className="ts-field" type="text" placeholder="e.g. Refactor Auth Middleware" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>
-              <div><label className="ts-label">Category</label><input className="ts-field" type="text" placeholder="e.g. Engineering · API" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} /></div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="ts-label">Team *</label>
-                  <select className="ts-field" required value={form.team} onChange={e => setForm({ ...form, team: e.target.value })}>
-                    <option value="">Select team…</option><option>Atelier Alpha</option><option>Studio Beta</option><option>Craft Gamma</option><option>Nexus Delta</option><option>Studio Epsilon</option>
-                  </select>
-                </div>
-                <div><label className="ts-label">Assignee</label>
-                  <select className="ts-field" value={form.assignee} onChange={e => setForm({ ...form, assignee: e.target.value })}>
-                    <option value="">Unassigned</option><option value="JD">Jane Doe</option><option value="DC">David Chen</option><option value="EV">Elena Vance</option><option value="MV">Marcus V.</option>
-                  </select>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="ts-label">Priority</label>
-                  <select className="ts-field" value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value })}>
-                    <option>Medium</option><option>Critical</option><option>High</option><option>Low</option>
-                  </select>
-                </div>
-                <div><label className="ts-label">Due Date</label><input className="ts-field" type="date" value={form.due} onChange={e => setForm({ ...form, due: e.target.value })} /></div>
-              </div>
-            </form>
-          </div>
-          <div className="ts-modal-footer">
-            <button className="btn-secondary text-sm" onClick={() => setShowModal(false)}>Cancel</button>
-            <button className="btn-primary text-sm" onClick={() => document.getElementById('newtask-form').requestSubmit()}>
-              <span className="material-symbols-outlined text-sm">add</span>Create Task
-            </button>
           </div>
         </div>
       </div>

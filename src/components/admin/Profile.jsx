@@ -6,12 +6,12 @@ import leaderAvatar from '../../assets/images/leader.png';
 import memberAvatar from '../../assets/images/member.png';
 
 const ROLE_AVATARS = { admin: adminAvatar, leader: leaderAvatar, member: memberAvatar };
+const WORKSPACE_NAME = 'Digital Atelier';
 
 export default function AdminProfile() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [firstName, setFirstName] = useState(() => user.name.split(' ')[0]);
-  const [lastName, setLastName] = useState(() => user.name.split(' ').slice(1).join(' '));
+  const [name, setName] = useState(user.name);
   const [oldPwd, setOldPwd] = useState('');
   const [newPwd, setNewPwd] = useState('');
   const [confirmPwd, setConfirmPwd] = useState('');
@@ -60,6 +60,10 @@ export default function AdminProfile() {
           </div>
           <p className="text-on-surface-variant">{user.title}</p>
           <p className="font-mono text-sm text-outline mt-1">{user.email}</p>
+          <div className="flex items-center gap-2 mt-2">
+            <span className="material-symbols-outlined text-outline text-sm">workspaces</span>
+            <span className="text-xs text-outline font-medium">{WORKSPACE_NAME}</span>
+          </div>
         </div>
         <div className="md:ml-auto">
           <button className="btn-primary gap-2 text-sm" onClick={handleSave} disabled={saveFeedback}>
@@ -72,21 +76,15 @@ export default function AdminProfile() {
       <div className="grid grid-cols-12 gap-8">
         {/* Left */}
         <div className="col-span-12 lg:col-span-7 space-y-8">
-          {/* Name */}
+          {/* Name — single field */}
           <section className="ts-card p-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><span className="material-symbols-outlined text-primary text-sm">badge</span></div>
-              <h2 className="font-headline text-xl text-on-surface">Change Your Name</h2>
+              <h2 className="font-headline text-xl text-on-surface">Your Name</h2>
             </div>
-            <div className="grid grid-cols-2 gap-5">
-              <div>
-                <label className="block text-[10px] uppercase tracking-widest text-outline font-bold mb-2">First Name</label>
-                <input className="field-input" type="text" placeholder="First name" value={firstName} onChange={e => setFirstName(e.target.value)} />
-              </div>
-              <div>
-                <label className="block text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Last Name</label>
-                <input className="field-input" type="text" placeholder="Last name" value={lastName} onChange={e => setLastName(e.target.value)} />
-              </div>
+            <div>
+              <label className="block text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Name</label>
+              <input className="field-input" type="text" placeholder="Your full name" value={name} onChange={e => setName(e.target.value)} />
             </div>
           </section>
 
@@ -121,6 +119,23 @@ export default function AdminProfile() {
 
         {/* Right */}
         <div className="col-span-12 lg:col-span-5 space-y-8">
+          {/* Workspace */}
+          <section className="ts-card p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><span className="material-symbols-outlined text-primary text-sm">workspaces</span></div>
+              <h2 className="font-headline text-xl text-on-surface">Workspace</h2>
+            </div>
+            <div className="flex items-center gap-4 p-4 bg-surface-container-low rounded-xl">
+              <div className="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center">
+                <span className="material-symbols-outlined text-white text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>sync_alt</span>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-on-surface">{WORKSPACE_NAME}</p>
+                <p className="text-xs text-on-surface-variant">TeamSync workspace</p>
+              </div>
+            </div>
+          </section>
+
           {/* Role */}
           <section className="ts-card p-8">
             <div className="flex items-center gap-3 mb-6">

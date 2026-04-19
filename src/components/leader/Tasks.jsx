@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Avatar from 'react-avatar';
 
 const INIT_TASKS = [
@@ -17,14 +16,12 @@ const ASSIGNEE_MAP = {
   MV: { name: 'Marcus V.', color: 'bg-outline' },
 };
 
-const PRIORITY_CLASS = { Critical: 'badge-critical', High: 'badge-high', Medium: 'badge-medium', Low: 'badge-low' };
-
 export default function LeaderTasks() {
   const [tasks, setTasks] = useState(INIT_TASKS);
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQ, setSearchQ] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ name: '', category: '', assignee: '', priority: 'Medium', due: '' });
+  const [form, setForm] = useState({ name: '', assignee: '' });
 
   const filtered = tasks.filter(t => {
     const matchStatus = statusFilter === 'all' || t.status === statusFilter;
@@ -44,10 +41,9 @@ export default function LeaderTasks() {
 
   function handleNewTask(e) {
     e.preventDefault();
-    const due = form.due ? new Date(form.due).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
-    setTasks([{ ...form, category: form.category || 'General', team: 'My Team', due, status: 'todo' }, ...tasks]);
+    setTasks([{ name: form.name, category: 'General', team: 'My Team', assignee: form.assignee, priority: 'Medium', status: 'todo', due: '—' }, ...tasks]);
     setShowModal(false);
-    setForm({ name: '', category: '', assignee: '', priority: 'Medium', due: '' });
+    setForm({ name: '', assignee: '' });
   }
 
   return (
@@ -109,26 +105,19 @@ export default function LeaderTasks() {
         </table>
       </div>
 
+      {/* Assign Task Modal — simplified: Task Name + Assignee only */}
       <div className={`ts-modal-overlay ${showModal ? 'open' : ''}`} onClick={e => { if (e.target === e.currentTarget) setShowModal(false); }}>
         <div className="ts-modal">
           <div className="ts-modal-header"><h2>Assign Task</h2><button className="ts-close-btn" onClick={() => setShowModal(false)}><span className="material-symbols-outlined">close</span></button></div>
           <div className="ts-modal-body">
             <form id="leader-task-form" className="space-y-5" onSubmit={handleNewTask}>
-              <div><label className="ts-label">Task Name *</label><input className="ts-field" type="text" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>
-              <div><label className="ts-label">Category</label><input className="ts-field" type="text" placeholder="e.g. Engineering · API" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} /></div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="ts-label">Assignee</label>
-                  <select className="ts-field" value={form.assignee} onChange={e => setForm({ ...form, assignee: e.target.value })}>
-                    <option value="">Unassigned</option><option value="JD">Jane Doe</option><option value="DC">David Chen</option><option value="EV">Elena Vance</option><option value="MV">Marcus V.</option>
-                  </select>
-                </div>
-                <div><label className="ts-label">Priority</label>
-                  <select className="ts-field" value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value })}>
-                    <option>Medium</option><option>Critical</option><option>High</option><option>Low</option>
-                  </select>
-                </div>
+              <div><label className="ts-label">Task Name *</label><input className="ts-field" type="text" placeholder="e.g. Refactor Auth Middleware" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>
+              <div><label className="ts-label">Assignee</label>
+              {/* //assignee must be non leader */}
+                <select className="ts-field" value={form.assignee} onChange={e => setForm({ ...form, assignee: e.target.value })}>
+                  <option value="JD">Jane Doe</option><option value="DC">David Chen</option><option value="EV">Elena Vance</option><option value="MV">Marcus V.</option>
+                </select>
               </div>
-              <div><label className="ts-label">Due Date</label><input className="ts-field" type="date" value={form.due} onChange={e => setForm({ ...form, due: e.target.value })} /></div>
             </form>
           </div>
           <div className="ts-modal-footer">

@@ -9,6 +9,11 @@ const ASSIGNEE_FULL_NAMES = {
   DC: 'David Chen',
 };
 
+const TEAM_INFO = {
+  name: 'Atelier Alpha',
+  description: 'Design & Brand team focused on UI, design systems, and brand standards across all product lines.',
+};
+
 export default function LeaderDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -28,7 +33,7 @@ export default function LeaderDashboard() {
               <div className="w-24 ts-progress-track"><div className="ts-progress-fill" style={{ width: '72%' }}></div></div>
             </div>
           </div>
-          <Link to="/leader/meetings" className="btn-primary text-sm">+ Schedule Meeting</Link>
+          <Link to="/leader/meetings" className="btn-primary text-sm">+ Create Meeting</Link>
         </div>
       </div>
 
@@ -40,60 +45,86 @@ export default function LeaderDashboard() {
 
       {/* Tab: Overview */}
       {activeTab === 'overview' && (
-        <div className="grid grid-cols-10 gap-8">
-          {/* Recent MOMs */}
-          <div className="col-span-10 lg:col-span-4">
-            <div className="flex items-baseline justify-between mb-5">
-              <h2 className="font-headline text-2xl text-on-surface">Recent MOMs</h2>
-              <Link to="/leader/mom-list" className="text-[11px] font-medium text-primary hover:underline">VIEW ALL</Link>
+        <div className="space-y-8">
+          {/* Team Information Card */}
+          <div className="ts-card p-6">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-primary text-sm">groups</span>
+              </div>
+              <h2 className="font-headline text-xl text-on-surface">Team Information</h2>
             </div>
-            <div className="space-y-4">
-              <article className="ts-card p-6 hover:shadow-md transition-shadow cursor-pointer" onClick={() => {}}>
-                <div className="flex justify-between items-start mb-3">
-                  <h3 className="font-headline text-lg leading-tight text-on-surface">Budget Re-allocation for Cloud Services</h3>
-                  <span className="font-mono text-[10px] bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">JUN 12</span>
-                </div>
-                <p className="text-xs text-on-surface-variant italic font-headline opacity-80 mb-4 line-clamp-2">"Decided to shift 15% of the marketing budget to infrastructure to handle the surge in user traffic..."</p>
-              </article>
-              <article className="ts-card p-6 hover:shadow-md transition-shadow cursor-pointer">
-                <div className="flex justify-between items-start mb-3">
-                  <h3 className="font-headline text-lg leading-tight text-on-surface">Design System V2 Launch Timeline</h3>
-                  <span className="font-mono text-[10px] bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">JUN 10</span>
-                </div>
-                <p className="text-xs text-on-surface-variant italic font-headline opacity-80 mb-4 line-clamp-2">"The rollout will be staged over three phases starting July 1st, beginning with core layout components..."</p>
-              </article>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Team Name</p>
+                <p className="text-sm font-semibold text-on-surface">{TEAM_INFO.name}</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Project</p>
+                <p className="text-sm font-semibold text-on-surface">{TEAM_INFO.project}</p>
+              </div>
+              <div className="md:col-span-2">
+                <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Description</p>
+                <p className="text-sm text-on-surface-variant">{TEAM_INFO.description}</p>
+              </div>
+
             </div>
           </div>
 
-          {/* Team Tasks */}
-          <div className="col-span-10 lg:col-span-6">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="font-headline text-2xl text-on-surface">Team Tasks</h2>
-              <Link to="/leader/tasks" className="btn-secondary text-xs px-3 py-1.5">+ Assign Task</Link>
+          <div className="grid grid-cols-10 gap-8">
+            {/* Recent MOMs */}
+            <div className="col-span-10 lg:col-span-4">
+              <div className="flex items-baseline justify-between mb-5">
+                <h2 className="font-headline text-2xl text-on-surface">Recent MOMs</h2>
+                <Link to="/leader/mom-list" className="text-[11px] font-medium text-primary hover:underline">VIEW ALL</Link>
+              </div>
+              <div className="space-y-4">
+                <article className="ts-card p-6 hover:shadow-md transition-shadow cursor-pointer" onClick={() => { }}>
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="font-headline text-lg leading-tight text-on-surface">Budget Re-allocation for Cloud Services</h3>
+                    <span className="font-mono text-[10px] bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">JUN 12</span>
+                  </div>
+                  <p className="text-xs text-on-surface-variant italic font-headline opacity-80 mb-4 line-clamp-2">"Decided to shift 15% of the marketing budget to infrastructure to handle the surge in user traffic..."</p>
+                </article>
+                <article className="ts-card p-6 hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="font-headline text-lg leading-tight text-on-surface">Design System V2 Launch Timeline</h3>
+                    <span className="font-mono text-[10px] bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">JUN 10</span>
+                  </div>
+                  <p className="text-xs text-on-surface-variant italic font-headline opacity-80 mb-4 line-clamp-2">"The rollout will be staged over three phases starting July 1st, beginning with core layout components..."</p>
+                </article>
+              </div>
             </div>
-            <div className="ts-card overflow-hidden">
-              <table className="ts-table">
-                <thead><tr><th>Task</th><th className="text-center">Assignee</th><th>Priority</th><th>Status</th></tr></thead>
-                <tbody>
-                  {[
-                    { task: 'Refactor Auth Middleware', assignee: 'JD', priority: 'HIGH', status: 'in-progress', pClass: 'badge-high' },
-                    { task: 'Update API Documentation', assignee: 'EV', priority: 'MEDIUM', status: 'todo', pClass: 'badge-medium' },
-                    { task: 'Cloud Security Audit', assignee: 'MV', priority: 'HIGH', status: 'completed', pClass: 'badge-high' },
-                    { task: 'Optimize Asset Pipeline', assignee: 'JD', priority: 'LOW', status: 'todo', pClass: 'badge-low' },
-                  ].map((t, i) => (
-                    <tr key={i} className="cursor-pointer">
-                      <td className="font-medium text-on-surface">{t.task}</td>
-                      <td className="text-center"><Avatar name={ASSIGNEE_FULL_NAMES[t.assignee] || t.assignee} size="28" round={true} className="mx-auto" /></td>
-                      <td><span className={`text-[10px] font-bold px-2 py-0.5 rounded ${t.pClass}`}>{t.priority}</span></td>
-                      <td>
-                        {t.status === 'in-progress' ? <span className="flex items-center gap-1.5 text-xs"><span className="animate-ping inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>In Progress</span>
-                          : t.status === 'completed' ? <span className="flex items-center gap-1.5 text-xs text-secondary"><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>Completed</span>
-                          : <span className="text-xs text-outline">To Do</span>}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+
+            {/* Team Tasks */}
+            <div className="col-span-10 lg:col-span-6">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="font-headline text-2xl text-on-surface">Team Tasks</h2>
+                <Link to="/leader/tasks" className="btn-secondary text-xs px-3 py-1.5">+ Assign Task</Link>
+              </div>
+              <div className="ts-card overflow-hidden">
+                <table className="ts-table">
+                  <thead><tr><th>Task</th><th className="text-center">Assignee</th><th>Status</th></tr></thead>
+                  <tbody>
+                    {[
+                      { task: 'Refactor Auth Middleware', assignee: 'JD', status: 'in-progress' },
+                      { task: 'Update API Documentation', assignee: 'EV', status: 'todo' },
+                      { task: 'Cloud Security Audit', assignee: 'MV', status: 'completed' },
+                      { task: 'Optimize Asset Pipeline', assignee: 'JD', status: 'todo' },
+                    ].map((t, i) => (
+                      <tr key={i} className="cursor-pointer">
+                        <td className="font-medium text-on-surface">{t.task}</td>
+                        <td className="text-center"><Avatar name={ASSIGNEE_FULL_NAMES[t.assignee] || t.assignee} size="28" round={true} className="mx-auto" /></td>
+                        <td>
+                          {t.status === 'in-progress' ? <span className="flex items-center gap-1.5 text-xs"><span className="animate-ping inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>In Progress</span>
+                            : t.status === 'completed' ? <span className="flex items-center gap-1.5 text-xs text-secondary"><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>Completed</span>
+                              : <span className="text-xs text-outline">To Do</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

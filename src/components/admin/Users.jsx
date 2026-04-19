@@ -104,7 +104,6 @@ export default function AdminUsers() {
         <div className="relative">
           <select className="appearance-none pl-4 pr-10 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm cursor-pointer focus:outline-none" value={roleFilter} onChange={e => setRoleFilter(e.target.value)}>
             <option value="">Role: All</option>
-            <option value="Admin">Admin</option>
             <option value="Team Leader">Team Leader</option>
             <option value="Member">Member</option>
           </select>
@@ -126,7 +125,7 @@ export default function AdminUsers() {
         <table className="ts-table">
           <thead>
             <tr>
-              <th>User</th><th>Role</th><th>Department</th><th>Status</th><th>Actions</th>
+              <th>User</th><th>Role</th><th>Team Role</th><th>Status</th><th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -150,16 +149,10 @@ export default function AdminUsers() {
                       : <span className="badge-deactivated text-[9px]">Deactivated</span>}
                   </td>
                   <td>
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className={`p-1.5 text-outline hover:text-${isDeactivated ? 'primary' : 'error'} rounded-lg transition-colors`} onClick={() => toggleUserStatus(realIdx)}><span className="material-symbols-outlined text-sm">{isDeactivated ? 'person' : 'person_off'}</span></button>
-                      <div className="relative">
-                        <button className="p-1.5 text-outline hover:text-on-surface rounded-lg transition-colors user-more-btn" onClick={() => setOpenDD(openDD === realIdx ? null : realIdx)}><span className="material-symbols-outlined text-sm">more_vert</span></button>
-                        <div className={`ts-dropdown ${openDD === realIdx ? 'open' : ''}`}>
-                          <button className="ts-dropdown-item"><span className="material-symbols-outlined text-sm">person</span>View Profile</button>
-                          <div className="ts-dropdown-sep"></div>
-                          <button className="ts-dropdown-item danger" onClick={() => removeUser(realIdx)}><span className="material-symbols-outlined text-sm">person_remove</span>Remove User</button>
-                        </div>
-                      </div>
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-error border border-error/20 rounded-lg hover:bg-error/5 transition-colors" onClick={() => removeUser(realIdx)}>
+                        <span className="material-symbols-outlined text-sm">person_remove</span>Remove
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -186,7 +179,8 @@ export default function AdminUsers() {
                 <div><label className="ts-label">Email Address *</label><input className="ts-field" type="email" placeholder="name@teamsync.io" required value={invForm.email} onChange={e => setInvForm({ ...invForm, email: e.target.value })} /></div>
                 <div><label className="ts-label">Role</label>
                   <select className="ts-field" value={invForm.role} onChange={e => setInvForm({ ...invForm, role: e.target.value })}>
-                    <option>Member</option><option>Team Leader</option><option>Admin</option>
+                    <option>Member</option><option>Team Leader</option>
+                    {/* cant add another admin */}
                   </select>
                 </div>
               </div>

@@ -1,22 +1,64 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Avatar from 'react-avatar';
 
+const ALL_PARTICIPANTS = [
+  { name: 'Julian Pierce', role: 'Design Lead' },
+  { name: 'Sarah Kim', role: 'Product Manager' },
+  { name: "Liam O'Brien", role: 'CTO' },
+  { name: 'Elena Rossi', role: 'Brand Strategist' },
+  { name: 'Marcus Chen', role: 'Developer' },
+  { name: 'Nina Park', role: 'UX Researcher' },
+];
+
 export default function LeaderMomDetail() {
+  const navigate = useNavigate();
   const [showEdit, setShowEdit] = useState(false);
   const [editData, setEditData] = useState({
     insights: 'This MOM is linked to the Brand Vision 2024 project epic.',
-    decisions: '01. Standardize #faf9f6 as the primary canvas color.\n02. Adopt Newsreader for all editorial-style headers.\n03. De-prioritize 1px borders in favor of tonal background shifts.',
-    participants: 'Julian Pierce — Design Lead\nSarah Kim — Product Manager\nLiam O\'Brien — CTO',
+    decisions: [
+      'Standardize #faf9f6 as the primary canvas color.',
+      'Adopt Newsreader for all editorial-style headers.',
+      'De-prioritize 1px borders in favor of tonal background shifts.',
+    ],
+    participants: [
+      { name: 'Julian Pierce', role: 'Design Lead' },
+      { name: 'Sarah Kim', role: 'Product Manager' },
+      { name: "Liam O'Brien", role: 'CTO' },
+    ],
     narrative: 'The discussion centered on evolving our visual identity to reflect a more sophisticated, "Digital Atelier" aesthetic. We scrutinized the current SaaS dashboard fatigue and agreed to pivot toward high-contrast typography and tonal layering.',
   });
+  const [newParticipant, setNewParticipant] = useState('');
 
-  function handleKeyDown(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      setShowEdit(false);
-    }
+  function addDecision() {
+    setEditData(prev => ({ ...prev, decisions: [...prev.decisions, ''] }));
   }
+
+  function removeDecision(idx) {
+    setEditData(prev => ({ ...prev, decisions: prev.decisions.filter((_, i) => i !== idx) }));
+  }
+
+  function updateDecision(idx, value) {
+    setEditData(prev => ({
+      ...prev,
+      decisions: prev.decisions.map((d, i) => i === idx ? value : d),
+    }));
+  }
+
+  function addParticipant() {
+    if (!newParticipant) return;
+    const found = ALL_PARTICIPANTS.find(p => p.name === newParticipant);
+    if (found && !editData.participants.find(p => p.name === found.name)) {
+      setEditData(prev => ({ ...prev, participants: [...prev.participants, found] }));
+    }
+    setNewParticipant('');
+  }
+
+  function removeParticipant(name) {
+    setEditData(prev => ({ ...prev, participants: prev.participants.filter(p => p.name !== name) }));
+  }
+
+  const availableToAdd = ALL_PARTICIPANTS.filter(p => !editData.participants.find(ep => ep.name === p.name));
 
   return (
     <>
@@ -36,9 +78,14 @@ export default function LeaderMomDetail() {
           <h1 className="font-headline text-5xl text-on-surface leading-tight mb-4">Q4 Brand Strategy &amp; Visual Language Sync</h1>
           <p className="font-mono text-sm text-outline">Oct 24, 2023 • 10:00 AM — 11:30 AM EST</p>
         </div>
-        <button className="btn-primary gap-2 flex-shrink-0" onClick={() => setShowEdit(true)}>
-          <span className="material-symbols-outlined text-sm">edit</span>Edit MOM
-        </button>
+        <div className="flex gap-3 flex-shrink-0">
+          <button className="btn-secondary gap-2" onClick={() => navigate('/leader/meeting-detail')}>
+            <span className="material-symbols-outlined text-sm">calendar_today</span>View Meeting
+          </button>
+          <button className="btn-primary gap-2" onClick={() => setShowEdit(true)}>
+            <span className="material-symbols-outlined text-sm">edit</span>Edit MOM
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-12 gap-8">
@@ -63,10 +110,10 @@ export default function LeaderMomDetail() {
             <h2 className="font-headline text-2xl text-on-surface mb-5 italic opacity-80">Pending Actions</h2>
             <div className="ts-card overflow-hidden">
               <table className="ts-table">
-                <thead><tr><th>Task Details</th><th>Assignee</th><th>Priority</th></tr></thead>
+                <thead><tr><th>Task Details</th><th>Assignee</th></tr></thead>
                 <tbody>
-                  <tr><td><span className="text-sm font-medium">Update Brand Style Guide PDF</span></td><td><div className="flex items-center gap-2"><Avatar name="Aria V." size="24" round={true} /><span className="text-xs text-on-surface-variant">Aria V.</span></div></td><td><span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold badge-critical">Critical</span></td></tr>
-                  <tr><td><span className="text-sm font-medium">Develop Tailwind Config for Atelier Palette</span></td><td><div className="flex items-center gap-2"><Avatar name="Marcus T." size="24" round={true} /><span className="text-xs text-on-surface-variant">Marcus T.</span></div></td><td><span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold badge-medium">Medium</span></td></tr>
+                  <tr><td><span className="text-sm font-medium">Update Brand Style Guide PDF</span></td><td><div className="flex items-center gap-2"><Avatar name="Aria V." size="24" round={true} /><span className="text-xs text-on-surface-variant">Aria V.</span></div></td></tr>
+                  <tr><td><span className="text-sm font-medium">Develop Tailwind Config for Atelier Palette</span></td><td><div className="flex items-center gap-2"><Avatar name="Marcus T." size="24" round={true} /><span className="text-xs text-on-surface-variant">Marcus T.</span></div></td></tr>
                 </tbody>
               </table>
             </div>
@@ -77,7 +124,7 @@ export default function LeaderMomDetail() {
           <section>
             <h3 className="font-headline text-xl text-on-surface mb-5 italic">Participants</h3>
             <div className="ts-card p-5 space-y-4">
-              {[{ initials:'JP',name:'Julian Pierce',role:'Design Lead',color:'bg-primary'},{ initials:'SK',name:'Sarah Kim',role:'Product Manager',color:'bg-secondary'},{ initials:'LO',name:"Liam O'Brien",role:'CTO',color:'bg-[#7f2500]'}].map((p,i)=>(
+              {[{ name: 'Julian Pierce', role: 'Design Lead' }, { name: 'Sarah Kim', role: 'Product Manager' }, { name: "Liam O'Brien", role: 'CTO' }].map((p, i) => (
                 <div key={i} className="flex items-center gap-3"><Avatar name={p.name} size="40" round={true} /><div><p className="text-sm font-semibold">{p.name}</p><p className="text-[10px] uppercase text-outline tracking-wider">{p.role}</p></div></div>
               ))}
             </div>
@@ -131,52 +178,129 @@ export default function LeaderMomDetail() {
         <p className="font-mono text-[10px] uppercase text-outline tracking-widest">Last sync: Today at 2:45 PM</p>
       </div>
 
-      {/* Edit MOM Slide-over Panel */}
-      <div className={`ts-slideover-overlay ${showEdit ? 'open' : ''}`} onClick={() => setShowEdit(false)}></div>
-      <div className={`ts-slideover ${showEdit ? 'open' : ''}`}>
+      {/* Edit MOM Slide-over Panel — fixed z-index to be above navbar */}
+      <div
+        className={`fixed inset-0 bg-on-surface/20 backdrop-blur-sm transition-opacity duration-300 ${showEdit ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        style={{ zIndex: 200 }}
+        onClick={() => setShowEdit(false)}
+      ></div>
+      <div
+        className={`fixed top-0 right-0 bottom-0 w-full md:w-[440px] bg-surface flex flex-col shadow-2xl transition-transform duration-300 overflow-hidden ${showEdit ? 'translate-x-0' : 'translate-x-full'}`}
+        style={{ zIndex: 201 }}
+      >
         <div className="ts-slideover-header">
           <h2 className="font-headline text-xl text-on-surface">Edit MOM</h2>
           <button className="ts-close-btn" onClick={() => setShowEdit(false)}><span className="material-symbols-outlined">close</span></button>
         </div>
-        <div className="ts-slideover-body space-y-6">
+        <div className="flex-1 overflow-y-auto ts-slideover-body space-y-6">
+          {/* Narrative */}
           <div>
             <label className="ts-label">Narrative</label>
             <textarea
               className="ts-field resize-none h-28"
               value={editData.narrative}
               onChange={e => setEditData({ ...editData, narrative: e.target.value })}
-              onKeyDown={handleKeyDown}
             ></textarea>
           </div>
+
+          {/* Key Decisions — separate input fields */}
           <div>
-            <label className="ts-label">Key Decisions</label>
-            <textarea
-              className="ts-field resize-none h-28"
-              value={editData.decisions}
-              onChange={e => setEditData({ ...editData, decisions: e.target.value })}
-              onKeyDown={handleKeyDown}
-            ></textarea>
+            <div className="flex items-center justify-between mb-3">
+              <label className="ts-label mb-0">Key Decisions</label>
+              <button
+                className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:bg-primary/5 px-2 py-1 rounded-lg transition-colors"
+                onClick={addDecision}
+                type="button"
+              >
+                <span className="material-symbols-outlined text-sm">add</span>Add
+              </button>
+            </div>
+            <div className="space-y-2">
+              {editData.decisions.map((d, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <span className="font-headline text-primary text-sm italic w-6 flex-shrink-0">{String(idx + 1).padStart(2, '0')}.</span>
+                  <input
+                    className="ts-field flex-1"
+                    type="text"
+                    placeholder={`Decision ${idx + 1}...`}
+                    value={d}
+                    onChange={e => updateDecision(idx, e.target.value)}
+                  />
+                  <button
+                    className="p-1.5 text-outline hover:text-error rounded-lg transition-colors flex-shrink-0"
+                    onClick={() => removeDecision(idx)}
+                    type="button"
+                    title="Remove"
+                  >
+                    <span className="material-symbols-outlined text-sm">remove_circle</span>
+                  </button>
+                </div>
+              ))}
+              {editData.decisions.length === 0 && (
+                <p className="text-sm text-outline italic">No decisions yet. Click "Add" to create one.</p>
+              )}
+            </div>
           </div>
+
+          {/* Participants */}
           <div>
             <label className="ts-label">Participants</label>
-            <textarea
-              className="ts-field resize-none h-24"
-              value={editData.participants}
-              onChange={e => setEditData({ ...editData, participants: e.target.value })}
-              onKeyDown={handleKeyDown}
-            ></textarea>
+            <div className="space-y-2 mb-3">
+              {editData.participants.map((p, i) => (
+                <div key={i} className="flex items-center gap-3 p-2 bg-surface-container-low rounded-xl">
+                  <Avatar name={p.name} size="32" round={true} />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-on-surface">{p.name}</p>
+                    <p className="text-[10px] uppercase text-outline tracking-wider">{p.role}</p>
+                  </div>
+                  <button
+                    className="p-1 text-outline hover:text-error rounded-lg transition-colors"
+                    onClick={() => removeParticipant(p.name)}
+                    type="button"
+                  >
+                    <span className="material-symbols-outlined text-sm">close</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+            {availableToAdd.length > 0 && (
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <select
+                    className="ts-field"
+                    value={newParticipant}
+                    onChange={e => setNewParticipant(e.target.value)}
+                  >
+                    <option value="">Add attendee…</option>
+                    {availableToAdd.map(p => (
+                      <option key={p.name} value={p.name}>{p.name} — {p.role}</option>
+                    ))}
+                  </select>
+                </div>
+                <button
+                  className="btn-secondary text-sm flex-shrink-0 px-3"
+                  onClick={addParticipant}
+                  type="button"
+                  disabled={!newParticipant}
+                >
+                  <span className="material-symbols-outlined text-sm">add</span>Add
+                </button>
+              </div>
+            )}
           </div>
+
+          {/* Workspace Insights */}
           <div>
             <label className="ts-label">Workspace Insights</label>
             <textarea
               className="ts-field resize-none h-20"
               value={editData.insights}
               onChange={e => setEditData({ ...editData, insights: e.target.value })}
-              onKeyDown={handleKeyDown}
             ></textarea>
           </div>
+
           <button className="btn-primary w-full justify-center text-sm mt-4" onClick={() => setShowEdit(false)}>
-            OK
+            Save Changes
           </button>
         </div>
       </div>

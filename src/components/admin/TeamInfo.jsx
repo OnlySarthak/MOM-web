@@ -167,7 +167,7 @@ export default function AdminTeamInfo() {
             </div>
             <table className="ts-table">
               <thead>
-                <tr><th>Member</th><th>Role</th><th>Email</th><th>Status</th><th></th></tr>
+                <tr><th>Member</th><th>Team Role</th><th>Email</th><th>Actions</th></tr>
               </thead>
               <tbody>
                 {team.members.map((m, i) => (
@@ -180,11 +180,7 @@ export default function AdminTeamInfo() {
                     </td>
                     <td><span className="text-xs text-on-surface-variant">{m.role}</span></td>
                     <td><span className="text-xs font-mono text-outline">{m.email}</span></td>
-                    <td>
-                      {m.status === 'Active'
-                        ? <span className="badge-active text-[9px]"><span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>{m.status}</span>
-                        : <span className="badge-draft text-[9px]">{m.status}</span>}
-                    </td>
+
                     <td>
                       {m.isLeader ? (
                         <button className="text-xs font-medium text-primary hover:underline" onClick={() => setShowReplace(true)}>Replace Leader</button>
