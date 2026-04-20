@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext.jsx';
+import { registerApi, loginApi, dashboardForRole } from '../../auth/auth.js';
 
 export default function RegisterPage() {
-  const { login } = useAuth();
+  const { setUser } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', workspace: '', password: '', confirmPwd: '' });
   const [showPassword, setShowPassword] = useState(false);
@@ -16,7 +17,7 @@ export default function RegisterPage() {
     setError('');
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (!form.name || !form.email || !form.workspace || !form.password) {
       setError('Please fill in all required fields.');
@@ -27,16 +28,22 @@ export default function RegisterPage() {
       return;
     }
     setLoading(true);
-    // Simulate registration — auto log in as admin for demo purposes
-    setTimeout(() => {
-      const result = login('admin@teamsync.app', 'admin123');
-      if (result.success) {
-        navigate('/admin/dashboard', { replace: true });
-      } else {
-        setLoading(false);
-        setError('Registration failed. Please try again.');
-      }
-    }, 700);
+    // Step 1: Register workspace + admin via real API
+    const regResult = await registerApi(form.name, form.email, form.workspace, form.password);
+    if (!regResult.success) {
+      setError(regResult.error);
+      setLoading(false);
+      return;
+    }
+    // Step 2: Auto log in with newly created creds
+    const loginResult = await loginApi(form.email, form.password);
+    if (loginResult.success) {
+      setUser(loginResult.user);
+      navigate(dashboardForRole(loginResult.user.role), { replace: true });
+    } else {
+      // Registration succeeded but auto-login failed — redirect to login
+      navigate('/login', { replace: true });
+    }
   }
 
   return (
@@ -107,60 +114,25 @@ export default function RegisterPage() {
             </div>
           )}
 
+          {/* Registration Form — calls real API */}
           <form className="space-y-5" onSubmit={handleSubmit} noValidate>
             <div>
               <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold mb-2">Admin Name *</label>
-              <input
-                type="text"
-                name="name"
-                className="auth-input"
-                placeholder="Your full name"
-                required
-                value={form.name}
-                onChange={handleChange}
-              />
+              <input type="text" name="name" className="auth-input" placeholder="Your full name" required value={form.name} onChange={handleChange} />
             </div>
             <div>
               <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold mb-2">Email Address *</label>
-              <input
-                type="email"
-                name="email"
-                className="auth-input"
-                placeholder="admin@yourcompany.com"
-                required
-                value={form.email}
-                onChange={handleChange}
-              />
+              <input type="email" name="email" className="auth-input" placeholder="admin@yourcompany.com" required value={form.email} onChange={handleChange} />
             </div>
             <div>
               <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold mb-2">Workspace Name *</label>
-              <input
-                type="text"
-                name="workspace"
-                className="auth-input"
-                placeholder="e.g. Digital Atelier"
-                required
-                value={form.workspace}
-                onChange={handleChange}
-              />
+              <input type="text" name="workspace" className="auth-input" placeholder="e.g. Digital Atelier" required value={form.workspace} onChange={handleChange} />
             </div>
             <div>
               <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold mb-2">Password *</label>
               <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  className="auth-input pr-12"
-                  placeholder="Create a strong password"
-                  required
-                  value={form.password}
-                  onChange={handleChange}
-                />
-                <button
-                  type="button"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
+                <input type={showPassword ? 'text' : 'password'} name="password" className="auth-input pr-12" placeholder="Create a strong password" required value={form.password} onChange={handleChange} />
+                <button type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" onClick={() => setShowPassword(!showPassword)}>
                   <span className="material-symbols-outlined text-lg">{showPassword ? 'visibility_off' : 'visibility'}</span>
                 </button>
               </div>
@@ -168,20 +140,8 @@ export default function RegisterPage() {
             <div>
               <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold mb-2">Confirm Password *</label>
               <div className="relative">
-                <input
-                  type={showConfirm ? 'text' : 'password'}
-                  name="confirmPwd"
-                  className="auth-input pr-12"
-                  placeholder="Confirm your password"
-                  required
-                  value={form.confirmPwd}
-                  onChange={handleChange}
-                />
-                <button
-                  type="button"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                >
+                <input type={showConfirm ? 'text' : 'password'} name="confirmPwd" className="auth-input pr-12" placeholder="Confirm your password" required value={form.confirmPwd} onChange={handleChange} />
+                <button type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" onClick={() => setShowConfirm(!showConfirm)}>
                   <span className="material-symbols-outlined text-lg">{showConfirm ? 'visibility_off' : 'visibility'}</span>
                 </button>
               </div>

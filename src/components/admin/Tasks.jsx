@@ -1,51 +1,62 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Avatar from 'react-avatar';
 
-const INIT_TASKS = [
-  { name: 'Refactor Auth Middleware', category: 'Engineering · API', team: 'Studio Beta', assignee: 'JD', priority: 'Critical', status: 'in-progress', due: 'Apr 16, 2026' },
-  { name: 'Update API Documentation', category: 'Engineering · Docs', team: 'Studio Beta', assignee: 'DC', priority: 'Medium', status: 'todo', due: '—' },
-  { name: 'Cloud Security Audit', category: 'Engineering · Security', team: 'Studio Beta', assignee: 'MV', priority: 'High', status: 'completed', due: 'Apr 8, 2026' },
-  { name: 'Optimize Asset Pipeline', category: 'DevOps · Performance', team: 'Studio Beta', assignee: 'JD', priority: 'Low', status: 'todo', due: '—' },
-  { name: 'Design System V2 — Component Audit', category: 'Design · System', team: 'Atelier Alpha', assignee: 'EV', priority: 'High', status: 'in-progress', due: 'Apr 20, 2026' },
-  { name: 'Brand Guidelines Update', category: 'Design · Brand', team: 'Atelier Alpha', assignee: 'DC', priority: 'Medium', status: 'todo', due: '—' },
-  { name: 'User Interview Synthesis', category: 'Product · Research', team: 'Craft Gamma', assignee: 'MV', priority: 'Medium', status: 'in-progress', due: 'Apr 22, 2026' },
-  { name: 'Pipeline Cleanup Sprint', category: 'Sales · Pipeline', team: 'Nexus Delta', assignee: 'JD', priority: 'High', status: 'in-progress', due: 'Apr 18, 2026' },
-  { name: 'Q2 Campaign Launch', category: 'Marketing · Campaign', team: 'Studio Epsilon', assignee: 'EV', priority: 'High', status: 'in-progress', due: 'Apr 20, 2026' },
-];
+const API_BASE = 'http://localhost:5000/api';
 
-const ASSIGNEE_MAP = {
-  JD: { name: 'Jane Doe', color: 'bg-primary' },
-  DC: { name: 'David Chen', color: 'bg-secondary' },
-  EV: { name: 'Elena Vance', color: 'bg-tertiary' },
-  MV: { name: 'Marcus V.', color: 'bg-outline' },
+async function apiFetch(path) {
+  const res = await fetch(`${API_BASE}${path}`, { credentials: 'include' });
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
+}
+
+// Backend uses 'in_progress' / 'pending' / 'completed'
+// UI uses 'in-progress' / 'todo' / 'completed'
+const STATE_DISPLAY = {
+  in_progress: 'in-progress',
+  pending: 'todo',
+  completed: 'completed',
+};
+
+const STATUS_ENDPOINTS = {
+  all: '/admin/tasks',
+  'in-progress': '/admin/tasks/in-progress',
+  todo: '/admin/tasks/todo',
+  completed: '/admin/tasks/completed',
 };
 
 export default function AdminTasks() {
-  const [tasks, setTasks] = useState(INIT_TASKS);
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
   const [teamFilter, setTeamFilter] = useState('');
-  const [assigneeFilter, setAssigneeFilter] = useState('');
   const [searchQ, setSearchQ] = useState('');
 
+  useEffect(() => {
+    setLoading(true);
+    const endpoint = STATUS_ENDPOINTS[statusFilter] || STATUS_ENDPOINTS.all;
+    apiFetch(endpoint)
+      .then(res => setTasks(res.data || []))
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [statusFilter]);
+
+  // Normalize task state to UI display value
+  const normalizeState = (state) => STATE_DISPLAY[state] || state;
+
   const filtered = tasks.filter(t => {
-    const matchStatus = statusFilter === 'all' || t.status === statusFilter;
-    const matchTeam = !teamFilter || t.team === teamFilter;
-    const matchAssignee = !assigneeFilter || (ASSIGNEE_MAP[t.assignee]?.name === assigneeFilter);
-    const matchSearch = !searchQ || t.name.toLowerCase().includes(searchQ.toLowerCase());
-    return matchStatus && matchTeam && matchAssignee && matchSearch;
+    const matchTeam = !teamFilter || t.teamId?.teamName === teamFilter;
+    const matchSearch = !searchQ || (t.title || '').toLowerCase().includes(searchQ.toLowerCase());
+    return matchTeam && matchSearch;
   });
 
-  const total = tasks.length;
-  const inProgress = tasks.filter(t => t.status === 'in-progress').length;
-  const todo = tasks.filter(t => t.status === 'todo').length;
-  const completed = tasks.filter(t => t.status === 'completed').length;
+  // Unique team names from fetched data
+  const teamNames = [...new Set(tasks.map(t => t.teamId?.teamName).filter(Boolean))];
 
-  function deleteTask(idx) {
-    const realIdx = tasks.indexOf(filtered[idx]);
-    if (window.confirm(`Delete "${tasks[realIdx].name}"?`)) {
-      const updated = [...tasks]; updated.splice(realIdx, 1); setTasks(updated);
-    }
-  }
+  const total = tasks.length;
+  const inProgress = tasks.filter(t => t.state === 'in_progress').length;
+  const todo = tasks.filter(t => t.state === 'pending').length;
+  const completed = tasks.filter(t => t.state === 'completed').length;
 
   return (
     <>
@@ -73,14 +84,7 @@ export default function AdminTasks() {
           <div className="relative">
             <select className="appearance-none pl-4 pr-10 py-2 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm cursor-pointer focus:outline-none" value={teamFilter} onChange={e => setTeamFilter(e.target.value)}>
               <option value="">All Teams</option>
-              <option>Atelier Alpha</option><option>Studio Beta</option><option>Craft Gamma</option><option>Nexus Delta</option><option>Studio Epsilon</option>
-            </select>
-            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-sm">expand_more</span>
-          </div>
-          <div className="relative">
-            <select className="appearance-none pl-4 pr-10 py-2 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm cursor-pointer focus:outline-none" value={assigneeFilter} onChange={e => setAssigneeFilter(e.target.value)}>
-              <option value="">All Assignees</option>
-              <option>Jane Doe</option><option>David Chen</option><option>Elena Vance</option><option>Marcus V.</option>
+              {teamNames.map(name => <option key={name}>{name}</option>)}
             </select>
             <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-sm">expand_more</span>
           </div>
@@ -97,46 +101,45 @@ export default function AdminTasks() {
 
       {/* Table */}
       <div className="ts-card overflow-hidden">
-        <table className="ts-table">
-          <thead><tr><th>Task Name</th><th>Team</th><th>Assignee</th><th>Status</th><th></th></tr></thead>
-          <tbody>
-            {filtered.map((t, idx) => {
-              const a = ASSIGNEE_MAP[t.assignee] || { name: 'Unassigned', color: 'bg-surface-container-high' };
-              const isCompleted = t.status === 'completed';
-              return (
-                <tr key={idx} className="task-row">
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <div>
-                        <p className={`font-medium text-on-surface ${isCompleted ? 'line-through opacity-60' : ''}`}>{t.name}</p>
+        {loading ? (
+          <div className="px-6 py-12 text-center text-sm text-outline animate-pulse">Loading tasks…</div>
+        ) : error ? (
+          <div className="px-6 py-12 text-center text-sm text-error">Failed to load tasks: {error}</div>
+        ) : (
+          <table className="ts-table">
+            <thead><tr><th>Task Name</th><th>Team</th><th>Status</th></tr></thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr><td colSpan={3} className="text-center text-outline py-8 text-sm">No tasks found.</td></tr>
+              ) : filtered.map((t, idx) => {
+                const uiState = normalizeState(t.state);
+                const isCompleted = t.state === 'completed';
+                return (
+                  <tr key={t._id || idx} className="task-row">
+                    <td>
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <p className={`font-medium text-on-surface ${isCompleted ? 'line-through opacity-60' : ''}`}>{t.title || '—'}</p>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td><span className="badge-team">{t.team}</span></td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <Avatar name={a.name} size="28" round={true} />
-                      <span className="text-sm">{a.name}</span>
-                    </div>
-                  </td>
-                  <td>
-                    {t.status === 'in-progress'
-                      ? <span className="flex items-center gap-1.5 text-xs font-medium"><span className="animate-ping inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>In Progress</span>
-                      : t.status === 'completed'
-                      ? <span className="flex items-center gap-1.5 text-xs font-medium text-secondary"><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>Completed</span>
-                      : <span className="text-xs text-outline">To Do</span>}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                    {/* team = teamName from backend */}
+                    <td><span className="badge-team">{t.teamId?.teamName || '—'}</span></td>
+                    <td>
+                      {uiState === 'in-progress'
+                        ? <span className="flex items-center gap-1.5 text-xs font-medium"><span className="animate-ping inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>In Progress</span>
+                        : uiState === 'completed'
+                        ? <span className="flex items-center gap-1.5 text-xs font-medium text-secondary"><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>Completed</span>
+                        : <span className="text-xs text-outline">To Do</span>}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
         <div className="px-6 py-4 border-t border-outline-variant/10 flex items-center justify-between">
           <p className="text-xs text-outline">Showing {filtered.length} of {tasks.length} tasks</p>
-          <div className="flex gap-2">
-            <button className="p-2 rounded-lg border border-outline-variant/15 text-outline hover:bg-surface-container-low transition-colors"><span className="material-symbols-outlined text-sm">chevron_left</span></button>
-            <button className="p-2 rounded-lg border border-outline-variant/15 text-on-surface bg-surface-container-low hover:bg-surface-container-high transition-colors"><span className="material-symbols-outlined text-sm">chevron_right</span></button>
-          </div>
         </div>
       </div>
     </>

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext.jsx';
-import { dashboardForRole } from '../../auth/auth.js';
+import { loginApi, dashboardForRole } from '../../auth/auth.js';
 
 export default function LoginPage() {
-  const { user, login } = useAuth();
+  const { user, setUser } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,34 +18,33 @@ export default function LoginPage() {
     }
   }, [user, navigate]);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setError('');
     setLoading(true);
-    setTimeout(() => {
-      const result = login(email.trim(), password);
-      if (result.success) {
-        navigate(dashboardForRole(result.user.role), { replace: true });
-      } else {
-        setError(result.error);
-        setLoading(false);
-      }
-    }, 600);
+    const result = await loginApi(email.trim(), password);
+    if (result.success) {
+      setUser(result.user); // Update AuthContext with real user
+      navigate(dashboardForRole(result.user.role), { replace: true });
+    } else {
+      setError(result.error);
+      setLoading(false);
+    }
   }
 
-  function fillDemo(demoEmail, demoPassword) {
+  async function fillDemo(demoEmail, demoPassword) {
     setEmail(demoEmail);
     setPassword(demoPassword);
     setError('');
     setLoading(true);
-    setTimeout(() => {
-      const result = login(demoEmail, demoPassword);
-      if (result.success) {
-        navigate(dashboardForRole(result.user.role), { replace: true });
-      } else {
-        setError(result.error);
-        setLoading(false);
-      }
-    }, 600);
+    const result = await loginApi(demoEmail, demoPassword);
+    if (result.success) {
+      setUser(result.user);
+      navigate(dashboardForRole(result.user.role), { replace: true });
+    } else {
+      setError(result.error);
+      setLoading(false);
+    }
   }
 
   return (
@@ -116,7 +115,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Login Form */}
+          {/* Login Form — calls real API */}
           <form className="space-y-5" onSubmit={handleSubmit} noValidate>
             <div>
               <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold mb-2">Email Address</label>
@@ -127,7 +126,7 @@ export default function LoginPage() {
                 autoComplete="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
               />
             </div>
             <div>
@@ -140,7 +139,7 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                 />
                 <button
                   type="button"

@@ -1,17 +1,14 @@
 import React, { createContext, useContext, useState } from 'react';
-import { getUser, login as authLogin, logout as authLogout } from './auth.js';
+import { getUser, logout as authLogout } from './auth.js';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => getUser());
 
-  function login(email, password) {
-    const result = authLogin(email, password);
-    if (result.success) {
-      setUser(result.user);
-    }
-    return result;
+  // setUser is exposed so LoginPage can push the real API user in after loginApi()
+  function updateUser(userData) {
+    setUser(userData);
   }
 
   function logout() {
@@ -20,7 +17,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser: updateUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

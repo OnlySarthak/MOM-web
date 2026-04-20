@@ -1,7 +1,42 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Avatar from 'react-avatar';
 
+const API_BASE = 'http://localhost:5000/api';
+
+async function apiFetch(path) {
+  const res = await fetch(`${API_BASE}${path}`, { credentials: 'include' });
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
+}
+
 export default function AdminDashboard() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    apiFetch('/admin/dashboard')
+      .then(setData)
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div className="flex items-center justify-center h-64 text-outline animate-pulse">Loading dashboard…</div>;
+  if (error) return <div className="flex items-center justify-center h-64 text-error text-sm">Failed to load dashboard: {error}</div>;
+
+  const { cards = {}, teamDirectory = [], systemHealth = {} } = data || {};
+  const {
+    totalUsers = 0, totalMeetings = 0, totalCompletedTasks = 0, totalTeams = 0
+  } = cards;
+  const {
+    totalTasks = 0, completedTasks = 0, inProgressTasks = 0, pendingTasks = 0, taskProgress = 0
+  } = systemHealth;
+
+  const completedPct = totalTasks > 0 ? ((completedTasks / totalTasks) * 100).toFixed(1) : 0;
+  const inProgressPct = totalTasks > 0 ? ((inProgressTasks / totalTasks) * 100).toFixed(1) : 0;
+  const pendingPct = totalTasks > 0 ? ((pendingTasks / totalTasks) * 100).toFixed(1) : 0;
+
   return (
     <>
       {/* Page Hero */}
@@ -19,8 +54,8 @@ export default function AdminDashboard() {
             </div>
             <span className="font-mono text-[10px] text-outline uppercase tracking-widest">Users</span>
           </div>
-          <p className="font-headline text-4xl font-bold text-on-surface">48</p>
-          <p className="text-xs text-on-surface-variant mt-1">+3 this month</p>
+          <p className="font-headline text-4xl font-bold text-on-surface">{totalUsers}</p>
+          <p className="text-xs text-on-surface-variant mt-1">Workspace members</p>
         </div>
         <div className="stat-card">
           <div className="flex items-start justify-between mb-4">
@@ -29,8 +64,8 @@ export default function AdminDashboard() {
             </div>
             <span className="font-mono text-[10px] text-outline uppercase tracking-widest">Meetings</span>
           </div>
-          <p className="font-headline text-4xl font-bold text-on-surface">124</p>
-          <p className="text-xs text-on-surface-variant mt-1">This quarter</p>
+          <p className="font-headline text-4xl font-bold text-on-surface">{totalMeetings}</p>
+          <p className="text-xs text-on-surface-variant mt-1">Total meetings</p>
         </div>
         <div className="stat-card">
           <div className="flex items-start justify-between mb-4">
@@ -39,8 +74,8 @@ export default function AdminDashboard() {
             </div>
             <span className="font-mono text-[10px] text-outline uppercase tracking-widest">Tasks</span>
           </div>
-          <p className="font-headline text-4xl font-bold text-on-surface">317</p>
-          <p className="text-xs text-on-surface-variant mt-1">72% completed</p>
+          <p className="font-headline text-4xl font-bold text-on-surface">{totalCompletedTasks}</p>
+          <p className="text-xs text-on-surface-variant mt-1">{completedPct}% completed</p>
         </div>
         <div className="stat-card">
           <div className="flex items-start justify-between mb-4">
@@ -49,8 +84,8 @@ export default function AdminDashboard() {
             </div>
             <span className="font-mono text-[10px] text-outline uppercase tracking-widest">Teams</span>
           </div>
-          <p className="font-headline text-4xl font-bold text-on-surface">6</p>
-          <p className="text-xs text-on-surface-variant mt-1">Active ateliers</p>
+          <p className="font-headline text-4xl font-bold text-on-surface">{totalTeams}</p>
+          <p className="text-xs text-on-surface-variant mt-1">Active teams</p>
         </div>
       </div>
 
@@ -62,64 +97,40 @@ export default function AdminDashboard() {
             <h2 className="font-headline text-2xl text-on-surface">Team Directory</h2>
             <Link to="/admin/users" className="text-xs font-medium text-primary hover:underline">Manage all users →</Link>
           </div>
-          <table className="ts-table">
-            <thead>
-              <tr>
-                <th>Member</th><th>Role</th><th>Team Role</th><th>Status</th><th></th>
-                {/* team role is team functional role in backend */}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div className="flex items-center gap-3">
-                    <Avatar name="Julian Thorne" size="36" round={true} />
-                    <div><p className="font-medium text-on-surface">Julian Thorne</p><p className="text-xs text-outline font-mono">julian.t@teamsync.io</p></div>
-                  </div>
-                </td>
-                <td><span className="text-sm font-medium">Admin</span></td>
-                <td><span className="text-sm text-on-surface-variant">Design</span></td>
-                <td><span className="badge-scheduled"><span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>Active</span></td>
-                <td className="text-right"><Link to="/admin/users" className="text-xs text-primary hover:underline">Edit</Link></td>
-              </tr>
-              <tr>
-                <td>
-                  <div className="flex items-center gap-3">
-                    <Avatar name="Elena Vance" size="36" round={true} />
-                    <div><p className="font-medium text-on-surface">Elena Vance</p><p className="text-xs text-outline font-mono">e.vance@teamsync.io</p></div>
-                  </div>
-                </td>
-                <td><span className="text-sm font-medium">Team Lead</span></td>
-                <td><span className="text-sm text-on-surface-variant">Engineering</span></td>
-                <td><span className="badge-draft">Invited</span></td>
-                <td className="text-right"><Link to="/admin/users" className="text-xs text-primary hover:underline">Edit</Link></td>
-              </tr>
-              <tr>
-                <td>
-                  <div className="flex items-center gap-3">
-                    <Avatar name="Marcus Chen" size="36" round={true} />
-                    <div><p className="font-medium text-on-surface">Marcus Chen</p><p className="text-xs text-outline font-mono">m.chen@teamsync.io</p></div>
-                  </div>
-                </td>
-                <td><span className="text-sm font-medium">Member</span></td>
-                <td><span className="text-sm text-on-surface-variant">Product</span></td>
-                <td><span className="badge-scheduled"><span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>Active</span></td>
-                <td className="text-right"><Link to="/admin/users" className="text-xs text-primary hover:underline">Edit</Link></td>
-              </tr>
-              <tr>
-                <td>
-                  <div className="flex items-center gap-3">
-                    <Avatar name="Sienna Brooks" size="36" round={true} />
-                    <div><p className="font-medium text-on-surface">Sienna Brooks</p><p className="text-xs text-outline font-mono">s.brooks@teamsync.io</p></div>
-                  </div>
-                </td>
-                <td><span className="text-sm font-medium">Member</span></td>
-                <td><span className="text-sm text-on-surface-variant">Design</span></td>
-                <td><span className="badge-completed">Deactivated</span></td>
-                <td className="text-right"><Link to="/admin/users" className="text-xs text-primary hover:underline">Edit</Link></td>
-              </tr>
-            </tbody>
-          </table>
+          {teamDirectory.length === 0 ? (
+            <p className="px-6 py-8 text-sm text-outline text-center">No team members found.</p>
+          ) : (
+            <table className="ts-table">
+              <thead>
+                <tr>
+                  <th>Member</th><th>Role</th><th>Team Role</th>
+                  {/* team role = teamFunctionalRole from backend */}
+                </tr>
+              </thead>
+              <tbody>
+                {teamDirectory.map((member, idx) => {
+                  const user = member.userId || {};
+                  const team = member.teamId || {};
+                  const isActive = user.status !== false;
+                  return (
+                    <tr key={member._id || idx}>
+                      <td>
+                        <div className="flex items-center gap-3">
+                          <Avatar name={user.name || '?'} size="36" round={true} />
+                          <div>
+                            <p className="font-medium text-on-surface">{user.name || '—'}</p>
+                            <p className="text-xs text-outline font-mono">{user.email || '—'}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td><span className="text-sm font-medium capitalize">{user.systemRole || '—'}</span></td>
+                      <td><span className="text-sm text-on-surface-variant">{team.teamFunctionalRole || '—'}</span></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* System Health & Quick Links */}
@@ -131,30 +142,30 @@ export default function AdminDashboard() {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-medium text-on-surface">Task Progress</span>
-                  <span className="font-mono text-xs text-primary font-bold">228 / 317</span>
+                  <span className="font-mono text-xs text-primary font-bold">{completedTasks} / {totalTasks}</span>
                 </div>
-                <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: '72%' }}></div></div>
+                <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: `${taskProgress}%` }}></div></div>
               </div>
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-medium text-on-surface">Completed Tasks</span>
-                  <span className="font-mono text-xs text-primary font-bold">228</span>
+                  <span className="font-mono text-xs text-primary font-bold">{completedTasks}</span>
                 </div>
-                <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: '72%' }}></div></div>
+                <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: `${completedPct}%` }}></div></div>
               </div>
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-medium text-on-surface">In Progress Tasks</span>
-                  <span className="font-mono text-xs text-primary font-bold">54</span>
+                  <span className="font-mono text-xs text-primary font-bold">{inProgressTasks}</span>
                 </div>
-                <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: '17%' }}></div></div>
+                <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: `${inProgressPct}%` }}></div></div>
               </div>
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-medium text-on-surface">Pending Tasks</span>
-                  <span className="font-mono text-xs text-primary font-bold">35</span>
+                  <span className="font-mono text-xs text-primary font-bold">{pendingTasks}</span>
                 </div>
-                <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: '11%' }}></div></div>
+                <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: `${pendingPct}%` }}></div></div>
               </div>
             </div>
           </div>
@@ -179,8 +190,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-
-
     </>
   );
 }

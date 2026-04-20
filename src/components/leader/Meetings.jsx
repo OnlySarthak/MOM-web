@@ -1,40 +1,35 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import Avatar from 'react-avatar';
 
-const MEETINGS = [
-  {
-    id: 1, title: 'Quarterly Brand Alignment', project: 'Rebranding 2026',
-    date: 'Apr 24, 2026 · 10:00 AM', organizer: { name: 'Sarah Miller', initials: 'SM', color: 'bg-primary' },
-    agenda: 'Review brand palette options and finalize direction for the 2026 rebrand. Discuss logo refresh concepts.',
-    status: 'Scheduled',
-    participants: [{ initials: 'DC', color: 'bg-secondary' }, { initials: 'JD', color: 'bg-tertiary' }, { extra: 4 }],
-    mom: { title: 'Quarterly Brand Alignment — MOM', date: 'Apr 24, 2026', decisions: ['Finalize brand palette by end of sprint'], actionItems: [{ task: 'Prepare logo concepts', assignee: 'David Chen', due: 'Apr 28' }], notes: 'Brand refresh prioritized.' }
-  },
-  {
-    id: 2, title: 'Mobile App UX Review', project: 'TeamSync Mobile',
-    date: 'Apr 22, 2026 · 02:30 PM', organizer: { name: 'David Chen', initials: 'DC', color: 'bg-secondary' },
-    agenda: 'Review mobile navigation patterns and discuss dark mode implementation timeline.',
-    status: 'Completed',
-    participants: [{ initials: 'JD', color: 'bg-primary' }, { initials: 'MV', color: 'bg-outline' }],
-    mom: { title: 'Mobile App UX Review — MOM', date: 'Apr 22, 2026', decisions: ['Adopt bottom nav pattern'], actionItems: [], notes: 'Navigation pattern decided.' }
-  },
-  {
-    id: 3, title: 'Architecture Sprint Planning', project: 'Engineering',
-    date: 'Apr 26, 2026 · 11:30 AM', organizer: { name: 'Marcus V.', initials: 'MV', color: 'bg-tertiary' },
-    agenda: 'Plan sprint tasks and prioritize auth refactor work.',
-    status: 'Scheduled',
-    participants: [{ initials: 'EV', color: 'bg-primary' }, { extra: 5 }],
-    mom: { title: 'Architecture Sprint Planning — MOM', date: 'Apr 26, 2026', decisions: ['Auth refactor first'], actionItems: [], notes: 'Sprint planning.' }
-  },
-];
+const API_BASE = 'http://localhost:5000/api';
+
+const FILTER_MAP = {
+  'All Time': 'all_time',
+  'Today': 'today',
+  'Yesterday': 'yesterday',
+  'This Week': 'this_week',
+  'Last Week': 'last_week',
+  'Earlier': 'earlier',
+};
+
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(`${API_BASE}${path}`, { credentials: 'include', ...opts });
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
+}
+
+const PAGE_SIZE = 3;
 
 export default function LeaderMeetings() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [meetings, setMeetings] = useState(MEETINGS);
+  const [meetings, setMeetings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchQ, setSearchQ] = useState('');
+  const [timeFilter, setTimeFilter] = useState('All Time');
   const [showCreate, setShowCreate] = useState(false);
   const [createStep, setCreateStep] = useState(1);
   const [openDD, setOpenDD] = useState(null);
@@ -42,24 +37,52 @@ export default function LeaderMeetings() {
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
+  const [meetingId, setMeetingId] = useState(null); // from initiateMeeting response
   const [page, setPage] = useState(1);
-  const PAGE_SIZE = 3;
 
-  const filtered = meetings.filter(m => !searchQ || m.title.toLowerCase().includes(searchQ.toLowerCase()));
+  function loadMeetings() {
+    setLoading(true);
+    const tf = FILTER_MAP[timeFilter] || 'all_time';
+    apiFetch(`/leader/meetings?filter=${tf}`)
+      .then(res => setMeetings(Array.isArray(res) ? res : []))
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => { loadMeetings(); }, [timeFilter]);
+
+  const filtered = meetings.filter(m => !searchQ || (m.title || '').toLowerCase().includes(searchQ.toLowerCase()));
   const paginated = filtered.slice(0, page * PAGE_SIZE);
   const hasMore = paginated.length < filtered.length;
 
-  function cancelMeeting(idx) {
-    if (window.confirm(`Cancel "${meetings[idx].title}"?`)) { const u = [...meetings]; u.splice(idx, 1); setMeetings(u); }
+  function cancelMeeting(id) {
+    const m = meetings.find(m => m._id === id);
+    if (m && window.confirm(`Cancel "${m.title}"?`)) {
+      apiFetch(`/leader/meetings/${id}`, { method: 'DELETE' })
+        .then(() => loadMeetings())
+        .catch(e => alert('Failed to cancel: ' + e.message));
+    }
     setOpenDD(null);
   }
 
-  function handleNext(e) {
+  // Step 1 "Next": call initiateMeeting → get meetingId
+  async function handleNext(e) {
     e.preventDefault();
-    setCreateStep(2);
-    setUploadProgress(0);
-    setUploadFile(null);
-    setUploading(false);
+    try {
+      const res = await apiFetch('/leader/meetings/initiate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: form.title, project: form.project }),
+      });
+      // Store meetingId for step 2
+      setMeetingId(res.meetingId);
+      setCreateStep(2);
+      setUploadProgress(0);
+      setUploadFile(null);
+      setUploading(false);
+    } catch (err) {
+      alert('Failed to initiate meeting: ' + err.message);
+    }
   }
 
   function handleFileChange(e) {
@@ -68,7 +91,7 @@ export default function LeaderMeetings() {
     setUploadFile(file);
     setUploading(true);
     setUploadProgress(0);
-    // Simulate upload progress
+    // Simulate upload progress (real implementation would upload to AWS)
     let prog = 0;
     const interval = setInterval(() => {
       prog += Math.random() * 20 + 5;
@@ -81,23 +104,22 @@ export default function LeaderMeetings() {
     }, 200);
   }
 
-  function handleDone() {
-    const initials = user.name.split(' ').map(n => n[0]).join('');
-    setMeetings([{
-      id: Date.now(),
-      title: form.title,
-      project: form.project || 'General',
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' · TBD',
-      organizer: { name: user.name, initials, color: 'bg-primary' },
-      agenda: form.agenda,
-      status: 'Scheduled',
-      participants: [],
-      mom: { title: form.title + ' — MOM', date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), decisions: [], actionItems: [], notes: '' }
-    }, ...meetings]);
-    setShowCreate(false);
-    setCreateStep(1);
-    setForm({ title: '', project: '', agenda: '' });
-    setUploadFile(null);
+  // Step 2 "Done": upload to AWS (simulated) → send meetingId + audioUrl to startMeetingProcess
+  async function handleDone() {
+    if (!meetingId) { alert('No meeting ID. Please restart.'); return; }
+    // TODO: replace with real AWS upload — obtain actual audioUrl
+    const audioUrl = uploadFile ? `https://s3.amazonaws.com/teamsync-audio/${Date.now()}-${uploadFile.name}` : '';
+    try {
+      await apiFetch(`/leader/meetings/${meetingId}/processing`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ audioUrl }),
+      });
+      closeCreateModal();
+      loadMeetings();
+    } catch (err) {
+      alert('Failed to start meeting processing: ' + err.message);
+    }
   }
 
   function closeCreateModal() {
@@ -105,6 +127,7 @@ export default function LeaderMeetings() {
     setCreateStep(1);
     setForm({ title: '', project: '', agenda: '' });
     setUploadFile(null);
+    setMeetingId(null);
   }
 
   return (
@@ -126,13 +149,13 @@ export default function LeaderMeetings() {
             <input className="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm focus:outline-none focus:border-primary" placeholder="Search meetings..." value={searchQ} onChange={e => setSearchQ(e.target.value)} />
           </div>
           <div className="relative">
-            <select className="appearance-none pl-4 pr-10 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm cursor-pointer focus:outline-none" defaultValue="All Time">
-              <option value="All Time">All Time</option>
-              <option value="Today">Today</option>
-              <option value="Yesterday">Yesterday</option>
-              <option value="This Week">This Week</option>
-              <option value="Last Week">Last Week</option>
-              <option value="Earlier">Earlier</option>
+            {/* Time filter wired to API */}
+            <select
+              className="appearance-none pl-4 pr-10 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm cursor-pointer focus:outline-none"
+              value={timeFilter}
+              onChange={e => setTimeFilter(e.target.value)}
+            >
+              {Object.keys(FILTER_MAP).map(k => <option key={k} value={k}>{k}</option>)}
             </select>
             <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
           </div>
@@ -140,27 +163,67 @@ export default function LeaderMeetings() {
       </div>
 
       <div className="ts-card overflow-hidden mb-12">
-        <table className="ts-table">
-          <thead><tr><th>Meeting Title</th><th>Date & Time</th><th>Participants</th><th></th></tr></thead>
-          <tbody>
-            {paginated.map((m, idx) => (
-              <tr key={m.id} className="cursor-pointer group" onClick={() => navigate('/leader/meeting-detail')}>
-                <td><p className="font-headline text-lg text-on-surface group-hover:text-primary transition-colors">{m.title}</p><p className="text-xs text-outline">Project: {m.project}</p></td>
-                <td className="font-mono text-xs text-on-surface-variant">{m.date}</td>
-                <td><div className="flex -space-x-1.5">{m.participants.map((p, pi) => p.extra ? <div key={pi} className="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center text-[9px] font-bold ring-2 ring-white">+{p.extra}</div> : <Avatar key={pi} name={p.initials} size="28" round={true} style={{ marginLeft: '-4px', border: '2px solid white' }} />)}</div></td>
-                <td className="text-right relative">
-                  <span className="material-symbols-outlined text-outline hover:text-on-surface cursor-pointer" onClick={e => { e.stopPropagation(); setOpenDD(openDD === idx ? null : idx); }}>more_vert</span>
-                  <div className={`ts-dropdown ${openDD === idx ? 'open' : ''}`}>
-                    <button className="ts-dropdown-item" onClick={e => { e.stopPropagation(); navigate('/leader/meeting-detail'); setOpenDD(null); }}><span className="material-symbols-outlined text-sm">visibility</span>View Details</button>
-                    <button className="ts-dropdown-item" onClick={e => { e.stopPropagation(); navigate('/leader/mom-detail'); setOpenDD(null); }}><span className="material-symbols-outlined text-sm">description</span>View MOM</button>
-                    <div className="ts-dropdown-sep"></div>
-                    <button className="ts-dropdown-item danger" onClick={e => { e.stopPropagation(); cancelMeeting(idx); }}><span className="material-symbols-outlined text-sm">cancel</span>Cancel Meeting</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {loading ? (
+          <div className="px-6 py-12 text-center text-sm text-outline animate-pulse">Loading meetings…</div>
+        ) : (error && filtered.length === 0) || filtered.length === 0 ? (
+          <div className="px-6 py-16 text-center">
+            <div className="w-16 h-16 bg-surface-container-high rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="material-symbols-outlined text-outline text-3xl">event_busy</span>
+            </div>
+            <p className="text-on-surface font-headline text-xl mb-1">No meetings found</p>
+            <p className="text-outline text-sm italic max-w-xs mx-auto mb-6">
+              {error ? "We couldn't load your meetings right now." : "Try adjusting your filters or search terms."}
+            </p>
+            {(error || timeFilter !== 'All Time' || searchQ) && (
+              <button 
+                onClick={() => { setError(null); setTimeFilter('All Time'); setSearchQ(''); loadMeetings(); }}
+                className="btn-secondary text-xs"
+              >
+                Clear all filters & refresh
+              </button>
+            )}
+          </div>
+        ) : (
+          <table className="ts-table">
+            {/* Status column removed per spec */}
+            <thead><tr><th>Meeting Title</th><th>Date & Time</th><th>Participants</th><th></th></tr></thead>
+            <tbody>
+              {paginated.map((m, idx) => {
+                // memberNames from presentAttendees (populated by backend)
+                const memberNames = Array.isArray(m.memberNames) ? m.memberNames : [];
+                const displayDate = m.meetingDate ? new Date(m.meetingDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+                return (
+                  <tr key={m._id || idx} className="cursor-pointer group" onClick={() => navigate(`/leader/meeting-detail?id=${m._id}`)}>
+                    <td>
+                      <p className="font-headline text-lg text-on-surface group-hover:text-primary transition-colors">{m.title || '—'}</p>
+                      <p className="text-xs text-outline">Project: {m.projectName || '—'}</p>
+                    </td>
+                    <td className="font-mono text-xs text-on-surface-variant">{displayDate}</td>
+                    <td>
+                      <div className="flex -space-x-1.5">
+                        {memberNames.slice(0, 3).map((name, pi) => (
+                          <Avatar key={pi} name={name || '?'} size="28" round={true} style={{ marginLeft: '-4px', border: '2px solid white' }} />
+                        ))}
+                        {memberNames.length > 3 && (
+                          <div className="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center text-[9px] font-bold ring-2 ring-white">+{memberNames.length - 3}</div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="text-right relative">
+                      <span className="material-symbols-outlined text-outline hover:text-on-surface cursor-pointer" onClick={e => { e.stopPropagation(); setOpenDD(openDD === idx ? null : idx); }}>more_vert</span>
+                      <div className={`ts-dropdown ${openDD === idx ? 'open' : ''}`}>
+                        <button className="ts-dropdown-item" onClick={e => { e.stopPropagation(); navigate(`/leader/meeting-detail?id=${m._id}`); setOpenDD(null); }}><span className="material-symbols-outlined text-sm">visibility</span>View Details</button>
+                        <div className="ts-dropdown-sep"></div>
+                        <button className="ts-dropdown-item danger" onClick={e => { e.stopPropagation(); cancelMeeting(m._id); }}><span className="material-symbols-outlined text-sm">cancel</span>Cancel Meeting</button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
+
         <div className="px-6 py-4 border-t border-outline-variant/10 flex items-center justify-between">
           <p className="text-xs text-outline">Showing <span className="text-on-surface">{paginated.length}</span> of <span className="text-on-surface">{filtered.length}</span> meetings</p>
           <div className="flex gap-2">
@@ -177,8 +240,6 @@ export default function LeaderMeetings() {
           </div>
         </div>
       </div>
-
-
 
       {/* Create Meeting Modal — Step 1 */}
       <div className={`ts-modal-overlay ${showCreate && createStep === 1 ? 'open' : ''}`} onClick={e => { if (e.target === e.currentTarget) closeCreateModal(); }}>
@@ -199,6 +260,7 @@ export default function LeaderMeetings() {
           </div>
           <div className="ts-modal-footer">
             <button className="btn-secondary text-sm" onClick={closeCreateModal}>Cancel</button>
+            {/* Next: calls initiateMeeting → gets meetingId */}
             <button className="btn-primary text-sm" onClick={() => document.getElementById('create-meeting-form').requestSubmit()}>
               Next <span className="material-symbols-outlined text-sm">arrow_forward</span>
             </button>
@@ -254,6 +316,7 @@ export default function LeaderMeetings() {
             <button className="btn-secondary text-sm" onClick={() => setCreateStep(1)}>
               <span className="material-symbols-outlined text-sm">arrow_back</span> Back
             </button>
+            {/* Done: sends meetingId + audioUrl to startMeetingProcess */}
             <button className="btn-primary text-sm" onClick={handleDone} disabled={uploading}>
               <span className="material-symbols-outlined text-sm">check</span>Done
             </button>

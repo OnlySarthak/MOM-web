@@ -1,21 +1,42 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Avatar from 'react-avatar';
 
-const ASSIGNEE_FULL_NAMES = {
-  JD: 'Jane Doe',
-  EV: 'Elena Vance',
-  MV: 'Marcus V.',
-  DC: 'David Chen',
-};
+const API_BASE = 'http://localhost:5000/api';
 
-const TEAM_INFO = {
-  name: 'Atelier Alpha',
-  description: 'Design & Brand team focused on UI, design systems, and brand standards across all product lines.',
-};
+async function apiFetch(path) {
+  const res = await fetch(`${API_BASE}${path}`, { credentials: 'include' });
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
+}
+
+const STATE_DISPLAY = { in_progress: 'in-progress', pending: 'todo', completed: 'completed' };
 
 export default function LeaderDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    apiFetch('/leader/dashboard')
+      .then(setData)
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div className="flex items-center justify-center h-64 text-outline animate-pulse">Loading dashboard…</div>;
+  if (error) return <div className="flex items-center justify-center h-64 text-error text-sm">Failed to load dashboard: {error}</div>;
+
+  const teamProgress = data?.teamProgress || {};
+  const recentMOM = Array.isArray(data?.recentMOM) ? data.recentMOM : [];
+  const recentTasks = Array.isArray(data?.recentTasks) ? data.recentTasks : [];
+  const teamMembersTasksDetails = Array.isArray(data?.teamMembersTasksDetails) ? data.teamMembersTasksDetails : [];
+  const teamStats = data?.teamStats || {};
+  const teamInfo = data?.teamInfo || {};
+
+  // team progress = teamProductivityScore (TeamProductivityScore field in model)
+  const progressScore = teamProgress.TeamProductivityScore ?? teamStats.TeamProductivityScore ?? 0;
 
   return (
     <>
@@ -29,8 +50,9 @@ export default function LeaderDashboard() {
           <div>
             <p className="text-[10px] uppercase tracking-widest text-outline font-semibold">Team Progress</p>
             <div className="flex items-center gap-3 mt-1">
-              <p className="font-headline text-2xl font-bold text-primary">72%</p>
-              <div className="w-24 ts-progress-track"><div className="ts-progress-fill" style={{ width: '72%' }}></div></div>
+              {/* team progress = teamProductivityScore */}
+              <p className="font-headline text-2xl font-bold text-primary">{progressScore}%</p>
+              <div className="w-24 ts-progress-track"><div className="ts-progress-fill" style={{ width: `${progressScore}%` }}></div></div>
             </div>
           </div>
           <Link to="/leader/meetings" className="btn-primary text-sm">+ Create Meeting</Link>
@@ -57,20 +79,20 @@ export default function LeaderDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div>
                 <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Team Name</p>
-                <p className="text-sm font-semibold text-on-surface">{TEAM_INFO.name}</p>
+                <p className="text-sm font-semibold text-on-surface">{teamInfo.teamName || '—'}</p>
               </div>
               <div>
                 <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Project</p>
-                <p className="text-sm font-semibold text-on-surface">{TEAM_INFO.project}</p>
+                <p className="text-sm font-semibold text-on-surface">{teamInfo.project || '—'}</p>
               </div>
               <div className="md:col-span-2">
                 <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Description</p>
-                <p className="text-sm text-on-surface-variant">{TEAM_INFO.description}</p>
+                <p className="text-sm text-on-surface-variant">{teamInfo.teamDescription || '—'}</p>
               </div>
+
 
             </div>
           </div>
-
           <div className="grid grid-cols-10 gap-8">
             {/* Recent MOMs */}
             <div className="col-span-10 lg:col-span-4">
@@ -79,20 +101,19 @@ export default function LeaderDashboard() {
                 <Link to="/leader/mom-list" className="text-[11px] font-medium text-primary hover:underline">VIEW ALL</Link>
               </div>
               <div className="space-y-4">
-                <article className="ts-card p-6 hover:shadow-md transition-shadow cursor-pointer" onClick={() => { }}>
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-headline text-lg leading-tight text-on-surface">Budget Re-allocation for Cloud Services</h3>
-                    <span className="font-mono text-[10px] bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">JUN 12</span>
-                  </div>
-                  <p className="text-xs text-on-surface-variant italic font-headline opacity-80 mb-4 line-clamp-2">"Decided to shift 15% of the marketing budget to infrastructure to handle the surge in user traffic..."</p>
-                </article>
-                <article className="ts-card p-6 hover:shadow-md transition-shadow cursor-pointer">
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-headline text-lg leading-tight text-on-surface">Design System V2 Launch Timeline</h3>
-                    <span className="font-mono text-[10px] bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">JUN 10</span>
-                  </div>
-                  <p className="text-xs text-on-surface-variant italic font-headline opacity-80 mb-4 line-clamp-2">"The rollout will be staged over three phases starting July 1st, beginning with core layout components..."</p>
-                </article>
+                {recentMOM.length === 0 ? (
+                  <p className="text-sm text-outline italic">No recent MOMs.</p>
+                ) : recentMOM.map((mom, i) => (
+                  <article key={mom._id || i} className="ts-card p-6 hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="font-headline text-lg leading-tight text-on-surface">{mom.MeetingTitle || '—'}</h3>
+                      <span className="font-mono text-[10px] bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">
+                        {mom.createdAt ? new Date(mom.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase() : '—'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-on-surface-variant italic font-headline opacity-80 mb-4 line-clamp-2">{mom.insights || mom.summary || '—'}</p>
+                  </article>
+                ))}
               </div>
             </div>
 
@@ -106,22 +127,24 @@ export default function LeaderDashboard() {
                 <table className="ts-table">
                   <thead><tr><th>Task</th><th className="text-center">Assignee</th><th>Status</th></tr></thead>
                   <tbody>
-                    {[
-                      { task: 'Refactor Auth Middleware', assignee: 'JD', status: 'in-progress' },
-                      { task: 'Update API Documentation', assignee: 'EV', status: 'todo' },
-                      { task: 'Cloud Security Audit', assignee: 'MV', status: 'completed' },
-                      { task: 'Optimize Asset Pipeline', assignee: 'JD', status: 'todo' },
-                    ].map((t, i) => (
-                      <tr key={i} className="cursor-pointer">
-                        <td className="font-medium text-on-surface">{t.task}</td>
-                        <td className="text-center"><Avatar name={ASSIGNEE_FULL_NAMES[t.assignee] || t.assignee} size="28" round={true} className="mx-auto" /></td>
-                        <td>
-                          {t.status === 'in-progress' ? <span className="flex items-center gap-1.5 text-xs"><span className="animate-ping inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>In Progress</span>
-                            : t.status === 'completed' ? <span className="flex items-center gap-1.5 text-xs text-secondary"><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>Completed</span>
-                              : <span className="text-xs text-outline">To Do</span>}
-                        </td>
-                      </tr>
-                    ))}
+                    {recentTasks.length === 0 ? (
+                      <tr><td colSpan={3} className="text-center text-outline py-6 text-sm">No tasks found.</td></tr>
+                    ) : recentTasks.map((t, i) => {
+                      const uiState = STATE_DISPLAY[t.state] || t.state;
+                      return (
+                        <tr key={t._id || i} className="cursor-pointer">
+                          <td className="font-medium text-on-surface">{t.title || '—'}</td>
+                          <td className="text-center">
+                            <Avatar name={t.responsibleId || 'User'} size="28" round={true} className="mx-auto" />
+                          </td>
+                          <td>
+                            {uiState === 'in-progress' ? <span className="flex items-center gap-1.5 text-xs"><span className="animate-ping inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>In Progress</span>
+                              : uiState === 'completed' ? <span className="flex items-center gap-1.5 text-xs text-secondary"><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>Completed</span>
+                                : <span className="text-xs text-outline">To Do</span>}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -135,10 +158,11 @@ export default function LeaderDashboard() {
         <>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
             {[
-              { label: 'Sprint Velocity', value: '84%', sub: '↑ 12% this sprint', color: 'text-primary' },
-              { label: 'Open Tasks', value: '12', sub: 'Across 3 members', color: 'text-on-surface' },
-              { label: 'Hours in Meetings', value: '18h', sub: 'This week', color: 'text-on-surface' },
-              { label: 'MOMs Published', value: '8', sub: 'This quarter', color: 'text-on-surface' },
+              // overall progress = teamProductivityScore
+              { label: 'Overall Progress', value: `${progressScore}%`, sub: 'Team productivity score', color: 'text-primary' },
+              { label: 'Open Tasks', value: teamStats.pendingTasks ?? '—', sub: 'Pending tasks', color: 'text-on-surface' },
+              { label: 'Completed Tasks', value: teamStats.completedTasks ?? '—', sub: 'Total completed', color: 'text-on-surface' },
+              { label: 'In Progress', value: teamStats.inProgressTasks ?? '—', sub: 'Currently active', color: 'text-on-surface' },
             ].map((s, i) => (
               <div key={i} className="stat-card text-center">
                 <p className="font-mono text-[10px] uppercase tracking-widest text-outline mb-2">{s.label}</p>
@@ -151,31 +175,32 @@ export default function LeaderDashboard() {
             <div className="ts-card p-6">
               <h2 className="font-headline text-2xl text-on-surface mb-5">Team Breakdown</h2>
               <div className="space-y-4">
-                {[
-                  { initials: 'EV', name: 'Elena Vance', tasks: '6/8 tasks', progress: 75, color: 'bg-primary' },
-                  { initials: 'MC', name: 'Marcus Chen', tasks: '4/6 tasks', progress: 66, color: 'bg-secondary' },
-                  { initials: 'JD', name: 'Jane Doe', tasks: '3/4 tasks', progress: 75, color: 'bg-[#7f2500]' },
-                ].map((m, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <Avatar name={m.name} size="32" round={true} />
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm font-medium text-on-surface">{m.name}</span>
-                        <span className="font-mono text-xs text-primary">{m.tasks}</span>
+                {teamMembersTasksDetails.length === 0 ? (
+                  <p className="text-sm text-outline italic">No member data available.</p>
+                ) : teamMembersTasksDetails.map((m, i) => {
+                  const pct = m.totalTasksAssigned > 0 ? Math.round((m.completedTasks / m.totalTasksAssigned) * 100) : 0;
+                  return (
+                    <div key={i} className="flex items-center gap-4">
+                      <Avatar name={m.memberName || 'User'} size="32" round={true} />
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-sm font-medium text-on-surface">{m.memberName}</span>
+                          <span className="font-mono text-xs text-primary">{m.completedTasks}/{m.totalTasksAssigned} tasks</span>
+                        </div>
+                        <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: `${pct}%` }}></div></div>
                       </div>
-                      <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: `${m.progress}%` }}></div></div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
             <div className="ts-card p-6">
               <h2 className="font-headline text-2xl text-on-surface mb-5">Status Distribution</h2>
               <div className="space-y-3">
                 {[
-                  { color: 'bg-primary', label: 'In Progress', value: 5, textColor: 'text-primary' },
-                  { color: 'bg-outline-variant', label: 'To Do', value: 7, textColor: '' },
-                  { color: 'bg-secondary', label: 'Completed', value: 14, textColor: 'text-secondary' },
+                  { color: 'bg-primary', label: 'In Progress', value: teamStats.inProgressTasks ?? 0, textColor: 'text-primary' },
+                  { color: 'bg-outline-variant', label: 'To Do', value: teamStats.pendingTasks ?? 0, textColor: '' },
+                  { color: 'bg-secondary', label: 'Completed', value: teamStats.completedTasks ?? 0, textColor: 'text-secondary' },
                 ].map((s, i) => (
                   <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-surface-container-low">
                     <span className="flex items-center gap-3 text-sm font-medium"><span className={`w-3 h-3 rounded-full ${s.color}`}></span>{s.label}</span>

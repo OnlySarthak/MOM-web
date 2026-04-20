@@ -1,49 +1,87 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Avatar from 'react-avatar';
 
-const INIT_TASKS = [
-  { name: 'Refactor Auth Middleware', category: 'Engineering · API', team: 'My Team', assignee: 'JD', priority: 'Critical', status: 'in-progress', due: 'Apr 16, 2026' },
-  { name: 'Update API Documentation', category: 'Engineering · Docs', team: 'My Team', assignee: 'DC', priority: 'Medium', status: 'todo', due: '—' },
-  { name: 'Cloud Security Audit', category: 'Engineering · Security', team: 'My Team', assignee: 'MV', priority: 'High', status: 'completed', due: 'Apr 8, 2026' },
-  { name: 'Optimize Asset Pipeline', category: 'DevOps · Performance', team: 'My Team', assignee: 'JD', priority: 'Low', status: 'todo', due: '—' },
-  { name: 'Design System V2 — Component Audit', category: 'Design · System', team: 'My Team', assignee: 'EV', priority: 'High', status: 'in-progress', due: 'Apr 20, 2026' },
-];
+const API_BASE = 'http://localhost:5000/api';
 
-const ASSIGNEE_MAP = {
-  JD: { name: 'Jane Doe', color: 'bg-primary' },
-  DC: { name: 'David Chen', color: 'bg-secondary' },
-  EV: { name: 'Elena Vance', color: 'bg-tertiary' },
-  MV: { name: 'Marcus V.', color: 'bg-outline' },
-};
+const STATE_DISPLAY = { in_progress: 'in-progress', pending: 'todo', completed: 'completed' };
+// Reverse map for sending to API (backend uses underscore format)
+const STATE_BACKEND = { 'todo': 'pending', 'in-progress': 'in_progress', 'completed': 'completed' };
+
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(`${API_BASE}${path}`, { credentials: 'include', ...opts });
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
+}
 
 export default function LeaderTasks() {
-  const [tasks, setTasks] = useState(INIT_TASKS);
+  const [tasks, setTasks] = useState([]);
+  const [stats, setStats] = useState({ totalTasks: 0, inProgress: 0, todo: 0, completed: 0 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQ, setSearchQ] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ name: '', assignee: '' });
+  const [form, setForm] = useState({ title: '', responsibleId: '' });
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+
+  function loadTasks() {
+    setLoading(true);
+    apiFetch('/leader/tasks')
+      .then(res => {
+        const list = Array.isArray(res) ? res : (res.tasks || res.data || []);
+        setTasks(list);
+        setStats({
+          totalTasks: list.length,
+          inProgress: list.filter(t => t.state === 'in_progress').length,
+          todo: list.filter(t => t.state === 'pending').length,
+          completed: list.filter(t => t.state === 'completed').length,
+        });
+      })
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    loadTasks();
+    // Load team members for assign dropdown (non-leader members)
+    apiFetch('/leader/tasks/lookout/team-members')
+      .then(res => setTeamMembers(Array.isArray(res) ? res : (res.data || [])))
+      .catch(() => {});
+  }, []);
 
   const filtered = tasks.filter(t => {
-    const matchStatus = statusFilter === 'all' || t.status === statusFilter;
-    const matchSearch = !searchQ || t.name.toLowerCase().includes(searchQ.toLowerCase());
+    const uiState = STATE_DISPLAY[t.state] || t.state;
+    const matchStatus = statusFilter === 'all' || uiState === statusFilter;
+    const matchSearch = !searchQ || (t.title || '').toLowerCase().includes(searchQ.toLowerCase());
     return matchStatus && matchSearch;
   });
 
-  const total = tasks.length;
-  const inProgress = tasks.filter(t => t.status === 'in-progress').length;
-  const todo = tasks.filter(t => t.status === 'todo').length;
-  const completed = tasks.filter(t => t.status === 'completed').length;
-
-  function deleteTask(idx) {
-    const realIdx = tasks.indexOf(filtered[idx]);
-    if (window.confirm(`Delete "${tasks[realIdx].name}"?`)) { const u = [...tasks]; u.splice(realIdx, 1); setTasks(u); }
+  function deleteTask(id, title) {
+    if (window.confirm(`Delete "${title}"?`)) {
+      apiFetch(`/leader/tasks/${id}`, { method: 'DELETE' })
+        .then(() => loadTasks())
+        .catch(e => alert('Failed to delete: ' + e.message));
+    }
   }
 
-  function handleNewTask(e) {
+  async function handleAssignTask(e) {
     e.preventDefault();
-    setTasks([{ name: form.name, category: 'General', team: 'My Team', assignee: form.assignee, priority: 'Medium', status: 'todo', due: '—' }, ...tasks]);
-    setShowModal(false);
-    setForm({ name: '', assignee: '' });
+    setSubmitting(true);
+    try {
+      await apiFetch('/leader/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskTitle: form.title, assignedToId: form.responsibleId }),
+      });
+      setShowModal(false);
+      setForm({ title: '', responsibleId: '' });
+      loadTasks();
+    } catch (err) {
+      alert('Failed to assign task: ' + err.message);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -53,76 +91,123 @@ export default function LeaderTasks() {
           <h1 className="font-headline text-5xl text-on-surface tracking-tight mb-2">Tasks</h1>
           <p className="font-headline italic text-xl text-outline">Track, assign, and deliver with precision.</p>
         </div>
-        <button className="btn-primary gap-2 text-sm" onClick={() => setShowModal(true)}><span className="material-symbols-outlined">add</span>Assign Task</button>
+        <button className="btn-primary gap-2 text-sm" onClick={() => setShowModal(true)}>
+          <span className="material-symbols-outlined">add</span>Assign Task
+        </button>
       </div>
 
+      {/* Status filter chips */}
       <div className="flex flex-wrap items-center gap-3 mb-8">
         <span className="text-[10px] uppercase tracking-widest text-outline font-semibold mr-2">Filter:</span>
-        {['all','in-progress','todo','completed'].map(f => (
-          <button key={f} className={`filter-chip px-4 py-2 rounded-full border border-outline-variant/20 text-sm font-medium transition-all ${statusFilter === f ? 'active' : 'hover:bg-surface-container'}`} onClick={() => setStatusFilter(f)}>
+        {['all', 'in-progress', 'todo', 'completed'].map(f => (
+          <button
+            key={f}
+            className={`filter-chip px-4 py-2 rounded-full border border-outline-variant/20 text-sm font-medium transition-all ${statusFilter === f ? 'active' : 'hover:bg-surface-container'}`}
+            onClick={() => setStatusFilter(f)}
+          >
             {f === 'all' ? 'All' : f === 'in-progress' ? 'In Progress' : f === 'todo' ? 'To Do' : 'Completed'}
           </button>
         ))}
         <div className="ml-auto">
           <div className="relative">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
-            <input className="pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm focus:outline-none focus:border-primary" placeholder="Search tasks..." value={searchQ} onChange={e => setSearchQ(e.target.value)} />
+            <input
+              className="pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm focus:outline-none focus:border-primary"
+              placeholder="Search tasks..."
+              value={searchQ}
+              onChange={e => setSearchQ(e.target.value)}
+            />
           </div>
         </div>
       </div>
 
+      {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="ts-card p-4 flex items-center gap-4"><div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0"><span className="material-symbols-outlined text-primary text-sm">list</span></div><div><p className="font-headline text-4xl font-bold text-on-surface">{total}</p><p className="text-xs text-outline">Total tasks</p></div></div>
-        <div className="ts-card p-4 flex items-center gap-4"><div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0"><span className="material-symbols-outlined text-primary text-sm">pending_actions</span></div><div><p className="font-headline text-4xl font-bold text-primary">{inProgress}</p><p className="text-xs text-outline">In progress</p></div></div>
-        <div className="ts-card p-4 flex items-center gap-4"><div className="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center flex-shrink-0"><span className="material-symbols-outlined text-on-surface-variant text-sm">radio_button_unchecked</span></div><div><p className="font-headline text-4xl font-bold text-on-surface">{todo}</p><p className="text-xs text-outline">To do</p></div></div>
-        <div className="ts-card p-4 flex items-center gap-4"><div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0"><span className="material-symbols-outlined text-secondary text-sm">check_circle</span></div><div><p className="font-headline text-4xl font-bold text-secondary">{completed}</p><p className="text-xs text-outline">Completed</p></div></div>
+        <div className="ts-card p-4 flex items-center gap-4"><div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0"><span className="material-symbols-outlined text-primary text-sm">list</span></div><div><p className="font-headline text-4xl font-bold text-on-surface">{stats.totalTasks}</p><p className="text-xs text-outline">Total tasks</p></div></div>
+        <div className="ts-card p-4 flex items-center gap-4"><div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0"><span className="material-symbols-outlined text-primary text-sm">pending_actions</span></div><div><p className="font-headline text-4xl font-bold text-primary">{stats.inProgress}</p><p className="text-xs text-outline">In progress</p></div></div>
+        <div className="ts-card p-4 flex items-center gap-4"><div className="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center flex-shrink-0"><span className="material-symbols-outlined text-on-surface-variant text-sm">radio_button_unchecked</span></div><div><p className="font-headline text-4xl font-bold text-on-surface">{stats.todo}</p><p className="text-xs text-outline">To do</p></div></div>
+        <div className="ts-card p-4 flex items-center gap-4"><div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0"><span className="material-symbols-outlined text-secondary text-sm">check_circle</span></div><div><p className="font-headline text-4xl font-bold text-secondary">{stats.completed}</p><p className="text-xs text-outline">Completed</p></div></div>
       </div>
 
+      {/* Table */}
       <div className="ts-card overflow-hidden">
-        <table className="ts-table">
-          <thead><tr><th>Task Name</th><th>Assignee</th><th>Status</th><th></th></tr></thead>
-          <tbody>
-            {filtered.map((t, idx) => {
-              const a = ASSIGNEE_MAP[t.assignee] || { name: 'Unassigned', color: 'bg-surface-container-high' };
-              const isCompleted = t.status === 'completed';
-              return (
-                <tr key={idx} className="task-row">
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <div><p className={`font-medium text-on-surface ${isCompleted ? 'line-through opacity-60' : ''}`}>{t.name}</p></div>
-                    </div>
-                  </td>
-                  <td><div className="flex items-center gap-2"><Avatar name={a.name} size="28" round={true} /><span className="text-sm">{a.name}</span></div></td>
-                  <td>{t.status === 'in-progress' ? <span className="flex items-center gap-1.5 text-xs"><span className="animate-ping inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>In Progress</span> : t.status === 'completed' ? <span className="flex items-center gap-1.5 text-xs text-secondary"><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>Completed</span> : <span className="text-xs text-outline">To Do</span>}</td>
-                  <td className="task-actions"><div className="flex items-center gap-1">
-                    <button className="p-1.5 text-outline hover:text-primary rounded-lg"><span className="material-symbols-outlined text-sm">edit</span></button>
-                    <button className="p-1.5 text-outline hover:text-error rounded-lg" onClick={() => deleteTask(idx)}><span className="material-symbols-outlined text-sm">delete</span></button>
-                  </div></td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        {loading ? (
+          <div className="px-6 py-12 text-center text-sm text-outline animate-pulse">Loading tasks…</div>
+        ) : error ? (
+          <div className="px-6 py-12 text-center text-sm text-error">Failed to load tasks: {error}</div>
+        ) : (
+          <table className="ts-table">
+            <thead><tr><th>Task Name</th><th>Assignee</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr><td colSpan={4} className="text-center text-outline py-8 text-sm">No tasks found.</td></tr>
+              ) : filtered.map((t, idx) => {
+                const uiState = STATE_DISPLAY[t.state] || t.state;
+                const isCompleted = t.state === 'completed';
+                return (
+                  <tr key={t._id || idx} className="task-row">
+                    <td>
+                      <p className={`font-medium text-on-surface ${isCompleted ? 'line-through opacity-60' : ''}`}>{t.title || '—'}</p>
+                    </td>
+                    <td>
+                      <div className="flex items-center gap-2">
+                        <Avatar name={t.resposibleName || t.responsibleId || 'User'} size="28" round={true} />
+                        <span className="text-sm">{t.resposibleName || '—'}</span>
+                      </div>
+                    </td>
+                    <td>
+                      {uiState === 'in-progress'
+                        ? <span className="flex items-center gap-1.5 text-xs"><span className="animate-ping inline-flex h-2 w-2 rounded-full bg-primary opacity-75"></span>In Progress</span>
+                        : uiState === 'completed'
+                        ? <span className="flex items-center gap-1.5 text-xs text-secondary"><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>Completed</span>
+                        : <span className="text-xs text-outline">To Do</span>}
+                    </td>
+                    <td className="task-actions">
+                      <div className="flex items-center gap-1">
+                        <button
+                          className="p-1.5 text-outline hover:text-error rounded-lg"
+                          onClick={() => deleteTask(t._id, t.title)}
+                        ><span className="material-symbols-outlined text-sm">delete</span></button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
 
-      {/* Assign Task Modal — simplified: Task Name + Assignee only */}
+      {/* Assign Task Modal */}
       <div className={`ts-modal-overlay ${showModal ? 'open' : ''}`} onClick={e => { if (e.target === e.currentTarget) setShowModal(false); }}>
         <div className="ts-modal">
           <div className="ts-modal-header"><h2>Assign Task</h2><button className="ts-close-btn" onClick={() => setShowModal(false)}><span className="material-symbols-outlined">close</span></button></div>
           <div className="ts-modal-body">
-            <form id="leader-task-form" className="space-y-5" onSubmit={handleNewTask}>
-              <div><label className="ts-label">Task Name *</label><input className="ts-field" type="text" placeholder="e.g. Refactor Auth Middleware" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>
-              <div><label className="ts-label">Assignee</label>
-              {/* //assignee must be non leader */}
-                <select className="ts-field" value={form.assignee} onChange={e => setForm({ ...form, assignee: e.target.value })}>
-                  <option value="JD">Jane Doe</option><option value="DC">David Chen</option><option value="EV">Elena Vance</option><option value="MV">Marcus V.</option>
+            <form id="leader-task-form" className="space-y-5" onSubmit={handleAssignTask}>
+              <div>
+                <label className="ts-label">Task Title *</label>
+                <input className="ts-field" type="text" placeholder="e.g. Refactor Auth Middleware" required value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+              </div>
+              <div>
+                <label className="ts-label">Assignee (Team Member)</label>
+                {/* Assignee must be a non-leader team member */}
+                <select className="ts-field" value={form.responsibleId} onChange={e => setForm({ ...form, responsibleId: e.target.value })}>
+                  <option value="">Select member…</option>
+                  {teamMembers.map(m => (
+                    <option key={m.userId?._id || m._id} value={m.userId?._id || m._id}>
+                      {m.userId?.name || 'Unknown Member'}
+                    </option>
+                  ))}
+
                 </select>
               </div>
             </form>
           </div>
           <div className="ts-modal-footer">
             <button className="btn-secondary text-sm" onClick={() => setShowModal(false)}>Cancel</button>
-            <button className="btn-primary text-sm" onClick={() => document.getElementById('leader-task-form').requestSubmit()}><span className="material-symbols-outlined text-sm">add</span>Assign Task</button>
+            <button className="btn-primary text-sm" disabled={submitting} onClick={() => document.getElementById('leader-task-form').requestSubmit()}>
+              <span className="material-symbols-outlined text-sm">add</span>{submitting ? 'Assigning…' : 'Assign Task'}
+            </button>
           </div>
         </div>
       </div>

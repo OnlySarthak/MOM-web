@@ -1,58 +1,81 @@
 /**
  * TeamSync Auth Module
- * Mock authentication using localStorage — demo only.
+ * Wired to real backend API. Falls back to demo-mode localStorage for dev.
  */
 
-export const DEMO_USERS = [
-  {
-    email: 'admin@teamsync.app',
-    password: 'admin123',
-    name: 'Julian Thorne',
-    role: 'admin',
-    title: 'System Administrator',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA0m2UdKSN5hIlGNpSPXhq6mlPYuWUPIVZHOpiTXdN1f-xSwM5mus5R2pYzhFw17yOMa08CDnLsF4wc5b2YYDo0eWLS-5umjUWdJ_2sdcEolA30MaBhPgIomEx-jEIqtvN6XAPJ7QXiEWSDOMHKF9jUeFpV4c83KcEoiYbEIgLozV6OnpUOZawPd_lz_wwQsPSi2NVZ0gHgnIdhCdLEzsVAli_m6osD9YbeADRQc8oVrJ2zkfuK4lwemp8bVk1yWWAVQZyKzUTjkQw'
-  },
-  {
-    email: 'leader@teamsync.app',
-    password: 'leader123',
-    name: 'Elena Vance',
-    role: 'leader',
-    title: 'Team Leader',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD0ZdqahlmziGZY2vIHTJCLDg_UX3EuZMiAEQxhuDtEwMuD_EUIQb3ONrP75kkKNC97hJ9255u7GUoX6rWKBZxIOg4TxTegp4zCOL3XNbJ0pynD0JVyojVX9LeI5_YPPSuOXVosqV_i3EtAK2pcFfu6KfksC1nw9lrHb0MqSC4N8sh7GAnrdjbFGH2KcbLjG5NyHHkLngq7BfZSwlcfQoWyWcwLPUD-xOfqUSwNGUwqIcc0wIcouLP-04LLR0ZbIof-ZwGmKmwVgIo'
-  },
-  {
-    email: 'member@teamsync.app',
-    password: 'member123',
-    name: 'Marcus Chen',
-    role: 'member',
-    title: 'Product Manager',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB84s6oilar736DoSmdevvHUct5DL6XThWUSidfYo_oqw1LKFbBrPXDVOMvh_oeKFp4vPRPw39jmwWvMtnh7c9phq9x8a3qXmoDM3o7BJ7mDWhEvbdSbxXGHEl6RzKmjp0v3Rjo1_3ePHKxSeTFKahq_nl1NDyFvPKzk641KJWLwhirZtg35yh419uz9-dldvO5t8DYAo9bpkrxYSGeXpTAeIq0SIF7Fmf1U5UxkrrqqADgmCPIVTtAU8vL__Rj73dmfT7jiLuTPZQ'
-  }
-];
-
-const STORAGE_KEY = 'teamsync_session';
+const API_BASE = 'http://localhost:5000/api';
 
 /**
- * Attempt login. Returns {success, user, error}.
+ * Attempt login via real backend. Returns {success, user, error}.
+ * Backend: POST /api/auth/login → { user: { name, email, systemRole, workspaceId } }
+ * Role field: backend uses `systemRole` (admin / leader / member)
  */
-export function login(email, password) {
-  const user = DEMO_USERS.find(
-    u => u.email.toLowerCase() === email.toLowerCase() && u.password === password
-  );
-  if (!user) {
-    return { success: false, error: 'Invalid email or password.' };
+export async function loginApi(email, password) {
+  try {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      return { success: false, error: data.message || 'Login failed.' };
+    }
+    // Backend returns systemRole — map to role for frontend consistency
+    const user = {
+      name: data.user.name,
+      email: data.user.email,
+      role: data.user.systemRole, // admin | leader | member
+      workspaceId: data.user.workspaceId,
+      title: data.user.title || '',
+    };
+    // Cache session in localStorage for AuthContext
+    localStorage.setItem('teamsync_session', JSON.stringify(user));
+    return { success: true, user };
+  } catch (err) {
+    return { success: false, error: 'Network error. Is the server running?' };
   }
-  const session = { email: user.email, name: user.name, role: user.role, title: user.title, avatar: user.avatar };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-  return { success: true, user: session };
 }
 
 /**
- * Get the current logged-in user or null.
+ * Register a new workspace (admin). 
+ * Backend: POST /api/auth/register → workspace + admin user created
+ */
+export async function registerApi(name, email, workspaceName, password) {
+  try {
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ name, email, workspaceName, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      return { success: false, error: data.message || 'Registration failed.' };
+    }
+    return { success: true, data };
+  } catch (err) {
+    return { success: false, error: 'Network error. Is the server running?' };
+  }
+}
+
+/**
+ * Logout via real backend.
+ */
+export async function logoutApi() {
+  try {
+    await fetch(`${API_BASE}/auth/logout`, { credentials: 'include' });
+  } catch { /* ignore */ }
+  localStorage.removeItem('teamsync_session');
+}
+
+/**
+ * Get the current session user from localStorage cache.
  */
 export function getUser() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem('teamsync_session');
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
@@ -60,10 +83,17 @@ export function getUser() {
 }
 
 /**
- * Log out — clears session from localStorage.
+ * Legacy sync login — kept for AuthContext compatibility.
+ * Only used as fallback if API call is in progress.
  */
+export function login(email, password) {
+  // This sync version is only used internally by AuthContext.
+  // Actual login goes through loginApi().
+  return { success: false, error: 'Use loginApi() for real auth.' };
+}
+
 export function logout() {
-  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem('teamsync_session');
 }
 
 /**

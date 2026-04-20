@@ -1,66 +1,90 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Avatar from 'react-avatar';
 
-const TEAMS = [
-  { id: 'alpha', name: 'Atelier Alpha', letter: 'Α', dept: 'Design & Brand — Product UI, Design System, Brand Standards', color: 'bg-primary', progress: 84, members: ['JP','SK','EV'], extraMembers: 3, tasks: 12 },
-  { id: 'beta', name: 'Studio Beta', letter: 'Β', dept: 'Engineering — Backend, Auth, API, Cloud Infrastructure', color: 'bg-secondary', progress: 61, members: ['DC','JD'], extraMembers: 4, tasks: 19 },
-  { id: 'gamma', name: 'Craft Gamma', letter: 'Γ', dept: 'Product — Roadmap, Analytics, Growth, User Research', color: 'bg-tertiary', progress: 92, members: ['MV','AK'], extraMembers: 2, tasks: 8 },
-  { id: 'delta', name: 'Nexus Delta', letter: 'Δ', dept: 'Sales & Operations — Pipeline, CRM, Client Success', color: 'bg-inverse-surface', progress: 45, members: ['CJ','LM'], extraMembers: 0, tasks: 15 },
-  { id: 'epsilon', name: 'Studio Epsilon', letter: 'Ε', dept: 'Marketing & Content — Campaigns, Content, Social Media', color: 'bg-outline', progress: 78, members: ['NR','PL'], extraMembers: 1, tasks: 11 },
-];
+const API_BASE = 'http://localhost:5000/api';
 
-const MEMBER_COLORS = {
-  JP: 'bg-primary', SK: 'bg-secondary', EV: 'bg-tertiary', DC: 'bg-secondary',
-  JD: 'bg-primary', MV: 'bg-tertiary', AK: 'bg-outline', CJ: 'bg-inverse-surface',
-  LM: 'bg-secondary', NR: 'bg-outline', PL: 'bg-primary-fixed'
-};
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(`${API_BASE}${path}`, { credentials: 'include', ...opts });
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
+}
 
-const GREEK = ['Ζ','Η','Θ','Ι','Κ','Λ','Μ','Ν','Ξ','Ο'];
+const GREEK = ['Α', 'Β', 'Γ', 'Δ', 'Ε', 'Ζ', 'Η', 'Θ', 'Ι', 'Κ'];
 
 export default function AdminTeams() {
   const navigate = useNavigate();
-  const [teams, setTeams] = useState(TEAMS);
+  const [teams, setTeams] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [selectedColor, setSelectedColor] = useState('bg-primary');
-  const [greekIdx, setGreekIdx] = useState(0);
   const [form, setForm] = useState({ name: '', dept: 'Engineering', projectName: '', leader: '', desc: '' });
+  const [leaders, setLeaders] = useState([]);
+  const [fetchingLeaders, setFetchingLeaders] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
-  function openCreateTeamModal() { setShowModal(true); setSelectedColor('bg-primary'); setForm({ name: '', dept: 'Engineering', projectName: '', leader: '', desc: '' }); }
+
+  function loadTeams() {
+    setLoading(true);
+    apiFetch('/admin/teams')
+      .then(res => setTeams(res.teams || []))
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
+  }
+
+  function loadLeaders() {
+    setFetchingLeaders(true);
+    apiFetch('/admin/lookout/leaders')
+      .then(res => {
+        if (res.success) setLeaders(res.data || []);
+      })
+      .catch(e => console.error("Failed to load leaders:", e))
+      .finally(() => setFetchingLeaders(false));
+  }
+
+  useEffect(() => {
+    loadTeams();
+    loadLeaders();
+  }, []);
+
+
+  function openCreateTeamModal() {
+    setShowModal(true);
+    setForm({ name: '', dept: 'Engineering', projectName: '', leader: '', desc: '' });
+    setSubmitError(null);
+    loadLeaders(); // Refresh leaders when opening modal
+  }
+
   function closeCreateTeamModal() { setShowModal(false); }
 
-  function handleCreateTeam(e) {
+  async function handleCreateTeam(e) {
     e.preventDefault();
-    const newTeam = {
-      id: form.name.toLowerCase().replace(/\s+/g, '-'),
-      name: form.name,
-      letter: GREEK[greekIdx % GREEK.length],
-      dept: form.dept,
-      projectName: form.projectName,
-      color: selectedColor,
-      progress: 0,
-      members: form.leader ? [form.leader] : [],
-      extraMembers: 0,
-      tasks: 0
-    };
-    setTeams([...teams, newTeam]);
-    setGreekIdx(greekIdx + 1);
-    closeCreateTeamModal();
-  }
-
-  function removeTeam(idx) {
-    if (window.confirm(`Remove team "${teams[idx].name}"? This action cannot be undone.`)) {
-      const updated = [...teams];
-      updated.splice(idx, 1);
-      setTeams(updated);
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      await apiFetch('/admin/teams', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          teamName: form.name,
+          leaderId: form.leader,
+          project: form.projectName,
+          teamDescription: form.desc,
+          teamFunctionalRole: form.dept,
+        }),
+      });
+      closeCreateTeamModal();
+      loadTeams();
+    } catch (err) {
+      setSubmitError(err.message);
+    } finally {
+      setSubmitting(false);
     }
-    setOpenDropdown(null);
   }
 
-  function toggleDropdown(idx) {
-    setOpenDropdown(openDropdown === idx ? null : idx);
-  }
+  const COLORS = ['bg-primary', 'bg-secondary', 'bg-tertiary', 'bg-inverse-surface', 'bg-outline'];
 
   return (
     <>
@@ -76,63 +100,70 @@ export default function AdminTeams() {
         </button>
       </div>
 
-      {/* Team Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {teams.map((t, idx) => (
-          <div key={t.id} className="ts-card p-6 hover:-translate-y-1 transition-all duration-300 group cursor-pointer" onClick={() => navigate(`/admin/team-info?id=${t.id}`)}>
-            <div className="flex items-start justify-between mb-5">
-              <div className={`w-12 h-12 rounded-2xl ${t.color} text-white flex items-center justify-center text-lg font-bold font-headline`}>{t.letter}</div>
-              <div className="relative">
-                <button className="text-outline hover:text-on-surface opacity-0 group-hover:opacity-100 transition-all" onClick={(e) => { e.stopPropagation(); toggleDropdown(idx); }}>
-                  <span className="material-symbols-outlined">more_vert</span>
-                </button>
-                <div className={`ts-dropdown ${openDropdown === idx ? 'open' : ''}`}>
-                  <button className="ts-dropdown-item" onClick={(e) => { e.stopPropagation(); navigate(`/admin/team-info?id=${t.id}`); setOpenDropdown(null); }}>
-                    <span className="material-symbols-outlined text-sm">visibility</span>View Details
-                  </button>
-                  <button className="ts-dropdown-item" onClick={(e) => { e.stopPropagation(); setOpenDropdown(null); }}>
-                    <span className="material-symbols-outlined text-sm">edit</span>Edit Team
-                  </button>
-                  <div className="ts-dropdown-sep"></div>
-                  <button className="ts-dropdown-item danger" onClick={(e) => { e.stopPropagation(); removeTeam(idx); }}>
-                    <span className="material-symbols-outlined text-sm">delete</span>Remove Team
-                  </button>
+      {loading ? (
+        <div className="flex items-center justify-center h-64 text-outline animate-pulse">Loading teams…</div>
+      ) : error ? (
+        <div className="flex items-center justify-center h-64 text-error text-sm">Failed to load teams: {error}</div>
+      ) : (
+        /* Team Cards Grid */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {teams.map((t, idx) => {
+            const color = COLORS[idx % COLORS.length];
+            const letter = GREEK[idx % GREEK.length];
+            return (
+              <div key={t.id || idx} className="ts-card p-6 hover:-translate-y-1 transition-all duration-300 group cursor-pointer" onClick={() => navigate(`/admin/team-info?id=${t.id}`)}>
+                <div className="flex items-start justify-between mb-5">
+                  <div className={`w-12 h-12 rounded-2xl ${color} text-white flex items-center justify-center text-lg font-bold font-headline`}>{letter}</div>
+                  <div className="relative">
+                    <button className="text-outline hover:text-on-surface opacity-0 group-hover:opacity-100 transition-all" onClick={(e) => { e.stopPropagation(); setOpenDropdown(openDropdown === idx ? null : idx); }}>
+                      <span className="material-symbols-outlined">more_vert</span>
+                    </button>
+                    <div className={`ts-dropdown ${openDropdown === idx ? 'open' : ''}`}>
+                      <button className="ts-dropdown-item" onClick={(e) => { e.stopPropagation(); navigate(`/admin/team-info?id=${t.id}`); setOpenDropdown(null); }}>
+                        <span className="material-symbols-outlined text-sm">visibility</span>View Details
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <h3 className="font-headline text-2xl text-on-surface mb-1">{t.teamName}</h3>
+                <p className="text-xs text-on-surface-variant mb-5">{t.teamFunctionalRole || '—'} — {t.teamDescription || '—'} </p>
+                <div className="mb-5">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[10px] uppercase tracking-widest text-outline font-bold">Sprint Progress</span>
+                    {/* sprint progress = totalProductivityScore (TeamProductivityScore) */}
+                    <span className="font-mono text-xs text-primary font-bold">{t.TeamProductivityScore ?? 0}%</span>
+                  </div>
+                  <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: `${t.TeamProductivityScore ?? 0}%` }}></div></div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex -space-x-2">
+                    {(t.members || []).slice(0, 3).map((name, mi) => (
+                      <Avatar key={mi} name={name} size="32" round={true} style={{ marginLeft: '-8px', border: '2px solid white' }} />
+                    ))}
+                    {(t.members || []).length > 3 && (
+                      <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-[10px] font-bold ring-2 ring-white">+{t.members.length - 3}</div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-on-surface-variant">
+                    <span className="material-symbols-outlined text-sm">assignment</span>
+                    {/* tasks = totalTasksCompleted from backend */}
+                    <span>{t.totalTasksCompleted ?? 0} tasks</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <h3 className="font-headline text-2xl text-on-surface mb-1">{t.name}</h3>
-            <p className="text-xs text-on-surface-variant mb-5">{t.dept}</p>
-            <div className="mb-5">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-[10px] uppercase tracking-widest text-outline font-bold">Sprint Progress</span>
-                <span className="font-mono text-xs text-primary font-bold">{t.progress}%</span>
-              </div>
-              <div className="ts-progress-track"><div className="ts-progress-fill" style={{ width: `${t.progress}%` }}></div></div>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex -space-x-2">
-                {t.members.map(m => (
-                  <Avatar key={m} name={m} size="32" round={true} style={{ marginLeft: '-8px', border: '2px solid white' }} />
-                ))}
-                {t.extraMembers > 0 && <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-[10px] font-bold ring-2 ring-white">+{t.extraMembers}</div>}
-              </div>
-              <div className="flex items-center gap-1.5 text-xs text-on-surface-variant">
-                <span className="material-symbols-outlined text-sm">assignment</span>
-                <span>{t.tasks} tasks</span>
-              </div>
-            </div>
-          </div>
-        ))}
+            );
+          })}
 
-        {/* Add Team card */}
-        <div className="ts-card p-6 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant/30 hover:border-primary/30 hover:bg-primary/3 transition-all cursor-pointer group" onClick={openCreateTeamModal}>
-          <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-sm">
-            <span className="material-symbols-outlined text-primary text-3xl">add</span>
+          {/* Add Team card */}
+          <div className="ts-card p-6 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant/30 hover:border-primary/30 hover:bg-primary/3 transition-all cursor-pointer group" onClick={openCreateTeamModal}>
+            <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-sm">
+              <span className="material-symbols-outlined text-primary text-3xl">add</span>
+            </div>
+            <h4 className="font-headline text-2xl text-on-surface mb-2">New Team</h4>
+            <p className="text-xs text-outline text-center max-w-[180px]">Create a new squad or department team</p>
           </div>
-          <h4 className="font-headline text-2xl text-on-surface mb-2">New Team</h4>
-          <p className="text-xs text-outline text-center max-w-[180px]">Create a new squad or department team</p>
         </div>
-      </div>
+      )}
 
       {/* Create Team Modal */}
       <div className={`ts-modal-overlay ${showModal ? 'open' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) closeCreateTeamModal(); }}>
@@ -166,24 +197,37 @@ export default function AdminTeams() {
                 </select>
               </div>
               <div>
-                <label className="ts-label">Team Leader</label>
-                <select className="ts-field" value={form.leader} onChange={e => setForm({ ...form, leader: e.target.value })}>
-                  <option value="">Select a leader…</option>
-                  <option value="EV">Elena Vance</option>
-                  <option value="JT">Julian Thorne</option>
-                  <option value="MC">Marcus Chen</option>
+                <label className="ts-label">Team Leader *</label>
+                <select
+                  className="ts-field"
+                  required
+                  value={form.leader}
+                  onChange={e => setForm({ ...form, leader: e.target.value })}
+                >
+                  <option value="" disabled>Select a leader...</option>
+                  {leaders.map(l => (
+                    <option key={l._id} value={l._id}>{l.name} ({l.email})</option>
+                  ))}
+                  {leaders.length === 0 && !fetchingLeaders && (
+                    <option disabled>No available leaders found</option>
+                  )}
+                  {fetchingLeaders && (
+                    <option disabled>Loading leaders...</option>
+                  )}
                 </select>
               </div>
+
               <div>
                 <label className="ts-label">Description</label>
                 <textarea className="ts-field resize-none h-20" placeholder="Brief team description…" value={form.desc} onChange={e => setForm({ ...form, desc: e.target.value })}></textarea>
               </div>
+              {submitError && <p className="text-xs text-error">{submitError}</p>}
             </form>
           </div>
           <div className="ts-modal-footer">
             <button className="btn-secondary text-sm" onClick={closeCreateTeamModal}>Cancel</button>
-            <button className="btn-primary text-sm" onClick={() => document.getElementById('create-team-form').requestSubmit()}>
-              <span className="material-symbols-outlined text-sm">add</span>Create Team
+            <button className="btn-primary text-sm" disabled={submitting} onClick={() => document.getElementById('create-team-form').requestSubmit()}>
+              <span className="material-symbols-outlined text-sm">add</span>{submitting ? 'Creating…' : 'Create Team'}
             </button>
           </div>
         </div>
