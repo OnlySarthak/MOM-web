@@ -36,7 +36,7 @@ export default function LeaderDashboard() {
   const teamInfo = data?.teamInfo || {};
 
   // team progress = teamProductivityScore (TeamProductivityScore field in model)
-  const progressScore = teamProgress.TeamProductivityScore ?? teamStats.TeamProductivityScore ?? 0;
+  const progressScore = teamProgress?.TeamProductivityScore ?? teamStats?.TeamProductivityScore ?? 0;
 
   return (
     <>

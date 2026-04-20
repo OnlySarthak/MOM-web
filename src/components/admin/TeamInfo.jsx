@@ -128,10 +128,10 @@ export default function AdminTeamInfo() {
   );
 
   const members = Array.isArray(teamData.members) ? teamData.members : [];
-  const tasks = Array.isArray(teamData.tasks) ? teamData.tasks : [];
-  const meetings = Array.isArray(teamData.meetings) ? teamData.meetings : [];
-  const stats = teamData.stats || {};
-  const progress = teamData.TeamProductivityScore ?? teamData.progress ?? 0;
+  const tasks = Array.isArray(teamData.recentTasks) ? teamData.recentTasks : [];
+  const meetings = Array.isArray(teamData.recentMeetings) ? teamData.recentMeetings : [];
+  const stats = teamData.teamStats || teamData.stats || {};
+  const progress = stats.TeamProductivityScore ?? teamData.progress ?? 0;
 
   // Derive first letter for avatar from team name
   const teamLetter = (teamData.name || teamData.teamName || 'T')[0].toUpperCase();

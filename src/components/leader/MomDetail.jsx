@@ -63,6 +63,24 @@ export default function LeaderMomDetail() {
     }
   }
 
+  async function handleApprove(sId) {
+    try {
+      await apiFetch(`/leader/moms/suggestion/${sId}/approve`, { method: 'PUT' });
+      loadMom();
+    } catch (e) {
+      alert("Failed to approve suggestion: " + e.message);
+    }
+  }
+
+  async function handleReject(sId) {
+    try {
+      await apiFetch(`/leader/moms/suggestion/${sId}/reject`, { method: 'PUT' });
+      loadMom();
+    } catch (e) {
+      alert("Failed to reject suggestion: " + e.message);
+    }
+  }
+
   if (loading) return <div className="flex items-center justify-center h-64 text-outline animate-pulse">Loading MOM…</div>;
   if (error) return <div className="flex items-center justify-center h-64 text-error text-sm">Failed to load MOM: {error}</div>;
   if (!momData) return <div className="flex items-center justify-center h-64 text-outline text-sm">MOM not found.</div>;
@@ -71,6 +89,7 @@ export default function LeaderMomDetail() {
   // presentAttendees → participants, show functionalRole below name
   const participants = Array.isArray(momData.presentAttendees) ? momData.presentAttendees : [];
   const pendingTasks = Array.isArray(momData.pendingTasks) ? momData.pendingTasks : [];
+  const suggestions = Array.isArray(momData.suggestions) ? momData.suggestions : [];
   const meetingId = momData.meetingId || null;
 
   return (
@@ -172,6 +191,44 @@ export default function LeaderMomDetail() {
                     {/* functionalRole below name per spec */}
                     <p className="text-[10px] uppercase text-outline tracking-wider">{p.functionalRole || '—'}</p>
                   </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Dialogue / Suggestions */}
+          <section>
+            <h3 className="font-headline text-xl text-on-surface mb-5 italic">Dialogue</h3>
+            <div className="space-y-5">
+              {suggestions.length === 0 ? (
+                <p className="text-sm text-outline italic">No suggestions yet.</p>
+              ) : suggestions.map((s, i) => (
+                <div key={s._id || i} className="relative pl-5 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-px before:bg-outline-variant/30">
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="text-xs font-mono text-outline uppercase">{s.suggestedBy?.name || 'Member'}</p>
+                    {s.status === 'accepted' && (
+                      <span className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-secondary/10 text-secondary">
+                        <span className="material-symbols-outlined text-[10px]" style={{ fontVariationSettings: "'FILL' 1" }}>check</span>Accepted
+                      </span>
+                    )}
+                    {s.status === 'rejected' && (
+                      <span className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-outline-variant/20 text-outline">
+                        <span className="material-symbols-outlined text-[10px]">close</span>Not accepted
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-on-surface-variant italic leading-relaxed mb-2">"{s.suggestionText || ''}"</p>
+                  
+                  {s.status === 'pending' && (
+                    <div className="flex items-center gap-2">
+                       <button className="p-1.5 rounded-lg bg-surface-container hover:bg-secondary/10 text-outline hover:text-secondary transition-colors" onClick={() => handleApprove(s._id)} title="Accept">
+                         <span className="material-symbols-outlined text-[14px]">thumb_up</span>
+                       </button>
+                       <button className="p-1.5 rounded-lg bg-surface-container hover:bg-error/10 text-outline hover:text-error transition-colors" onClick={() => handleReject(s._id)} title="Reject">
+                         <span className="material-symbols-outlined text-[14px]">thumb_down</span>
+                       </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

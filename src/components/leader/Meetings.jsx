@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../../auth/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import Avatar from 'react-avatar';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -21,6 +23,18 @@ async function apiFetch(path, opts = {}) {
 }
 
 const PAGE_SIZE = 3;
+const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500 MB
+
+// S3 client — credentials from Vite env
+function getS3Client() {
+  return new S3Client({
+    region: import.meta.env.VITE_AWS_REGION,
+    credentials: {
+      accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
+      secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
+    },
+  });
+}
 
 export default function LeaderMeetings() {
   const { user } = useAuth();
@@ -33,12 +47,19 @@ export default function LeaderMeetings() {
   const [showCreate, setShowCreate] = useState(false);
   const [createStep, setCreateStep] = useState(1);
   const [openDD, setOpenDD] = useState(null);
-  const [form, setForm] = useState({ title: '', project: '', agenda: '' });
+  const [form, setForm] = useState({ title: '', projectName: '', description: '' });
+  const [formErrors, setFormErrors] = useState({});
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
-  const [meetingId, setMeetingId] = useState(null); // from initiateMeeting response
+  const [uploadError, setUploadError] = useState(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [meetingId, setMeetingId] = useState(null);
+  const [audioDuration, setAudioDuration] = useState(0);
   const [page, setPage] = useState(1);
+  const [initiating, setInitiating] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const fileInputRef = useRef(null);
 
   function loadMeetings() {
     setLoading(true);
@@ -65,69 +86,182 @@ export default function LeaderMeetings() {
     setOpenDD(null);
   }
 
-  // Step 1 "Next": call initiateMeeting → get meetingId
+  // ─── STEP 1: Validate form ───
+  function validateForm() {
+    const errors = {};
+    if (!form.title.trim()) errors.title = 'Meeting Title is required';
+    if (!form.projectName.trim()) errors.projectName = 'Project Name is required';
+    if (!form.description.trim()) errors.description = 'Description is required';
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  }
+
+  // ─── STEP 2: Initialize meeting → get meetingId ───
   async function handleNext(e) {
     e.preventDefault();
+    if (!validateForm()) return;
+
+    setInitiating(true);
     try {
       const res = await apiFetch('/leader/meetings/initiate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: form.title, project: form.project }),
+        body: JSON.stringify({
+          title: form.title.trim(),
+          projectName: form.projectName.trim(),
+          description: form.description.trim(),
+        }),
       });
-      // Store meetingId for step 2
       setMeetingId(res.meetingId);
       setCreateStep(2);
       setUploadProgress(0);
       setUploadFile(null);
       setUploading(false);
+      setUploadError(null);
+      setUploadSuccess(false);
     } catch (err) {
       alert('Failed to initiate meeting: ' + err.message);
+    } finally {
+      setInitiating(false);
     }
   }
 
+  // ─── STEP 3: Validate and select MP3 file ───
   function handleFileChange(e) {
     const file = e.target.files[0];
     if (!file) return;
+
+    // Validate type — MP3 only
+    if (file.type !== 'audio/mpeg') {
+      setUploadError('Only .mp3 files are allowed. Please select an MP3 audio file.');
+      setUploadFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    // Validate size
+    if (file.size > MAX_FILE_SIZE) {
+      setUploadError(`File size exceeds 500MB limit. Your file is ${(file.size / 1024 / 1024).toFixed(1)}MB.`);
+      setUploadFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    setUploadError(null);
     setUploadFile(file);
-    setUploading(true);
     setUploadProgress(0);
-    // Simulate upload progress (real implementation would upload to AWS)
-    let prog = 0;
-    const interval = setInterval(() => {
-      prog += Math.random() * 20 + 5;
-      if (prog >= 100) {
-        prog = 100;
-        clearInterval(interval);
-        setUploading(false);
-      }
-      setUploadProgress(Math.min(Math.round(prog), 100));
-    }, 200);
+    setUploadSuccess(false);
+
+    // Extract audio duration
+    const audioEl = new Audio();
+    const objectUrl = URL.createObjectURL(file);
+    audioEl.src = objectUrl;
+    audioEl.addEventListener('loadedmetadata', () => {
+      setAudioDuration(Math.round(audioEl.duration)); // duration in seconds
+      URL.revokeObjectURL(objectUrl);
+    });
+    audioEl.addEventListener('error', () => {
+      URL.revokeObjectURL(objectUrl);
+      // If we can't read duration, continue without it
+      setAudioDuration(0);
+    });
   }
 
-  // Step 2 "Done": upload to AWS (simulated) → send meetingId + audioUrl to startMeetingProcess
-  async function handleDone() {
-    if (!meetingId) { alert('No meeting ID. Please restart.'); return; }
-    // TODO: replace with real AWS upload — obtain actual audioUrl
-    const audioUrl = uploadFile ? `https://s3.amazonaws.com/teamsync-audio/${Date.now()}-${uploadFile.name}` : '';
+  // ─── STEP 4 & 5: Upload to S3 → Generate signed URL → Trigger processing ───
+  async function handleUploadAndProcess() {
+    if (!uploadFile || !meetingId) return;
+
+    setUploading(true);
+    setUploadError(null);
+    setUploadProgress(0);
+
     try {
+      // 4a. Get workspaceId and teamId from API
+      const ids = await apiFetch('/leader/meetings/workspaceId-teamId');
+      const { workspaceId, teamId } = ids;
+
+      // 4b. Build S3 key
+      const timestamp = Date.now();
+      const s3Key = `Mom-Audios/${workspaceId}/${teamId}/${timestamp}.mp3`;
+      const bucketName = import.meta.env.VITE_AWS_BUCKET_NAME;
+
+      // 4c. Read file as ArrayBuffer for SDK upload
+      const fileBuffer = await uploadFile.arrayBuffer();
+
+      // 4d. Upload to S3 using PutObjectCommand
+      // We use XMLHttpRequest for progress tracking since SDK v3 doesn't natively support upload progress
+      const s3Client = getS3Client();
+
+      // Start progress simulation for the SDK upload (SDK v3 doesn't expose upload progress natively)
+      let progressInterval;
+      let fakeProg = 0;
+      progressInterval = setInterval(() => {
+        fakeProg = Math.min(fakeProg + Math.random() * 8 + 2, 90);
+        setUploadProgress(Math.round(fakeProg));
+      }, 300);
+
+      const putCommand = new PutObjectCommand({
+        Bucket: bucketName,
+        Key: s3Key,
+        Body: fileBuffer,
+        ContentType: 'audio/mpeg',
+      });
+
+      await s3Client.send(putCommand);
+
+      // Upload complete
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      // 4e. Generate signed URL (2 hour expiry)
+      const getCommand = new GetObjectCommand({
+        Bucket: bucketName,
+        Key: s3Key,
+      });
+
+      const signedUrl = await getSignedUrl(s3Client, getCommand, { expiresIn: 7200 }); // 2 hours
+
+      setUploadSuccess(true);
+      setUploading(false);
+
+      // ─── STEP 5: Trigger backend processing ───
+      setProcessing(true);
       await apiFetch(`/leader/meetings/${meetingId}/processing`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ audioUrl }),
+        body: JSON.stringify({ audioUrl: signedUrl, meetingDuration: audioDuration }),
       });
-      closeCreateModal();
-      loadMeetings();
+
+      setProcessing(false);
+
+      // Success! Close modal and refresh
+      setTimeout(() => {
+        closeCreateModal();
+        loadMeetings();
+      }, 1500);
+
     } catch (err) {
-      alert('Failed to start meeting processing: ' + err.message);
+      setUploading(false);
+      setProcessing(false);
+      setUploadError(`Upload failed: ${err.message}`);
+      console.error('S3 upload error:', err);
     }
   }
 
   function closeCreateModal() {
     setShowCreate(false);
     setCreateStep(1);
-    setForm({ title: '', project: '', agenda: '' });
+    setForm({ title: '', projectName: '', description: '' });
+    setFormErrors({});
     setUploadFile(null);
+    setUploadProgress(0);
+    setUploadError(null);
+    setUploadSuccess(false);
     setMeetingId(null);
+    setAudioDuration(0);
+    setInitiating(false);
+    setProcessing(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
   return (
@@ -149,7 +283,6 @@ export default function LeaderMeetings() {
             <input className="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm focus:outline-none focus:border-primary" placeholder="Search meetings..." value={searchQ} onChange={e => setSearchQ(e.target.value)} />
           </div>
           <div className="relative">
-            {/* Time filter wired to API */}
             <select
               className="appearance-none pl-4 pr-10 py-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm cursor-pointer focus:outline-none"
               value={timeFilter}
@@ -185,11 +318,9 @@ export default function LeaderMeetings() {
           </div>
         ) : (
           <table className="ts-table">
-            {/* Status column removed per spec */}
             <thead><tr><th>Meeting Title</th><th>Date & Time</th><th>Participants</th><th></th></tr></thead>
             <tbody>
               {paginated.map((m, idx) => {
-                // memberNames from presentAttendees (populated by backend)
                 const memberNames = Array.isArray(m.memberNames) ? m.memberNames : [];
                 const displayDate = m.meetingDate ? new Date(m.meetingDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
                 return (
@@ -241,7 +372,7 @@ export default function LeaderMeetings() {
         </div>
       </div>
 
-      {/* Create Meeting Modal — Step 1 */}
+      {/* ═══ Create Meeting Modal — Step 1: Meeting Details ═══ */}
       <div className={`ts-modal-overlay ${showCreate && createStep === 1 ? 'open' : ''}`} onClick={e => { if (e.target === e.currentTarget) closeCreateModal(); }}>
         <div className="ts-modal">
           <div className="ts-modal-header">
@@ -253,22 +384,61 @@ export default function LeaderMeetings() {
           </div>
           <div className="ts-modal-body">
             <form id="create-meeting-form" className="space-y-5" onSubmit={handleNext}>
-              <div><label className="ts-label">Meeting Title *</label><input className="ts-field" type="text" placeholder="e.g. Sprint Review #13" required value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} /></div>
-              <div><label className="ts-label">Project Name</label><input className="ts-field" type="text" placeholder="e.g. Rebranding 2026" value={form.project} onChange={e => setForm({ ...form, project: e.target.value })} /></div>
-              <div><label className="ts-label">Agenda</label><textarea className="ts-field resize-none h-24" placeholder="Brief agenda for this meeting..." value={form.agenda} onChange={e => setForm({ ...form, agenda: e.target.value })}></textarea></div>
+              <div>
+                <label className="ts-label">Meeting Title *</label>
+                <input
+                  className={`ts-field ${formErrors.title ? 'border-error' : ''}`}
+                  type="text"
+                  placeholder="e.g. Sprint Review #13"
+                  required
+                  value={form.title}
+                  onChange={e => { setForm({ ...form, title: e.target.value }); setFormErrors(prev => ({ ...prev, title: '' })); }}
+                />
+                {formErrors.title && <p className="text-xs text-error mt-1">{formErrors.title}</p>}
+              </div>
+              <div>
+                <label className="ts-label">Project Name *</label>
+                <input
+                  className={`ts-field ${formErrors.projectName ? 'border-error' : ''}`}
+                  type="text"
+                  placeholder="e.g. Rebranding 2026"
+                  required
+                  value={form.projectName}
+                  onChange={e => { setForm({ ...form, projectName: e.target.value }); setFormErrors(prev => ({ ...prev, projectName: '' })); }}
+                />
+                {formErrors.projectName && <p className="text-xs text-error mt-1">{formErrors.projectName}</p>}
+              </div>
+              <div>
+                <label className="ts-label">Description *</label>
+                <textarea
+                  className={`ts-field resize-none h-24 ${formErrors.description ? 'border-error' : ''}`}
+                  placeholder="Brief description of this meeting..."
+                  required
+                  value={form.description}
+                  onChange={e => { setForm({ ...form, description: e.target.value }); setFormErrors(prev => ({ ...prev, description: '' })); }}
+                ></textarea>
+                {formErrors.description && <p className="text-xs text-error mt-1">{formErrors.description}</p>}
+              </div>
             </form>
           </div>
           <div className="ts-modal-footer">
             <button className="btn-secondary text-sm" onClick={closeCreateModal}>Cancel</button>
-            {/* Next: calls initiateMeeting → gets meetingId */}
-            <button className="btn-primary text-sm" onClick={() => document.getElementById('create-meeting-form').requestSubmit()}>
-              Next <span className="material-symbols-outlined text-sm">arrow_forward</span>
+            <button
+              className="btn-primary text-sm"
+              disabled={initiating}
+              onClick={() => document.getElementById('create-meeting-form').requestSubmit()}
+            >
+              {initiating ? (
+                <><span className="animate-spin material-symbols-outlined text-sm">progress_activity</span>Initiating…</>
+              ) : (
+                <>Next <span className="material-symbols-outlined text-sm">arrow_forward</span></>
+              )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Create Meeting Modal — Step 2 */}
+      {/* ═══ Create Meeting Modal — Step 2: Audio Upload ═══ */}
       <div className={`ts-modal-overlay ${showCreate && createStep === 2 ? 'open' : ''}`} onClick={e => { if (e.target === e.currentTarget) closeCreateModal(); }}>
         <div className="ts-modal">
           <div className="ts-modal-header">
@@ -281,15 +451,44 @@ export default function LeaderMeetings() {
           <div className="ts-modal-body">
             <div className="space-y-6">
               <div>
-                <label className="ts-label">Meeting Audio File</label>
-                <label className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-outline-variant/30 rounded-xl cursor-pointer hover:border-primary/40 hover:bg-primary/3 transition-all">
-                  <span className="material-symbols-outlined text-3xl text-outline mb-2">upload_file</span>
-                  <p className="text-sm text-on-surface-variant font-medium">Click to upload audio</p>
-                  <p className="text-xs text-outline mt-1">MP3, WAV, M4A up to 500MB</p>
-                  <input type="file" accept="audio/*" className="hidden" onChange={handleFileChange} />
+                <label className="ts-label">Meeting Audio File (.mp3 only)</label>
+                <label className={`flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-xl cursor-pointer transition-all ${
+                  uploadError ? 'border-error/50 bg-error/3' : 'border-outline-variant/30 hover:border-primary/40 hover:bg-primary/3'
+                } ${uploading || uploadSuccess ? 'pointer-events-none opacity-60' : ''}`}>
+                  <span className="material-symbols-outlined text-3xl text-outline mb-2">{uploadError ? 'error' : 'upload_file'}</span>
+                  <p className="text-sm text-on-surface-variant font-medium">
+                    {uploading ? 'Uploading...' : uploadSuccess ? 'Upload complete!' : 'Click to select MP3 file'}
+                  </p>
+                  <p className="text-xs text-outline mt-1">MP3 files only, up to 500MB</p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="audio/mpeg,.mp3"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    disabled={uploading || uploadSuccess}
+                  />
                 </label>
               </div>
-              {uploadFile && (
+
+              {/* Error message */}
+              {uploadError && (
+                <div className="flex items-start gap-2 p-3 bg-error/5 border border-error/20 rounded-xl">
+                  <span className="material-symbols-outlined text-error text-lg flex-shrink-0 mt-0.5">warning</span>
+                  <div>
+                    <p className="text-sm text-error font-medium">{uploadError}</p>
+                    <button
+                      className="text-xs text-error/70 hover:text-error underline mt-1"
+                      onClick={() => { setUploadError(null); setUploadFile(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                    >
+                      Try again
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* File info + progress */}
+              {uploadFile && !uploadError && (
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 p-3 bg-surface-container-low rounded-xl">
                     <span className="material-symbols-outlined text-primary text-lg">audio_file</span>
@@ -297,28 +496,56 @@ export default function LeaderMeetings() {
                       <p className="text-sm font-medium text-on-surface truncate">{uploadFile.name}</p>
                       <p className="text-xs text-outline">{(uploadFile.size / 1024 / 1024).toFixed(1)} MB</p>
                     </div>
-                    {uploadProgress === 100 && <span className="material-symbols-outlined text-secondary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>}
+                    {uploadSuccess && <span className="material-symbols-outlined text-secondary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>}
                   </div>
-                  <div>
-                    <div className="flex justify-between items-center mb-1.5">
-                      <p className="text-xs text-outline font-medium">{uploading ? 'Uploading...' : 'Upload complete'}</p>
-                      <p className="text-xs font-mono text-primary font-bold">{uploadProgress}%</p>
+
+                  {/* Progress bar — only show during/after upload */}
+                  {(uploading || uploadProgress > 0) && (
+                    <div>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <p className="text-xs text-outline font-medium">
+                          {processing ? 'Starting AI processing...' : uploading ? 'Uploading to cloud...' : uploadSuccess ? 'Upload complete!' : 'Ready to upload'}
+                        </p>
+                        <p className="text-xs font-mono text-primary font-bold">{uploadProgress}%</p>
+                      </div>
+                      <div className="w-full bg-surface-container-high rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full transition-all duration-300 ${uploadSuccess ? 'bg-secondary' : 'bg-primary'}`}
+                          style={{ width: `${uploadProgress}%` }}
+                        ></div>
+                      </div>
                     </div>
-                    <div className="w-full bg-surface-container-high rounded-full h-2">
-                      <div className="bg-primary h-2 rounded-full transition-all duration-200" style={{ width: `${uploadProgress}%` }}></div>
+                  )}
+
+                  {/* Success state */}
+                  {uploadSuccess && !processing && (
+                    <div className="flex items-center gap-2 p-3 bg-secondary/5 border border-secondary/20 rounded-xl">
+                      <span className="material-symbols-outlined text-secondary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                      <p className="text-sm text-secondary font-medium">Audio uploaded & processing started! Closing shortly...</p>
                     </div>
-                  </div>
+                  )}
                 </div>
               )}
             </div>
           </div>
           <div className="ts-modal-footer">
-            <button className="btn-secondary text-sm" onClick={() => setCreateStep(1)}>
+            <button className="btn-secondary text-sm" onClick={() => { if (!uploading) setCreateStep(1); }} disabled={uploading || processing}>
               <span className="material-symbols-outlined text-sm">arrow_back</span> Back
             </button>
-            {/* Done: sends meetingId + audioUrl to startMeetingProcess */}
-            <button className="btn-primary text-sm" onClick={handleDone} disabled={uploading}>
-              <span className="material-symbols-outlined text-sm">check</span>Done
+            <button
+              className="btn-primary text-sm"
+              onClick={handleUploadAndProcess}
+              disabled={!uploadFile || uploading || uploadSuccess || processing || !!uploadError}
+            >
+              {uploading ? (
+                <><span className="animate-spin material-symbols-outlined text-sm">progress_activity</span>Uploading…</>
+              ) : processing ? (
+                <><span className="animate-spin material-symbols-outlined text-sm">progress_activity</span>Processing…</>
+              ) : uploadSuccess ? (
+                <><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>Done!</>
+              ) : (
+                <><span className="material-symbols-outlined text-sm">cloud_upload</span>Upload & Process</>
+              )}
             </button>
           </div>
         </div>

@@ -35,7 +35,8 @@ export default function AdminMeetingDetail() {
   const mom = data.mom || {};
   // presentAttendees → participants
   const participants = Array.isArray(mom.presentAttendees) ? mom.presentAttendees : [];
-  const transcripts = Array.isArray(data.transcripts) ? data.transcripts : [];
+  const transcriptsData = Array.isArray(data.transcripts) ? data.transcripts : [];
+  const transcripts = transcriptsData.flatMap(t => Array.isArray(t.content) ? t.content : t);
   const meetingDate = meeting.meetingDate ? new Date(meeting.meetingDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
   // momId → navigation to MOM detail page
   const momId = mom._id || null;
@@ -100,6 +101,14 @@ export default function AdminMeetingDetail() {
                 <div>
                   <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Stage</p>
                   <p className="text-sm font-medium capitalize">{meeting.processingStage || '—'}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Duration</p>
+                  <p className="text-sm font-medium">
+                    {meeting.meetingDuration
+                      ? `${Math.floor(meeting.meetingDuration / 60)}m ${meeting.meetingDuration % 60}s`
+                      : '—'}
+                  </p>
                 </div>
               </div>
             </div>

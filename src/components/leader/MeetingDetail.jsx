@@ -21,7 +21,7 @@ export default function LeaderMeetingDetail() {
   useEffect(() => {
     if (!meetingId) { setLoading(false); return; }
     apiFetch(`/leader/meetings/${meetingId}`)
-      .then(res => setData(res.data || res))
+      .then(res => setData(res.data))
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [meetingId]);
@@ -34,7 +34,8 @@ export default function LeaderMeetingDetail() {
   const mom = data.mom || {};
   // presentAttendees from participants
   const participants = Array.isArray(mom.presentAttendees) ? mom.presentAttendees : [];
-  const transcripts = Array.isArray(data.transcripts) ? data.transcripts : [];
+  const transcriptsData = Array.isArray(data.transcripts) ? data.transcripts : [];
+  const transcripts = transcriptsData.flatMap(t => Array.isArray(t.content) ? t.content : t);
   const momId = mom._id || null;
   const displayDate = meeting.meetingDate
     ? new Date(meeting.meetingDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -111,6 +112,14 @@ export default function LeaderMeetingDetail() {
                 <div>
                   <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Stage</p>
                   <p className="text-sm font-medium capitalize">{meeting.processingStage || '—'}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Duration</p>
+                  <p className="text-sm font-medium">
+                    {meeting.meetingDuration
+                      ? `${Math.floor(meeting.meetingDuration / 60)}m ${meeting.meetingDuration % 60}s`
+                      : '—'}
+                  </p>
                 </div>
               </div>
             </div>

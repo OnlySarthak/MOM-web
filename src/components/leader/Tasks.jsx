@@ -24,10 +24,12 @@ export default function LeaderTasks() {
   const [form, setForm] = useState({ title: '', responsibleId: '' });
   const [teamMembers, setTeamMembers] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+  const [memberFilter, setMemberFilter] = useState('all');
 
   function loadTasks() {
     setLoading(true);
-    apiFetch('/leader/tasks')
+    const query = memberFilter !== 'all' ? `?memberId=${memberFilter}` : '';
+    apiFetch(`/leader/tasks${query}`)
       .then(res => {
         const list = Array.isArray(res) ? res : (res.tasks || res.data || []);
         setTasks(list);
@@ -44,7 +46,10 @@ export default function LeaderTasks() {
 
   useEffect(() => {
     loadTasks();
-    // Load team members for assign dropdown (non-leader members)
+  }, [memberFilter]);
+
+  useEffect(() => {
+    // Load team members for assign dropdown and member filter
     apiFetch('/leader/tasks/lookout/team-members')
       .then(res => setTeamMembers(Array.isArray(res) ? res : (res.data || [])))
       .catch(() => {});
@@ -108,6 +113,19 @@ export default function LeaderTasks() {
             {f === 'all' ? 'All' : f === 'in-progress' ? 'In Progress' : f === 'todo' ? 'To Do' : 'Completed'}
           </button>
         ))}
+        
+        {/* Member Filter Dropdown */}
+        <select 
+          className="ml-4 pl-4 pr-10 py-2 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm focus:outline-none focus:border-primary appearance-none cursor-pointer"
+          value={memberFilter}
+          onChange={e => setMemberFilter(e.target.value)}
+        >
+          <option value="all">All Members</option>
+          {teamMembers.map(m => (
+             m.userId && <option key={m.userId._id} value={m.userId._id}>{m.userId.name}</option>
+          ))}
+        </select>
+
         <div className="ml-auto">
           <div className="relative">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>

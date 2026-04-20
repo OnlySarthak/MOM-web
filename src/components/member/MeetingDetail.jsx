@@ -20,14 +20,8 @@ export default function MemberMeetingDetail() {
 
   useEffect(() => {
     if (!meetingId) { setLoading(false); return; }
-    // Member uses the same meeting data as leader (no dedicated member meeting detail endpoint)
-    // Use the member meetings list and find by id, or reuse leader endpoint if accessible
-    apiFetch(`/member/meetings`)
-      .then(res => {
-        const list = Array.isArray(res) ? res : [];
-        const found = list.find(m => m._id === meetingId);
-        setData(found || null);
-      })
+    apiFetch(`/member/meetings/${meetingId}`)
+      .then(res => setData(res.data))
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [meetingId]);
@@ -39,8 +33,9 @@ export default function MemberMeetingDetail() {
   const meeting = data;
   const mom = data.mom || {};
   const participants = Array.isArray(mom.presentAttendees) ? mom.presentAttendees : [];
-  const transcripts = Array.isArray(data.transcripts) ? data.transcripts : [];
-  const momId = mom._id || data.momId || null;
+  const transcriptsData = Array.isArray(data.transcripts) ? data.transcripts : [];
+  const transcripts = transcriptsData.flatMap(t => Array.isArray(t.content) ? t.content : t);
+  const momId = mom._id || null;
   const displayDate = meeting.meetingDate
     ? new Date(meeting.meetingDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : '—';
@@ -86,6 +81,14 @@ export default function MemberMeetingDetail() {
                 <div><p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Organizer</p><div className="flex items-center gap-3"><Avatar name={meeting.leaderName || '?'} size="28" round={true} /><p className="text-sm font-semibold">{meeting.leaderName || '—'}</p></div></div>
                 <div><p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Project</p><p className="text-sm font-medium">{meeting.projectName || '—'}</p></div>
                 <div><p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Stage</p><p className="text-sm font-medium capitalize">{meeting.processingStage || '—'}</p></div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Duration</p>
+                  <p className="text-sm font-medium">
+                    {meeting.meetingDuration
+                      ? `${Math.floor(meeting.meetingDuration / 60)}m ${meeting.meetingDuration % 60}s`
+                      : '—'}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -114,21 +117,23 @@ export default function MemberMeetingDetail() {
             </div>
 
             {/* MOM Artifact */}
-            <div className="col-span-12 lg:col-span-3 ts-card p-8">
-              <div className="flex items-center gap-3 mb-5"><div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><span className="material-symbols-outlined">description</span></div><h2 className="font-headline text-xl text-on-surface">MOM Artifact</h2></div>
-              {momId ? (
-                <div className="bg-surface-container-low rounded-xl p-5 border border-dashed border-outline-variant text-center">
-                  <span className="material-symbols-outlined text-3xl text-outline mb-2">draft</span>
-                  <p className="text-sm font-semibold mb-1">{mom.MeetingTitle || 'MOM'}</p>
-                  <p className="font-mono text-[10px] text-outline mb-4">Auto-generated</p>
-                  <Link to={`/member/mom-detail?id=${momId}`} className="block py-2 text-xs font-semibold bg-on-surface text-white rounded-lg hover:opacity-80 transition-all text-center">Open MOM</Link>
-                </div>
-              ) : (
-                <div className="bg-surface-container-low rounded-xl p-5 border border-dashed border-outline-variant text-center">
-                  <span className="material-symbols-outlined text-3xl text-outline mb-2">hourglass_empty</span>
-                  <p className="text-sm text-outline">MOM not yet generated</p>
-                </div>
-              )}
+            <div className="col-span-12 lg:col-span-3 ts-card p-8 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-3 mb-5"><div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><span className="material-symbols-outlined">description</span></div><h2 className="font-headline text-xl text-on-surface">MOM Artifact</h2></div>
+                {momId ? (
+                  <div className="bg-surface-container-low rounded-xl p-5 border border-dashed border-outline-variant text-center">
+                    <span className="material-symbols-outlined text-3xl text-outline mb-2">draft</span>
+                    <p className="text-sm font-semibold mb-1">{mom.MeetingTitle || 'MOM'}</p>
+                    <p className="font-mono text-[10px] text-outline mb-4">Auto-generated</p>
+                    <Link to={`/member/mom-detail?id=${momId}`} className="block py-2 text-xs font-semibold bg-on-surface text-white rounded-lg hover:opacity-80 transition-all text-center">Open MOM</Link>
+                  </div>
+                ) : (
+                  <div className="bg-surface-container-low rounded-xl p-5 border border-dashed border-outline-variant text-center">
+                    <span className="material-symbols-outlined text-3xl text-outline mb-2">hourglass_empty</span>
+                    <p className="text-sm text-outline">MOM not yet generated</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

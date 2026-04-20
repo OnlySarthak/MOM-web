@@ -117,7 +117,7 @@ export default function AdminMeetings() {
             </thead>
             <tbody>
               {filtered.map((m, idx) => {
-                const memberNames = Array.isArray(m.memberNames) ? m.memberNames : [];
+                const memberNames = Array.isArray(m.attendees) ? m.attendees : Array.isArray(m.memberNames) ? m.memberNames : [];
                 const displayDate = m.meetingDate
                   ? new Date(m.meetingDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                   : '—';

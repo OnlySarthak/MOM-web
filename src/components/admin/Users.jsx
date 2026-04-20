@@ -28,6 +28,12 @@ export default function AdminUsers() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
 
+  const [renameTarget, setRenameTarget] = useState(null);
+  const [newName, setNewName] = useState('');
+  const [resetTarget, setResetTarget] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [openDD, setOpenDD] = useState(null);
+
   function loadUsers() {
     setLoading(true);
     apiFetch('/admin/users')
@@ -70,6 +76,54 @@ export default function AdminUsers() {
       loadUsers(); // Refresh list
     } catch (err) {
       setSubmitError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleRemove(id, name) {
+    if (!window.confirm(`Are you sure you want to completely remove "${name}"? This action cannot be undone.`)) return;
+    try {
+      await apiFetch(`/admin/users/${id}`, { method: 'DELETE' });
+      loadUsers();
+    } catch (err) {
+      alert(`Failed to remove: ${err.message}`);
+    }
+    setOpenDD(null);
+  }
+
+  async function handleRename(e) {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await apiFetch(`/admin/users/${renameTarget.id}/rename`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newName })
+      });
+      setRenameTarget(null);
+      loadUsers();
+    } catch (err) {
+      alert(`Failed to rename: ${err.message}`);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleResetPassword(e) {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      if (newPassword.length < 6) throw new Error("Password must be at least 6 characters.");
+      await apiFetch(`/admin/users/${resetTarget.id}/password`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: newPassword })
+      });
+      setResetTarget(null);
+      alert('Password reset successfully.');
+    } catch (err) {
+      alert(`Failed to reset password: ${err.message}`);
     } finally {
       setSubmitting(false);
     }
@@ -170,9 +224,24 @@ export default function AdminUsers() {
                     </td>
 
                     <td>
-                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        {/* Actions can be added later */}
-                      </div>
+                      {u.systemRole !== 'admin' && (
+                        <div className="relative text-right">
+                          <span className="material-symbols-outlined text-outline hover:text-on-surface transition-colors cursor-pointer" onClick={(e) => { e.stopPropagation(); setOpenDD(openDD === idx ? null : idx); }}>more_vert</span>
+                          <div className={`ts-dropdown ${openDD === idx ? 'open' : ''} right-[10px]`}>
+                            <button className="ts-dropdown-item" onClick={(e) => { e.stopPropagation(); setRenameTarget(u); setNewName(u.name); setOpenDD(null); }}>
+                              <span className="material-symbols-outlined text-sm">edit</span> Rename
+                            </button>
+                            <button className="ts-dropdown-item" onClick={(e) => { e.stopPropagation(); setResetTarget(u); setNewPassword(''); setOpenDD(null); }}>
+                              <span className="material-symbols-outlined text-sm">key</span> Reset Password
+                            </button>
+                            {isDeactivated && (
+                              <button className="ts-dropdown-item text-error hover:bg-error/10 hover:text-error" onClick={(e) => { e.stopPropagation(); handleRemove(u.id, u.name); }}>
+                                <span className="material-symbols-outlined text-sm">delete</span> Remove User
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 );
@@ -218,6 +287,54 @@ export default function AdminUsers() {
           </div>
         </div>
       </div>
+
+      {/* Rename User Modal */}
+      <div className={`ts-modal-overlay ${renameTarget ? 'open' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) setRenameTarget(null); }}>
+        <div className="ts-modal" style={{ maxWidth: '400px' }}>
+          <div className="ts-modal-header">
+            <h2>Rename User</h2>
+            <button className="ts-close-btn" onClick={() => setRenameTarget(null)}><span className="material-symbols-outlined">close</span></button>
+          </div>
+          <div className="ts-modal-body">
+            <form id="rename-form" className="space-y-4" onSubmit={handleRename}>
+              <div>
+                <label className="ts-label">New Full Name *</label>
+                <input className="ts-field" type="text" placeholder="John Doe" required value={newName} onChange={e => setNewName(e.target.value)} />
+              </div>
+            </form>
+          </div>
+          <div className="ts-modal-footer">
+            <button className="btn-secondary text-sm" onClick={() => setRenameTarget(null)}>Cancel</button>
+            <button className="btn-primary text-sm" disabled={submitting || !newName.trim()} onClick={() => document.getElementById('rename-form').requestSubmit()}>{submitting ? 'Updating…' : 'Save Name'}</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Reset Password Modal */}
+      <div className={`ts-modal-overlay ${resetTarget ? 'open' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) setResetTarget(null); }}>
+        <div className="ts-modal" style={{ maxWidth: '400px' }}>
+          <div className="ts-modal-header">
+            <h2>Reset Password</h2>
+            <button className="ts-close-btn" onClick={() => setResetTarget(null)}><span className="material-symbols-outlined">close</span></button>
+          </div>
+          <div className="ts-modal-body">
+            <div className="mb-4 text-sm text-outline p-3 bg-surface-container rounded-lg">
+              You are resetting the password for <strong>{resetTarget?.name}</strong> ({resetTarget?.email}).
+            </div>
+            <form id="reset-pw-form" className="space-y-4" onSubmit={handleResetPassword}>
+              <div>
+                <label className="ts-label">New Password *</label>
+                <input className="ts-field" type="text" placeholder="••••••••" required value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+              </div>
+            </form>
+          </div>
+          <div className="ts-modal-footer">
+            <button className="btn-secondary text-sm" onClick={() => setResetTarget(null)}>Cancel</button>
+            <button className="btn-primary text-sm" disabled={submitting || newPassword.length < 6} onClick={() => document.getElementById('reset-pw-form').requestSubmit()}>{submitting ? 'Resetting…' : 'Update Password'}</button>
+          </div>
+        </div>
+      </div>
+
     </>
   );
 }

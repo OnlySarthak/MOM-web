@@ -45,7 +45,7 @@ export default function Sidebar() {
   const { user, logout } = useAuth();
   const location = useLocation();
   const items = NAV_ITEMS[user.role] || NAV_ITEMS.member;
-  const roleLabel = user.role === 'admin' ? 'Administrator' : user.role === 'leader' ? 'Team Leader' : 'Member';
+  const roleLabel = user.role === 'admin' ? 'System Administrator' : user.role === 'leader' ? 'Team Leader' : 'Member';
   const rolePrefix = `/${user.role}`;
   const activeKey = deriveActiveKey(location.pathname);
 
@@ -75,7 +75,7 @@ export default function Sidebar() {
           <Avatar name={user.name} size="32" round={true} />
           <div className="overflow-hidden">
             <p className="text-xs font-semibold text-white truncate">{user.name}</p>
-            <p className="text-[10px] text-zinc-500 truncate">{user.title}</p>
+            <p className="text-[10px] text-zinc-500 truncate">{roleLabel}</p>
           </div>
         </div>
         <Link className="flex items-center gap-3 px-3 py-2 text-zinc-400 hover:text-white hover:bg-white/5 transition-all duration-200 rounded-lg" to={`${rolePrefix}/profile`}>
