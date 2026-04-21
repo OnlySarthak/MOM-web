@@ -73,6 +73,18 @@ export default function MemberMeetingDetail() {
 
       {activeTab === 'overview' && (
         <div className="space-y-6 mb-10">
+          {/* Agenda section */}
+          {meeting.agenda && (
+            <div className="ts-card p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-primary text-sm">format_list_bulleted</span>
+                </div>
+                <h2 className="font-headline text-xl text-on-surface">Agenda</h2>
+              </div>
+              <p className="text-sm text-on-surface-variant whitespace-pre-line">{meeting.agenda}</p>
+            </div>
+          )}
           <div className="grid grid-cols-12 gap-6">
             {/* Meeting Details */}
             <div className="col-span-12 lg:col-span-4 glass-card p-8">

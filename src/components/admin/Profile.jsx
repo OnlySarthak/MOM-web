@@ -16,7 +16,7 @@ async function apiFetch(path, opts = {}) {
 }
 
 export default function AdminProfile() {
-  const { user, logout } = useAuth();
+  const { user, setUser, logout } = useAuth();
   const navigate = useNavigate();
 
   const [profile, setProfile] = useState(null);
@@ -44,10 +44,24 @@ export default function AdminProfile() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Save name — no dedicated name-update endpoint found; show local feedback only
-  function handleSave() {
-    setSaveFeedback('Saved!');
-    setTimeout(() => setSaveFeedback(''), 2000);
+  async function handleSave() {
+    setSaveFeedback('');
+    try {
+      await apiFetch('/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+      });
+      setProfile(prev => ({ ...prev, name }));
+      const updatedUser = { ...user, name };
+      setUser(updatedUser);
+      localStorage.setItem('teamsync_session', JSON.stringify(updatedUser));
+      setSaveFeedback('Saved!');
+      setTimeout(() => setSaveFeedback(''), 2000);
+    } catch (err) {
+      setError(err.message || 'Failed to update name.');
+      setTimeout(() => setError(null), 3000);
+    }
   }
 
   async function handleChangePwd() {
@@ -98,7 +112,7 @@ export default function AdminProfile() {
             <span className="px-2 py-0.5 bg-primary-fixed text-on-primary-fixed-variant text-[9px] font-bold uppercase tracking-widest rounded-full">{roleLabel}</span>
           </div>
           {/* title shown from profile API data */}
-          <p className="text-on-surface-variant">{profile?.title || user?.title || '—'}</p>
+          {(profile?.title || user?.title) && <p className="text-on-surface-variant">{profile?.title || user?.title}</p>}
           <p className="font-mono text-sm text-outline mt-1">{profile?.email || user?.email || '—'}</p>
           <div className="flex items-center gap-2 mt-2">
             <span className="material-symbols-outlined text-outline text-sm">workspaces</span>

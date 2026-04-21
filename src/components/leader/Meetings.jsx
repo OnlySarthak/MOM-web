@@ -47,7 +47,7 @@ export default function LeaderMeetings() {
   const [showCreate, setShowCreate] = useState(false);
   const [createStep, setCreateStep] = useState(1);
   const [openDD, setOpenDD] = useState(null);
-  const [form, setForm] = useState({ title: '', projectName: '', description: '' });
+  const [form, setForm] = useState({ title: '', projectName: '', agenda: '' });
   const [formErrors, setFormErrors] = useState({});
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -91,7 +91,7 @@ export default function LeaderMeetings() {
     const errors = {};
     if (!form.title.trim()) errors.title = 'Meeting Title is required';
     if (!form.projectName.trim()) errors.projectName = 'Project Name is required';
-    if (!form.description.trim()) errors.description = 'Description is required';
+    if (!form.agenda.trim()) errors.agenda = 'Agenda is required';
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   }
@@ -109,7 +109,7 @@ export default function LeaderMeetings() {
         body: JSON.stringify({
           title: form.title.trim(),
           projectName: form.projectName.trim(),
-          description: form.description.trim(),
+          agenda: form.agenda.trim(),
         }),
       });
       setMeetingId(res.meetingId);
@@ -251,7 +251,7 @@ export default function LeaderMeetings() {
   function closeCreateModal() {
     setShowCreate(false);
     setCreateStep(1);
-    setForm({ title: '', projectName: '', description: '' });
+    setForm({ title: '', projectName: '', agenda: '' });
     setFormErrors({});
     setUploadFile(null);
     setUploadProgress(0);
@@ -308,7 +308,7 @@ export default function LeaderMeetings() {
               {error ? "We couldn't load your meetings right now." : "Try adjusting your filters or search terms."}
             </p>
             {(error || timeFilter !== 'All Time' || searchQ) && (
-              <button 
+              <button
                 onClick={() => { setError(null); setTimeFilter('All Time'); setSearchQ(''); loadMeetings(); }}
                 className="btn-secondary text-xs"
               >
@@ -409,15 +409,15 @@ export default function LeaderMeetings() {
                 {formErrors.projectName && <p className="text-xs text-error mt-1">{formErrors.projectName}</p>}
               </div>
               <div>
-                <label className="ts-label">Description *</label>
+                <label className="ts-label">Agenda *</label>
                 <textarea
-                  className={`ts-field resize-none h-24 ${formErrors.description ? 'border-error' : ''}`}
+                  className={`ts-field resize-none h-24 ${formErrors.agenda ? 'border-error' : ''}`}
                   placeholder="Brief description of this meeting..."
                   required
-                  value={form.description}
-                  onChange={e => { setForm({ ...form, description: e.target.value }); setFormErrors(prev => ({ ...prev, description: '' })); }}
+                  value={form.agenda}
+                  onChange={e => { setForm({ ...form, agenda: e.target.value }); setFormErrors(prev => ({ ...prev, agenda: '' })); }}
                 ></textarea>
-                {formErrors.description && <p className="text-xs text-error mt-1">{formErrors.description}</p>}
+                {formErrors.agenda && <p className="text-xs text-error mt-1">{formErrors.agenda}</p>}
               </div>
             </form>
           </div>
@@ -452,9 +452,8 @@ export default function LeaderMeetings() {
             <div className="space-y-6">
               <div>
                 <label className="ts-label">Meeting Audio File (.mp3 only)</label>
-                <label className={`flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-xl cursor-pointer transition-all ${
-                  uploadError ? 'border-error/50 bg-error/3' : 'border-outline-variant/30 hover:border-primary/40 hover:bg-primary/3'
-                } ${uploading || uploadSuccess ? 'pointer-events-none opacity-60' : ''}`}>
+                <label className={`flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-xl cursor-pointer transition-all ${uploadError ? 'border-error/50 bg-error/3' : 'border-outline-variant/30 hover:border-primary/40 hover:bg-primary/3'
+                  } ${uploading || uploadSuccess ? 'pointer-events-none opacity-60' : ''}`}>
                   <span className="material-symbols-outlined text-3xl text-outline mb-2">{uploadError ? 'error' : 'upload_file'}</span>
                   <p className="text-sm text-on-surface-variant font-medium">
                     {uploading ? 'Uploading...' : uploadSuccess ? 'Upload complete!' : 'Click to select MP3 file'}

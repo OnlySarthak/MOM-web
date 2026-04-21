@@ -16,7 +16,7 @@ async function apiFetch(path, opts = {}) {
 }
 
 export default function MemberProfile() {
-  const { user, logout } = useAuth();
+  const { user, setUser, logout } = useAuth();
   const navigate = useNavigate();
 
   const [profile, setProfile] = useState(null);
@@ -39,7 +39,25 @@ export default function MemberProfile() {
       .finally(() => setLoading(false));
   }, []);
 
-  function handleSave() { setSaveFeedback('Saved!'); setTimeout(() => setSaveFeedback(''), 2000); }
+  async function handleSave() {
+    setSaveFeedback('');
+    try {
+      await apiFetch('/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+      });
+      setProfile(prev => ({ ...prev, name }));
+      const updatedUser = { ...user, name };
+      setUser(updatedUser);
+      localStorage.setItem('teamsync_session', JSON.stringify(updatedUser));
+      setSaveFeedback('Saved!');
+      setTimeout(() => setSaveFeedback(''), 2000);
+    } catch (err) {
+      setError(err.message || 'Failed to update name.');
+      setTimeout(() => setError(null), 3000);
+    }
+  }
 
   async function handleChangePwd() {
     setPwdError('');
@@ -77,18 +95,16 @@ export default function MemberProfile() {
             <h1 className="font-headline text-4xl text-on-surface">{profile?.name || user?.name || '—'}</h1>
             <span className="px-2 py-0.5 bg-primary-fixed text-on-primary-fixed-variant text-[9px] font-bold uppercase tracking-widest rounded-full">Member</span>
           </div>
-          <p className="text-on-surface-variant">{profile?.title || user?.title || '—'}</p>
+          {(profile?.title || user?.title) && <p className="text-on-surface-variant">{profile?.title || user?.title}</p>}
           <p className="font-mono text-sm text-outline mt-1">{profile?.email || user?.email || '—'}</p>
           <div className="flex items-center gap-2 mt-2">
             <span className="material-symbols-outlined text-outline text-sm">workspaces</span>
             <span className="text-xs text-outline font-medium">{profile?.workspaceName || '—'}</span>
           </div>
-          {profile?.teamName && (
-            <div className="flex items-center gap-2 mt-1">
-              <span className="material-symbols-outlined text-outline text-sm">groups</span>
-              <span className="text-xs text-outline font-medium">{profile.teamName}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-2 mt-1">
+            <span className="material-symbols-outlined text-outline text-sm">groups</span>
+            <span className="text-xs text-outline font-medium">{profile?.teamName || '—'}</span>
+          </div>
         </div>
         <div className="md:ml-auto">
           <button className="btn-primary gap-2 text-sm" onClick={handleSave} disabled={!!saveFeedback}>

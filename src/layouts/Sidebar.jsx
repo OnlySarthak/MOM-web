@@ -17,7 +17,7 @@ const NAV_ITEMS = {
     { icon: 'calendar_today', label: 'Meetings', path: '/leader/meetings', key: 'meetings' },
     { icon: 'description', label: 'MOMs', path: '/leader/mom-list', key: 'moms' },
     { icon: 'assignment', label: 'Tasks', path: '/leader/tasks', key: 'tasks' },
-    { icon: 'hub', label: 'Teams', path: '/leader/teams', key: 'teams' },
+    { icon: 'hub', label: 'Team', path: '/leader/teams', key: 'teams' },
     { icon: 'person', label: 'Profile', path: '/leader/profile', key: 'profile' },
   ],
   member: [

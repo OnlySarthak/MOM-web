@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Avatar from 'react-avatar';
+import { generateMomLatex, downloadLatexString } from '../../utils/latexGenerator';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -24,6 +25,16 @@ export default function AdminMomDetail() {
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [momId]);
+
+  function handleExport() {
+    if (!data) return;
+    try {
+      const latexStr = generateMomLatex(data);
+      downloadLatexString(latexStr, `MOM_${data._id}.tex`);
+    } catch (err) {
+      alert('Failed to generate export: ' + err.message);
+    }
+  }
 
   if (loading) return <div className="flex items-center justify-center h-64 text-outline animate-pulse">Loading MOM…</div>;
   if (error) return <div className="flex items-center justify-center h-64 text-error text-sm">Failed to load MOM: {error}</div>;
@@ -164,7 +175,7 @@ export default function AdminMomDetail() {
       {/* Footer */}
       <div className="mt-16 pt-10 border-t border-outline-variant/10 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <button className="btn-secondary gap-2 text-sm"><span className="material-symbols-outlined text-sm">download</span>Export PDF</button>
+          <button className="btn-secondary gap-2 text-sm" onClick={handleExport}><span className="material-symbols-outlined text-sm">download</span>Export PDF</button>
         </div>
         <p className="font-mono text-[10px] uppercase text-outline tracking-widest">
           {mom.updatedAt ? `Last sync: ${new Date(mom.updatedAt).toLocaleString()}` : ''}

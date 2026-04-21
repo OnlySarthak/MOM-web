@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import Avatar from 'react-avatar';
+import { generateMomLatex, downloadLatexString } from '../../utils/latexGenerator';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -51,6 +52,16 @@ export default function MemberMomDetail() {
       alert('Failed to post suggestion: ' + err.message);
     } finally {
       setPosting(false);
+    }
+  }
+
+  function handleExport() {
+    if (!momData) return;
+    try {
+      const latexStr = generateMomLatex(momData);
+      downloadLatexString(latexStr, `MOM_${momData._id}.tex`);
+    } catch (err) {
+      alert('Failed to generate export: ' + err.message);
     }
   }
 
@@ -223,7 +234,7 @@ export default function MemberMomDetail() {
       </div>
 
       <div className="mt-16 pt-10 border-t border-outline-variant/10 flex justify-between items-center">
-        <button className="btn-secondary gap-2 text-sm"><span className="material-symbols-outlined text-sm">download</span>Export PDF</button>
+        <button className="btn-secondary gap-2 text-sm" onClick={handleExport}><span className="material-symbols-outlined text-sm">download</span>Export PDF</button>
         <p className="font-mono text-[10px] uppercase text-outline tracking-widest">
           {momData.updatedAt ? `Last sync: ${new Date(momData.updatedAt).toLocaleString()}` : ''}
         </p>

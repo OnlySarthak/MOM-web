@@ -75,15 +75,24 @@ export default function AdminMeetingDetail() {
         <button className={`tab-btn ${activeTab === 'transcript' ? 'active' : ''} pb-4 text-sm font-medium text-outline hover:text-on-surface`} onClick={() => setActiveTab('transcript')}>Transcript</button>
       </nav>
 
+      {/* MOM overview */}
       {activeTab === 'overview' && (
         <div className="space-y-6 mb-10">
+          {/* Agenda (static — stored in meeting description/agenda field if present) */}
+          {meeting.agenda && (
+            <div className="ts-card p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><span className="material-symbols-outlined text-primary text-sm">format_list_bulleted</span></div>
+                <h2 className="font-headline text-xl text-on-surface">Agenda</h2>
+              </div>
+              <p className="text-sm text-on-surface-variant whitespace-pre-line">{meeting.agenda}</p>
+            </div>
+          )}
           <div className="grid grid-cols-12 gap-6">
-            {/* Meeting Info */}
+            {/* Meeting Details */}
             <div className="col-span-12 lg:col-span-4 glass-card p-8">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                  <span className="material-symbols-outlined">info</span>
-                </div>
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><span className="material-symbols-outlined">info</span></div>
                 <h2 className="font-headline text-xl text-on-surface">Meeting Details</h2>
               </div>
               <div className="space-y-5">
@@ -153,8 +162,8 @@ export default function AdminMeetingDetail() {
                     <p className="text-sm font-semibold mb-1">{mom.MeetingTitle || 'MOM'}</p>
                     <p className="font-mono text-[10px] text-outline mb-4">Auto-generated</p>
                     <div className="flex gap-2">
-                      {/* Open MOM → momId navigation */}
-                      <Link to={`/admin/mom-detail?id=${momId}`} className="flex-1 py-2 text-xs font-semibold bg-on-surface text-white rounded-lg hover:opacity-80 transition-all text-center">Open MOM</Link>
+                      {/* Open MOM → real momId navigation */}
+                      <Link to={`/leader/mom-detail?id=${momId}`} className="flex-1 py-2 text-xs font-semibold bg-on-surface text-white rounded-lg hover:opacity-80 transition-all text-center">Open MOM</Link>
                     </div>
                   </div>
                 ) : (

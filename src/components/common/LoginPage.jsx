@@ -160,33 +160,33 @@ export default function LoginPage() {
           <div className="mt-10">
             <p className="text-[10px] uppercase tracking-widest text-outline font-semibold mb-4 text-center">— Quick Demo Access —</p>
             <div className="space-y-3">
-              <button className="demo-chip w-full flex items-center gap-4 p-4 border border-outline-variant/20 rounded-xl bg-surface-container-low hover:bg-surface-container" onClick={() => fillDemo('admin@teamsync.app', 'admin123')}>
+              <button className="demo-chip w-full flex items-center gap-4 p-4 border border-outline-variant/20 rounded-xl bg-surface-container-low hover:bg-surface-container" onClick={() => fillDemo('sadmin@gmail.com', 'abc@123')}>
                 <div className="w-10 h-10 rounded-xl bg-[#2f312f] flex items-center justify-center flex-shrink-0">
                   <span className="material-symbols-outlined text-white text-lg">shield</span>
                 </div>
                 <div className="text-left flex-1">
                   <p className="text-sm font-semibold text-on-surface">Admin Account</p>
-                  <p className="font-mono text-xs text-outline">admin@teamsync.app · admin123</p>
+                  <p className="font-mono text-xs text-outline">sadmin@gmail.com · Kalpesh Sonawane</p>
                 </div>
                 <span className="material-symbols-outlined text-outline text-sm">arrow_forward</span>
               </button>
-              <button className="demo-chip w-full flex items-center gap-4 p-4 border border-primary/20 rounded-xl bg-primary/5 hover:bg-primary/10" onClick={() => fillDemo('leader@teamsync.app', 'leader123')}>
+              <button className="demo-chip w-full flex items-center gap-4 p-4 border border-primary/20 rounded-xl bg-primary/5 hover:bg-primary/10" onClick={() => fillDemo('leader1@gmail.com', 'abc@123')}>
                 <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center flex-shrink-0">
                   <span className="material-symbols-outlined text-white text-lg">groups</span>
                 </div>
                 <div className="text-left flex-1">
                   <p className="text-sm font-semibold text-on-surface">Team Leader</p>
-                  <p className="font-mono text-xs text-outline">leader@teamsync.app · leader123</p>
+                  <p className="font-mono text-xs text-outline">leader1@gmail.com · leader 1</p>
                 </div>
                 <span className="material-symbols-outlined text-outline text-sm">arrow_forward</span>
               </button>
-              <button className="demo-chip w-full flex items-center gap-4 p-4 border border-outline-variant/20 rounded-xl bg-surface-container-low hover:bg-surface-container" onClick={() => fillDemo('member@teamsync.app', 'member123')}>
+              <button className="demo-chip w-full flex items-center gap-4 p-4 border border-outline-variant/20 rounded-xl bg-surface-container-low hover:bg-surface-container" onClick={() => fillDemo('member11@gmail.com', 'abc@123')}>
                 <div className="w-10 h-10 rounded-xl bg-secondary text-white flex items-center justify-center flex-shrink-0">
                   <span className="material-symbols-outlined text-lg">person</span>
                 </div>
                 <div className="text-left flex-1">
                   <p className="text-sm font-semibold text-on-surface">Team Member</p>
-                  <p className="font-mono text-xs text-outline">member@teamsync.app · member123</p>
+                  <p className="font-mono text-xs text-outline">member11@gmail.com · member 11</p>
                 </div>
                 <span className="material-symbols-outlined text-outline text-sm">arrow_forward</span>
               </button>
