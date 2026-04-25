@@ -76,12 +76,12 @@ export default function LeaderMeetings() {
   const paginated = filtered.slice(0, page * PAGE_SIZE);
   const hasMore = paginated.length < filtered.length;
 
-  function cancelMeeting(id) {
+  function deleteMeeting(id) {
     const m = meetings.find(m => m._id === id);
-    if (m && window.confirm(`Cancel "${m.title}"?`)) {
+    if (m && window.confirm(`Delete "${m.title}"?`)) {
       apiFetch(`/leader/meetings/${id}`, { method: 'DELETE' })
         .then(() => loadMeetings())
-        .catch(e => alert('Failed to cancel: ' + e.message));
+        .catch(e => alert('Failed to delete: ' + e.message));
     }
     setOpenDD(null);
   }
@@ -345,7 +345,7 @@ export default function LeaderMeetings() {
                       <div className={`ts-dropdown ${openDD === idx ? 'open' : ''}`}>
                         <button className="ts-dropdown-item" onClick={e => { e.stopPropagation(); navigate(`/leader/meeting-detail?id=${m._id}`); setOpenDD(null); }}><span className="material-symbols-outlined text-sm">visibility</span>View Details</button>
                         <div className="ts-dropdown-sep"></div>
-                        <button className="ts-dropdown-item danger" onClick={e => { e.stopPropagation(); cancelMeeting(m._id); }}><span className="material-symbols-outlined text-sm">cancel</span>Cancel Meeting</button>
+                        <button className="ts-dropdown-item danger" onClick={e => { e.stopPropagation(); deleteMeeting(m._id); }}><span className="material-symbols-outlined text-sm">delete</span>Delete Meeting</button>
                       </div>
                     </td>
                   </tr>
