@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Avatar from 'react-avatar';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
 const STATE_DISPLAY = { in_progress: 'in-progress', pending: 'todo', completed: 'completed' };
 // Reverse map for sending to API (backend uses underscore format)

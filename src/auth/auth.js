@@ -3,7 +3,7 @@
  * Wired to real backend API. Falls back to demo-mode localStorage for dev.
  */
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
 /**
  * Attempt login via real backend. Returns {success, user, error}.

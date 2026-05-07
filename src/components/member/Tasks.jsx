@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext.jsx';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
 const STATE_DISPLAY = { in_progress: 'in-progress', pending: 'todo', completed: 'completed' };
 // Next state cycle: todo→in-progress→completed→in-progress

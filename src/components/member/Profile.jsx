@@ -6,7 +6,7 @@ import adminAvatar from '../../assets/images/admin.png';
 import leaderAvatar from '../../assets/images/leader.png';
 import memberAvatar from '../../assets/images/member.png';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_BACKEND_URL;
 const ROLE_AVATARS = { admin: adminAvatar, leader: leaderAvatar, member: memberAvatar };
 
 async function apiFetch(path, opts = {}) {

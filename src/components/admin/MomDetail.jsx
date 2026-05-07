@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import Avatar from 'react-avatar';
 import { generateMomLatex, downloadLatexString } from '../../utils/latexGenerator';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
 async function apiFetch(path) {
   const res = await fetch(`${API_BASE}${path}`, { credentials: 'include' });

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import Avatar from 'react-avatar';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
 const STATE_DISPLAY = { in_progress: 'In Progress', pending: 'To Do', completed: 'Completed' };
 
