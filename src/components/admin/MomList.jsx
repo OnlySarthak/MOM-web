@@ -28,9 +28,10 @@ export default function AdminMomList() {
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
     const tf = FILTER_MAP[timeFilter] || 'all_time';
     apiFetch(`/admin/moms?timeframe=${tf}`)
-      .then(res => setMoms(res.data || []))
+      .then(res => setMoms(Array.isArray(res) ? res : (res.data || [])))
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [timeFilter]);
@@ -78,7 +79,7 @@ export default function AdminMomList() {
               >
                 <div className="flex justify-between items-start mb-4">
                   {/* label = contextLable (backend field name has typo) */}
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-primary font-bold">{mom.contextLable || '—'}</span>
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-primary font-bold">{mom.teamId ? (mom.teamId.teamName || '—') : '—'}</span>
                   <span className="font-mono text-[10px] text-outline">{displayDate}</span>
                 </div>
                 {/* title = MeetingTitle */}

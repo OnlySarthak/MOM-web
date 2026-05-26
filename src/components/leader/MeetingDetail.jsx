@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import Avatar from 'react-avatar';
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
-async function apiFetch(path) {
-  const res = await fetch(`${API_BASE}${path}`, { credentials: 'include' });
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(`${API_BASE}${path}`, { credentials: 'include', ...opts });
   if (!res.ok) throw new Error(`API error ${res.status}`);
   return res.json();
 }
 
 export default function LeaderMeetingDetail() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const meetingId = searchParams.get('id');
   const [activeTab, setActiveTab] = useState('overview');
   const [data, setData] = useState(null);
@@ -41,6 +42,17 @@ export default function LeaderMeetingDetail() {
     ? new Date(meeting.meetingDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : '—';
 
+  const handleDelete = async () => {
+    if (window.confirm(`Are you sure you want to delete the meeting "${meeting.title || ''}"?`)) {
+      try {
+        await apiFetch(`/leader/meetings/${meetingId}`, { method: 'DELETE' });
+        navigate('/leader/meetings');
+      } catch (err) {
+        alert('Failed to delete meeting: ' + err.message);
+      }
+    }
+  };
+
   return (
     <>
       <Link to="/leader/meetings" className="inline-flex items-center gap-2 text-primary text-sm font-medium hover:-translate-x-1 transition-transform mb-8">
@@ -63,12 +75,20 @@ export default function LeaderMeetingDetail() {
             {displayDate}
           </p>
         </div>
-        {/* View MOM — uses real momId */}
-        {momId && (
-          <Link to={`/leader/mom-detail?id=${momId}`} className="btn-secondary gap-2 flex-shrink-0">
-            <span className="material-symbols-outlined text-sm">description</span>View MOM
-          </Link>
-        )}
+        {/* Actions */}
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {momId && (
+            <Link to={`/leader/mom-detail?id=${momId}`} className="btn-secondary gap-2">
+              <span className="material-symbols-outlined text-sm">description</span>View MOM
+            </Link>
+          )}
+          <button
+            onClick={handleDelete}
+            className="btn-secondary gap-2 text-error hover:bg-error-container/20 transition-colors"
+          >
+            <span className="material-symbols-outlined text-sm">delete</span>Delete Meeting
+          </button>
+        </div>
       </div>
 
       {/* Tabs */}

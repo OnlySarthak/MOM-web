@@ -130,7 +130,7 @@ export default function AdminMeetings() {
                   >
                     <td>
                       <p className="font-headline text-lg text-on-surface group-hover:text-primary transition-colors">{m.title || '—'}</p>
-                      <p className="text-xs text-outline">Project: {m.projectName || '—'}</p>
+                      <p className="text-xs text-outline">Team: {m.teamId?.teamName || '—'}</p>
                     </td>
                     <td className="font-mono text-xs text-on-surface-variant">{displayDate}</td>
                     <td>

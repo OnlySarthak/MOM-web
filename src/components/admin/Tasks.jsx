@@ -34,6 +34,7 @@ export default function AdminTasks() {
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
     const endpoint = STATUS_ENDPOINTS[statusFilter] || STATUS_ENDPOINTS.all;
     apiFetch(endpoint)
       .then(res => setTasks(res.data || []))

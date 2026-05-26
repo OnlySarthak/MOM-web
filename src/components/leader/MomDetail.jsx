@@ -175,8 +175,8 @@ export default function LeaderMomDetail() {
                       <td><span className="text-sm font-medium">{task.title || '—'}</span></td>
                       <td>
                         <div className="flex items-center gap-2">
-                          <Avatar name={task.responsibleId || 'User'} size="24" round={true} />
-                          <span className="text-xs text-on-surface-variant">{task.responsibleId || '—'}</span>
+                          <Avatar name={task.resposibleName || 'User'} size="24" round={true} />
+                          <span className="text-xs text-on-surface-variant">{task.resposibleName || '—'}</span>
                         </div>
                       </td>
                     </tr>
