@@ -9,7 +9,15 @@ const STATE_BACKEND = { 'todo': 'pending', 'in-progress': 'in_progress', 'comple
 
 async function apiFetch(path, opts = {}) {
   const res = await fetch(`${API_BASE}${path}`, { credentials: 'include', ...opts });
-  if (!res.ok) throw new Error(`API error ${res.status}`);
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const err = new Error(errorData.message || `API error ${res.status}`);
+    err.status = res.status;
+    err.limitType = errorData.limitType;
+    err.maxLimit = errorData.maxLimit;
+    err.currentCount = errorData.currentCount;
+    throw err;
+  }
   return res.json();
 }
 
@@ -24,6 +32,7 @@ export default function LeaderTasks() {
   const [form, setForm] = useState({ title: '', responsibleId: '' });
   const [teamMembers, setTeamMembers] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
   const [memberFilter, setMemberFilter] = useState('all');
 
   function loadTasks() {
@@ -73,6 +82,7 @@ export default function LeaderTasks() {
   async function handleAssignTask(e) {
     e.preventDefault();
     setSubmitting(true);
+    setSubmitError(null);
     try {
       await apiFetch('/leader/tasks', {
         method: 'POST',
@@ -83,7 +93,7 @@ export default function LeaderTasks() {
       setForm({ title: '', responsibleId: '' });
       loadTasks();
     } catch (err) {
-      alert('Failed to assign task: ' + err.message);
+      setSubmitError(err.message);
     } finally {
       setSubmitting(false);
     }
@@ -219,10 +229,11 @@ export default function LeaderTasks() {
 
                 </select>
               </div>
+              {submitError && <p className="text-xs text-error">{submitError}</p>}
             </form>
           </div>
           <div className="ts-modal-footer">
-            <button className="btn-secondary text-sm" onClick={() => setShowModal(false)}>Cancel</button>
+            <button className="btn-secondary text-sm" onClick={() => { setShowModal(false); setSubmitError(null); }}>Cancel</button>
             <button className="btn-primary text-sm" disabled={submitting} onClick={() => document.getElementById('leader-task-form').requestSubmit()}>
               <span className="material-symbols-outlined text-sm">add</span>{submitting ? 'Assigning…' : 'Assign Task'}
             </button>

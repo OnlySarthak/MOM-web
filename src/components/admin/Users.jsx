@@ -7,7 +7,12 @@ async function apiFetch(path, opts = {}) {
   const res = await fetch(`${API_BASE}${path}`, { credentials: 'include', ...opts });
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.message || `API error ${res.status}`);
+    const err = new Error(errorData.message || `API error ${res.status}`);
+    err.status = res.status;
+    err.limitType = errorData.limitType;
+    err.maxLimit = errorData.maxLimit;
+    err.currentCount = errorData.currentCount;
+    throw err;
   }
   return res.json();
 }

@@ -18,7 +18,15 @@ const FILTER_MAP = {
 
 async function apiFetch(path, opts = {}) {
   const res = await fetch(`${API_BASE}${path}`, { credentials: 'include', ...opts });
-  if (!res.ok) throw new Error(`API error ${res.status}`);
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const err = new Error(errorData.message || `API error ${res.status}`);
+    err.status = res.status;
+    err.limitType = errorData.limitType;
+    err.maxLimit = errorData.maxLimit;
+    err.currentCount = errorData.currentCount;
+    throw err;
+  }
   return res.json();
 }
 
@@ -58,6 +66,7 @@ export default function LeaderMeetings() {
   const [audioDuration, setAudioDuration] = useState(0);
   const [page, setPage] = useState(1);
   const [initiating, setInitiating] = useState(false);
+  const [initiateError, setInitiateError] = useState(null);
   const [processing, setProcessing] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -102,6 +111,7 @@ export default function LeaderMeetings() {
     if (!validateForm()) return;
 
     setInitiating(true);
+    setInitiateError(null);
     try {
       const res = await apiFetch('/leader/meetings/initiate', {
         method: 'POST',
@@ -120,7 +130,7 @@ export default function LeaderMeetings() {
       setUploadError(null);
       setUploadSuccess(false);
     } catch (err) {
-      alert('Failed to initiate meeting: ' + err.message);
+      setInitiateError(err.message);
     } finally {
       setInitiating(false);
     }
@@ -419,6 +429,7 @@ export default function LeaderMeetings() {
                 ></textarea>
                 {formErrors.agenda && <p className="text-xs text-error mt-1">{formErrors.agenda}</p>}
               </div>
+              {initiateError && <p className="text-xs text-error">{initiateError}</p>}
             </form>
           </div>
           <div className="ts-modal-footer">

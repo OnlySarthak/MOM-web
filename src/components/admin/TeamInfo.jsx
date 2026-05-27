@@ -9,7 +9,15 @@ const STATE_DISPLAY = { in_progress: 'In Progress', pending: 'To Do', completed:
 
 async function apiFetch(path, opts = {}) {
   const res = await fetch(`${API_BASE}${path}`, { credentials: 'include', ...opts });
-  if (!res.ok) throw new Error(`API error ${res.status}`);
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const err = new Error(errorData.message || `API error ${res.status}`);
+    err.status = res.status;
+    err.limitType = errorData.limitType;
+    err.maxLimit = errorData.maxLimit;
+    err.currentCount = errorData.currentCount;
+    throw err;
+  }
   return res.json();
 }
 
@@ -32,6 +40,7 @@ export default function AdminTeamInfo() {
   const [replaceLeaderId, setReplaceLeaderId] = useState('');
 
   const [submitting, setSubmitting] = useState(false);
+  const [addMemberError, setAddMemberError] = useState(null);
 
   function loadTeam() {
     if (!teamId) { setLoading(false); return; }
@@ -60,13 +69,14 @@ export default function AdminTeamInfo() {
   useEffect(() => { loadTeam(); }, [teamId]);
 
   // Load candidates when modals open
-  useEffect(() => { if (showAddMember) loadAvailableMembers(); }, [showAddMember]);
+  useEffect(() => { if (showAddMember) { loadAvailableMembers(); setAddMemberError(null); } }, [showAddMember]);
   useEffect(() => { if (showReplace) loadAvailableLeaders(); }, [showReplace]);
 
   async function handleAddMember(e) {
     e.preventDefault();
     if (!addMemberForm.userId) return;
     setSubmitting(true);
+    setAddMemberError(null);
     try {
       await apiFetch(`/admin/teams/${teamId}/members`, {
         method: 'POST',
@@ -77,7 +87,7 @@ export default function AdminTeamInfo() {
       setAddMemberForm({ userId: '' });
       loadTeam();
     } catch (err) {
-      alert('Failed to add member: ' + err.message);
+      setAddMemberError(err.message);
     } finally {
       setSubmitting(false);
     }
@@ -323,7 +333,7 @@ export default function AdminTeamInfo() {
                   )}
                 </select>
               </div>
-
+              {addMemberError && <p className="text-xs text-error mt-2">{addMemberError}</p>}
             </form>
           </div>
           <div className="ts-modal-footer">

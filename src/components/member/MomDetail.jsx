@@ -7,7 +7,15 @@ const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
 async function apiFetch(path, opts = {}) {
   const res = await fetch(`${API_BASE}${path}`, { credentials: 'include', ...opts });
-  if (!res.ok) throw new Error(`API error ${res.status}`);
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const err = new Error(errorData.message || `API error ${res.status}`);
+    err.status = res.status;
+    err.limitType = errorData.limitType;
+    err.maxLimit = errorData.maxLimit;
+    err.currentCount = errorData.currentCount;
+    throw err;
+  }
   return res.json();
 }
 
@@ -22,6 +30,7 @@ export default function MemberMomDetail() {
   const [dialogueText, setDialogueText] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [posting, setPosting] = useState(false);
+  const [postError, setPostError] = useState(null);
 
   function loadMom() {
     if (!momId) { setLoading(false); return; }
@@ -40,6 +49,7 @@ export default function MemberMomDetail() {
   async function handlePost() {
     if (!dialogueText.trim()) return;
     setPosting(true);
+    setPostError(null);
     try {
       await apiFetch(`/member/moms/${momId}/suggestions`, {
         method: 'POST',
@@ -49,7 +59,7 @@ export default function MemberMomDetail() {
       setDialogueText('');
       loadMom();
     } catch (err) {
-      alert('Failed to post suggestion: ' + err.message);
+      setPostError(err.message);
     } finally {
       setPosting(false);
     }
@@ -72,7 +82,7 @@ export default function MemberMomDetail() {
   const decisions = Array.isArray(momData.decisions) ? momData.decisions : [];
   const participants = Array.isArray(momData.presentAttendees) ? momData.presentAttendees : [];
   const pendingTasks = Array.isArray(momData.pendingTasks) ? momData.pendingTasks : [];
-  const meetingId = momData.meetingId || null;
+  const meetingId = momData.meetingId?._id || momData.meetingId || null;
 
   return (
     <>
@@ -215,6 +225,7 @@ export default function MemberMomDetail() {
                   >{posting ? 'Posting…' : 'Post'}</button>
                 </div>
               </div>
+              {postError && <p className="text-xs text-error mt-2 px-1">{postError}</p>}
             </div>
           </section>
 

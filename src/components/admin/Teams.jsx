@@ -6,7 +6,15 @@ const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
 async function apiFetch(path, opts = {}) {
   const res = await fetch(`${API_BASE}${path}`, { credentials: 'include', ...opts });
-  if (!res.ok) throw new Error(`API error ${res.status}`);
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const err = new Error(errorData.message || `API error ${res.status}`);
+    err.status = res.status;
+    err.limitType = errorData.limitType;
+    err.maxLimit = errorData.maxLimit;
+    err.currentCount = errorData.currentCount;
+    throw err;
+  }
   return res.json();
 }
 
@@ -84,6 +92,20 @@ export default function AdminTeams() {
     }
   }
 
+  async function handleDeleteTeam(teamId, teamName) {
+    if (!window.confirm(`Are you sure you want to delete the team "${teamName}"? This will delete all tasks, meetings, and reports associated with it, and deactivate members who aren't part of any other teams. This action cannot be undone.`)) {
+      return;
+    }
+    try {
+      await apiFetch(`/admin/teams/${teamId}`, {
+        method: 'DELETE',
+      });
+      loadTeams();
+    } catch (err) {
+      alert(`Failed to delete team: ${err.message}`);
+    }
+  }
+
   const COLORS = ['bg-primary', 'bg-secondary', 'bg-tertiary', 'bg-inverse-surface', 'bg-outline'];
 
   return (
@@ -121,6 +143,9 @@ export default function AdminTeams() {
                     <div className={`ts-dropdown ${openDropdown === idx ? 'open' : ''}`}>
                       <button className="ts-dropdown-item" onClick={(e) => { e.stopPropagation(); navigate(`/admin/team-info?id=${t.id}`); setOpenDropdown(null); }}>
                         <span className="material-symbols-outlined text-sm">visibility</span>View Details
+                      </button>
+                      <button className="ts-dropdown-item text-error hover:bg-error/10 hover:text-error" onClick={(e) => { e.stopPropagation(); handleDeleteTeam(t.id, t.teamName); setOpenDropdown(null); }}>
+                        <span className="material-symbols-outlined text-sm">delete</span>Delete Team
                       </button>
                     </div>
                   </div>

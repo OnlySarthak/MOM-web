@@ -9,7 +9,15 @@ const NEXT_STATE = { pending: 'in_progress', in_progress: 'completed', completed
 
 async function apiFetch(path, opts = {}) {
   const res = await fetch(`${API_BASE}${path}`, { credentials: 'include', ...opts });
-  if (!res.ok) throw new Error(`API error ${res.status}`);
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const err = new Error(errorData.message || `API error ${res.status}`);
+    err.status = res.status;
+    err.limitType = errorData.limitType;
+    err.maxLimit = errorData.maxLimit;
+    err.currentCount = errorData.currentCount;
+    throw err;
+  }
   return res.json();
 }
 
@@ -24,6 +32,7 @@ export default function MemberTasks() {
   const [showSelfAssign, setShowSelfAssign] = useState(false);
   const [selfTaskName, setSelfTaskName] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
   const [renamingId, setRenamingId] = useState(null);
   const [renameValue, setRenameValue] = useState('');
 
@@ -91,6 +100,7 @@ export default function MemberTasks() {
     e.preventDefault();
     if (!selfTaskName.trim()) return;
     setSubmitting(true);
+    setSubmitError(null);
     try {
       await apiFetch('/member/tasks', {
         method: 'POST',
@@ -101,7 +111,7 @@ export default function MemberTasks() {
       setSelfTaskName('');
       loadTasks();
     } catch (err) {
-      alert('Failed to assign task: ' + err.message);
+      setSubmitError(err.message);
     } finally {
       setSubmitting(false);
     }
@@ -239,10 +249,11 @@ export default function MemberTasks() {
                   onChange={e => setSelfTaskName(e.target.value)}
                 />
               </div>
+              {submitError && <p className="text-xs text-error">{submitError}</p>}
             </form>
           </div>
           <div className="ts-modal-footer">
-            <button className="btn-secondary text-sm" onClick={() => setShowSelfAssign(false)}>Cancel</button>
+            <button className="btn-secondary text-sm" onClick={() => { setShowSelfAssign(false); setSubmitError(null); }}>Cancel</button>
             <button className="btn-primary text-sm" disabled={submitting} onClick={() => document.getElementById('self-task-form').requestSubmit()}>
               <span className="material-symbols-outlined text-sm">add</span>{submitting ? 'Assigning…' : 'Assign to Self'}
             </button>

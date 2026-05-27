@@ -45,7 +45,7 @@ export default function AdminMomDetail() {
   // presentAttendees → participants with functionalRole
   const participants = Array.isArray(mom.presentAttendees) ? mom.presentAttendees : [];
   const pendingTasks = Array.isArray(mom.pendingTasks) ? mom.pendingTasks : [];
-  const meetingId = mom.meetingId || null;
+  const meetingId = mom.meetingId?._id || mom.meetingId || null;
 
   return (
     <>

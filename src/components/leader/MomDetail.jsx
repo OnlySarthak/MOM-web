@@ -101,7 +101,7 @@ export default function LeaderMomDetail() {
   const participants = Array.isArray(momData.presentAttendees) ? momData.presentAttendees : [];
   const pendingTasks = Array.isArray(momData.pendingTasks) ? momData.pendingTasks : [];
   const suggestions = Array.isArray(momData.suggestions) ? momData.suggestions : [];
-  const meetingId = momData.meetingId || null;
+  const meetingId = momData.meetingId?._id || momData.meetingId || null;
 
   return (
     <>
